@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault()
     const role = document.querySelector(".role-btn.active").dataset.role
     alert("Login berhasil sebagai " + role)
-    window.location.href = "index.html"
+    window.location.href = "/dashboard"
   })
 
   registerForm.addEventListener("submit", (e) => {
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (isValid) {
-      window.location.href = "success.html"
+      window.location.href = "/dashboard"
     }
   })
 
@@ -83,10 +83,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = btn.querySelector("img")
       if (input.type === "password") {
         input.type = "text"
-        img.src = "../assets/eye-open-svgrepo-com.svg"   
+        img.src = "/img/eye-open-svgrepo-com.svg"
       } else {
         input.type = "password"
-        img.src = "../assets/eye-close-svgrepo-com.svg" 
+        img.src = "/img/eye-close-svgrepo-com.svg"
       }
     })
   })
