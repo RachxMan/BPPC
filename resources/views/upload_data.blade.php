@@ -31,7 +31,7 @@
       <li class="active"><a href="{{ url('/uploaddata') }}"><span>Upload Data</span></a></li>
       <li><a href="{{ url('/kelolaakun') }}"><span>Kelola Akun</span></a></li>
       <li><a href="{{ url('/profil') }}"><span>Profil & Pengaturan</span></a></li>
-      <li><a href="{{ url('/login') }}"><span>Logout</span></a></li>
+      <li><a href="{{ url('/') }}"><span>Logout</span></a></li>
     </ul>
   </aside>
 
