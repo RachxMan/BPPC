@@ -1,0 +1,220 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(45deg, #333 0%, #fff 30%, #ffcccc 50%, #ff4d4d 75%, #e60012 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.container {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  overflow: hidden;
+  width: 850px;
+  max-width: 95%;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.branding {
+  flex: 1;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.branding .logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+.form-box {
+  flex: 1.2;
+  background: rgba(255,255,255,0.15);
+  padding: 40px;
+  border-radius: 0 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.role-btn {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.role-btn.active,
+.role-btn:hover {
+  background: #ff2d2d;
+  border-color: #ff2d2d;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #fff;
+}
+
+.form {
+  display: none;
+  min-height: 420px;
+}
+.form.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  color: #595959;
+}
+.input-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.phone-input input,
+.password-wrapper input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #595959;
+}
+.options a {
+  color: #595959;
+  text-decoration: none;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: #ff2d2d;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn:hover {
+  background: #e62222;
+}
+
+.toggle-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #595959;
+}
+.toggle-link span {
+  cursor: pointer;
+  font-weight: bold;
+}
+.toggle-link span:hover {
+  color: #e62222;
+}
+
+.phone-input {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+.phone-input .prefix {
+  padding: 12px;
+  background: #eee;
+  color: #333;
+  font-size: 15px;
+  border-right: 1px solid #ddd;
+  white-space: nowrap;
+}
+.phone-input input {
+  flex: 1;
+  border-radius: 0 10px 10px 0;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+.password-wrapper input {
+  padding-right: 44px;
+}
+.toggle-password {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.toggle-password img {
+  width: 20px;
+  height: 20px;
+}
+
+.error-message {
+  color: #e62222;
+  font-size: 13px;
+  margin-top: 4px;
+  display: none;
+}
+.error-message.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(10px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    width: 95%;
+  }
+  .branding {
+    border-radius: 20px 20px 0 0;
+  }
+  .form-box {
+    border-radius: 0 0 20px 20px;
+  }
+}
