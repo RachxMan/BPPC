@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telkom Paycoll - Login</title>
+  <title>Telkom Paycoll - Login/Register</title>
   <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 <body>
   <div class="container">
     <div class="branding">
-      <img src="{{ asset('img/logo_telkom.png') }}" alt="Telkom Indonesia Logo" class="logo">
+      <img src="{{ asset('img/logo_telkom.png') }}" alt="Telkom Logo" class="logo">
       <h2>PAYCOLL</h2>
       <h3>Telkom Indonesia</h3>
     </div>
 
     <div class="form-box">
+
       <div class="form-header">
         <button type="button" class="role-btn active" data-role="Admin">Admin</button>
         <button type="button" class="role-btn" data-role="Agent">Agent</button>
@@ -40,7 +41,7 @@
           <a href="#">Lupa password?</a>
         </div>
         <button type="submit" class="btn">Login</button>
-        <p class="toggle-link">Belum punya akun? <span onclick="showRegister()">Daftar</span></p>
+        <p class="toggle-link">Belum punya akun? <span id="showRegisterBtn">Daftar</span></p>
       </form>
 
       <form id="registerForm" class="form">
@@ -89,10 +90,12 @@
           <small class="error-message" id="phone-error"></small>
         </div>
         <button type="submit" class="btn">Daftar</button>
-        <p class="toggle-link">Sudah punya akun? <span onclick="showLogin()">Login</span></p>
+        <p class="toggle-link">Sudah punya akun? <span id="showLoginBtn">Login</span></p>
       </form>
+
     </div>
   </div>
+
   <script src="{{ asset('js/regist_login.js') }}"></script>
 </body>
 </html>

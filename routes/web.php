@@ -34,3 +34,6 @@ Route::get('/profil&pengaturan', function () {
     return view('profil_pengaturan');
 });
 
+Route::get('/success', function () {
+    return view('success');
+});

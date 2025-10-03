@@ -4,19 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const roleButtons = document.querySelectorAll(".role-btn")
   const phoneInput = document.getElementById("phone")
 
-  window.showRegister = function () {
+  document.getElementById("showRegisterBtn").addEventListener("click", () => {
     loginForm.classList.remove("active")
     registerForm.classList.add("active")
-  }
+  })
 
-  window.showLogin = function () {
+  document.getElementById("showLoginBtn").addEventListener("click", () => {
     registerForm.classList.remove("active")
     loginForm.classList.add("active")
-  }
+  })
 
-  roleButtons.forEach((btn) => {
+  roleButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-      roleButtons.forEach((b) => b.classList.remove("active"))
+      roleButtons.forEach(b => b.classList.remove("active"))
       btn.classList.add("active")
     })
   })
@@ -61,25 +61,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (isValid) {
-      window.location.href = "/dashboard"
+      window.location.href = "/success"
     }
   })
-
   if (phoneInput) {
     phoneInput.addEventListener("input", function () {
       this.value = this.value.replace(/[^0-9]/g, "")
-      if (this.value.startsWith("0")) {
-        this.value = this.value.substring(1)
-      }
+      if (this.value.startsWith("0")) this.value = this.value.substring(1)
     })
   }
 
-  document.querySelectorAll(".toggle-password").forEach((btn) => {
+  document.querySelectorAll(".toggle-password").forEach(btn => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.target
       const input = document.getElementById(targetId)
       if (!input) return
-
       const img = btn.querySelector("img")
       if (input.type === "password") {
         input.type = "text"
