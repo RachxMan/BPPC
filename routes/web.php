@@ -14,7 +14,7 @@ Route::get('/mailing-list', function () {
     return view('mailing_list');
 });
 
-Route::get('/uploaddata', function () {
+Route::get('/upload-data', function () {
     return view('upload_data');
 });
 

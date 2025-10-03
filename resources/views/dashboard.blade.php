@@ -28,7 +28,7 @@
     <ul class="menu" id="menu">
       <li class="active"><a href="{{ url('/dashboard') }}"><span>Dashboard</span></a></li>
       <li><a href="{{ url('/mailing-list') }}"><span>Mailing List Reminder</span></a></li>
-      <li><a href="{{ url('/uploaddata') }}"><span>Upload Data</span></a></li>
+      <li><a href="{{ url('/upload-data') }}"><span>Upload Data</span></a></li>
       <li><a href="{{ url('/kelola-akun') }}"><span>Kelola Akun</span></a></li>
       <li><a href="{{ url('/profil&pengaturan') }}"><span>Profil & Pengaturan</span></a></li>
       <li><a href="{{ url('/') }}"><span>Logout</span></a></li>
