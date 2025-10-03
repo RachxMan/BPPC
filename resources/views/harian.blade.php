@@ -38,7 +38,7 @@
   <div id="overlay" class="overlay hidden"></div>
 
   <main class="main">
-    <h1><span style="color:#e74c3c;">Upload Data</span><br>Bulanan</h1>
+    <h1><span style="color:#e74c3c;">Upload Data</span><br>Harian</h1>
 
     <div class="upload-box" id="uploadBox">
       <div class="upload-content">
