@@ -1,0 +1,297 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Inter, Arial, sans-serif;
+}
+
+:root {
+  --telkom-red: #e74c3c;
+  --bg: #f5f5f5;
+  --card: #ffffff;
+  --muted: #7a7a7a;
+  --success: #2ecc71;
+  --warning: #f1c40f;
+  --danger: #e74c3c;
+  --sidebar-bg: #1c1c1c;
+  --sidebar-text: #eaeaea;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  color: #222;
+}
+
+.sidebar {
+  width: 250px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  transition: left .28s ease;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo img {
+  width: 50px;   /* hanya logo Telkom yang kecil */
+  height: auto;
+  margin: 0;
+}
+
+.logo p {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  text-align: left;
+}
+
+.profile {
+  text-align: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.profile img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--telkom-red);
+}
+
+.profile-name {
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.online {
+  font-size: 12px;
+  color: #27c24c;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.search-box {
+  display: flex;
+  gap: 6px;
+  background: #222;
+  padding: 6px;
+  border-radius: 6px;
+  align-items: center;
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--sidebar-text);
+  padding: 6px;
+  flex: 1;
+}
+
+.search-box button {
+  background: #333;
+  border: none;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.menu {
+  list-style: none;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.menu li {
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--sidebar-text);
+  font-size: 14px;
+}
+
+.menu li:hover,
+.menu li.active {
+  background: var(--telkom-red);
+  color: #fff;
+}
+
+.menu li a {
+  color: #fff;              
+  text-decoration: none;    
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.menu li a span {
+  margin-left: 10px;
+}
+
+.menu li.active a {
+  background: #e74c3c;     
+}
+
+
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1100;
+  background: var(--sidebar-bg);
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 900;
+  transition: opacity .2s;
+}
+
+.hidden {
+  display: none;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* center horizontal */
+  justify-content: center; /* center vertical */
+  padding: 2rem;
+  text-align: center;
+  min-height: calc(100vh - 50px); /* kurangi tinggi footer */
+  box-sizing: border-box;
+  margin-left: 250px;
+}
+
+.main h1 {
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+/* Upload Page */
+.upload-box {
+  border: 2px dashed #999;
+  border-radius: 10px;
+  height: 300px;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  margin: 0 auto; /* auto margin center */
+}
+.upload-box.dragover {
+  background: rgba(231, 76, 60, 0.2); /* merah agak transparan */
+}
+
+.upload-content {
+  text-align: center;
+  color: #555;
+}
+
+.upload-icon {
+  width: 125px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+
+.support {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 1rem;
+}
+
+.btn-upload {
+  background: #ddd;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-upload:hover {
+  background: #ccc;
+}
+
+
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: #111;
+  color: #fff;
+  font-size: 0.85rem;
+  position: fixed;
+  bottom: 0;
+  left: 250px; /* sama dengan lebar sidebar */
+  right: 0;
+  transition: left 0.28s ease; /* biar smooth waktu sidebar toggle */
+}
+
+@media (max-width: 900px) {
+  .hamburger {
+    display: block;
+  }
+  .sidebar {
+    left: -260px;
+  }
+  .sidebar.open {
+    left: 0;
+  }
+  .overlay.hidden {
+    display: none;
+  }
+  .overlay.show {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+    padding-top: 60px;
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+  .tables {
+    grid-template-columns: 1fr;
+  }
+  footer {
+    left: 0; /* full width di layar kecil */
+  }
+}
