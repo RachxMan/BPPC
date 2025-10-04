@@ -19,9 +19,8 @@
       </div>
     </main>
 
-    <footer>
-      © 2025 Business Process Payment & Collection - PT. Telkom Indonesia Tbk. Witel Riau
-    </footer>
+    <x-footer/>
+    
   </div>
 
   <script src="{{ asset('js/updata.js') }}"></script>
