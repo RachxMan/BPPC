@@ -10,8 +10,6 @@
   
     <x-sidebar />
 
-  <button id="hamburger" class="hamburger" aria-label="Open menu">☰</button>
-  <div id="overlay" class="overlay hidden"></div>
 
   <main class="main">
     <h1><span style="color:#e74c3c;">Upload Data</span><br>Harian</h1>
