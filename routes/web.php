@@ -30,7 +30,7 @@ Route::get('/kelola-akun', function () {
     return view('kelola-akun');
 });
 
-Route::get('/profil&pengaturan', function () {
+Route::get('/profil-pengaturan', function () {
     return view('profil_pengaturan');
 });
 

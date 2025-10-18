@@ -28,8 +28,8 @@
   <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
     <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
   </li>
-  <li class="{{ request()->is('profil&pengaturan') ? 'active' : '' }}">
-    <a href="{{ url('/profil&pengaturan') }}">Profil & Pengaturan</a>
+  <li class="{{ request()->is('profil-pengaturan') ? 'active' : '' }}">
+    <a href="{{ url('/profil-pengaturan') }}">Profil & Pengaturan</a>
   </li>
   <li>
     <a href="{{ url('/') }}">Logout</a>
