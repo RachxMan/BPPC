@@ -1,13 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Tests\Unit;
 
-use Illuminate\Http\Request;
+use PHPUnit\Framework\TestCase;
+use App\Http\Controllers\ProfileController;
 
-class ProfileController extends Controller
+class ProfileControllerTest extends TestCase
 {
-    public function index()
+    /** @test */
+    public function it_returns_profile_view()
     {
-        return view('profile.index');
+        $controller = new ProfileController();
+        $response = $controller->index();
+
+        $this->assertEquals('profile.index', $response->name());
     }
 }

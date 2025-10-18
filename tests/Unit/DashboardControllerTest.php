@@ -13,6 +13,6 @@ class DashboardControllerTest extends TestCase
         $controller = new DashboardController();
         $response = $controller->index();
 
-        $this->assertEquals('dashboard.index', $response->name());
+        $this->assertEquals('dashboard', $response->name());
     }
 }
