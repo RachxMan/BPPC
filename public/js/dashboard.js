@@ -17,19 +17,6 @@ const progressData = [
   { label: "Week 4", value: 67, color: "#2ecc71" }
 ];
 
-const orderNotOkeData = [
-  { "ID NET":"TLK001","NAMA":"PT. Indosat Tbk","MASALAH":"Koneksi Terputus","AKSI":"Dalam Proses" },
-  { "ID NET":"TLK002","NAMA":"PT. XL Axiata","MASALAH":"Bandwidth Lambat","AKSI":"Pending" },
-  { "ID NET":"TLK003","NAMA":"PT. Smartfren","MASALAH":"Gangguan Jaringan","AKSI":"Escalated" }
-];
-
-const customerData = [
-  { "ID NET":"CUS001","NAMA":"Budi Santoso","ALAMAT":"Jakarta Selatan","KONTAK":"081234567890","STATUS":"Active" },
-  { "ID NET":"CUS002","NAMA":"Siti Aminah","ALAMAT":"Bandung","KONTAK":"081234567891","STATUS":"Active" },
-  { "ID NET":"CUS003","NAMA":"Ahmad Rahman","ALAMAT":"Surabaya","KONTAK":"081234567892","STATUS":"Inactive" },
-  { "ID NET":"CUS004","NAMA":"Dewi Sartika","ALAMAT":"Medan","KONTAK":"081234567893","STATUS":"Active" }
-];
-
 const sidebar = document.getElementById('sidebar');
 const hamburger = document.getElementById('hamburger');
 const overlay = document.getElementById('overlay');
