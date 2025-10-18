@@ -39,7 +39,9 @@ Route::prefix('laporan')->group(function () {
 });
 
 // ========== KELOLA AKUN ==========
-Route::get('/kelola-akun', [UserController::class, 'index'])->name('user.index');
+Route::get('/kelola-akun', [UserController::class, 'index'])->name('kelola.index');
+Route::get('/kelola-akun/create', [UserController::class, 'create'])->name('kelola.create');
+Route::post('/kelola-akun', [UserController::class, 'store'])->name('kelola.store');
 
 // ========== PROFIL & PENGATURAN ==========
 Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
