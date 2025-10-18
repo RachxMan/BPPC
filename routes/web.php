@@ -44,9 +44,14 @@ Route::prefix('laporan')->middleware('auth')->group(function () {
     Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
 });
 
+ HEAD
 // ================= KELOLA AKUN =================
 Route::get('/kelola-akun', [UserController::class, 'index'])
     ->name('user.index'); // <--- titik koma ditambahkan
+// ========== KELOLA AKUN ==========
+Route::get('/kelola-akun', [UserController::class, 'index'])->name('kelola.index');
+Route::get('/kelola-akun/create', [UserController::class, 'create'])->name('kelola.create');
+Route::post('/kelola-akun', [UserController::class, 'store'])->name('kelola.store');8ccdb0b (update halaman kelola akun)
 
 // ================= PROFIL & PENGATURAN =================
 Route::get('/profil', [ProfileController::class, 'index'])
