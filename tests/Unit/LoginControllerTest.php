@@ -10,6 +10,7 @@ class LoginControllerTest extends TestCase
     #[Test]
     public function it_displays_the_login_page(): void
     {
+        // Pastikan halaman login dapat diakses
         $response = $this->get('/login');
 
         $response->assertStatus(200);
@@ -17,26 +18,48 @@ class LoginControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_can_login_with_valid_credentials(): void
+    public function it_can_login_and_redirect_to_dashboard(): void
     {
-        // Kirim request login (saat ini login langsung redirect)
+        // Karena login saat ini dummy, kita tidak buat user
+        // Langsung kirim POST ke /login dan pastikan redirect
         $response = $this->post('/login', [
-            // input apapun karena login bypass
+            'email' => 'admin@example.com',
+            'password' => 'password123',
         ]);
 
-        // Pastikan redirect ke dashboard
+        // Login dummy selalu redirect ke dashboard
         $response->assertRedirect('/dashboard');
+
+        // Tidak perlu autentikasi, cukup pastikan redirect sukses
+        $this->assertTrue(true);
     }
 
     #[Test]
-    public function it_fails_login_with_invalid_credentials(): void
+    public function it_redirects_to_dashboard_even_with_wrong_credentials(): void
     {
-        // Saat ini login selalu redirect ke dashboard
+        // Kirim POST dengan password salah
         $response = $this->post('/login', [
-            // input apapun
+            'email' => 'admin@example.com',
+            'password' => 'wrongpassword',
         ]);
 
-        // Pastikan redirect ke dashboard (karena login bypass)
+        // Karena login dummy, tetap redirect ke dashboard
         $response->assertRedirect('/dashboard');
+
+        // Tidak ada autentikasi yang dicek
+        $this->assertTrue(true);
+    }
+
+    #[Test]
+    public function it_can_logout(): void
+    {
+        // Logout dummy: hanya redirect ke /login
+        $response = $this->post('/logout');
+
+        // Pastikan diarahkan kembali ke halaman login
+        $response->assertRedirect('/login');
+
+        // Tidak perlu cek Auth
+        $this->assertTrue(true);
     }
 }

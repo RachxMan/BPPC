@@ -17,42 +17,48 @@ use App\Http\Controllers\ProfileController;
 |--------------------------------------------------------------------------
 */
 
-// ================= LOGIN & LOGOUT =================
+// ================= HALAMAN UTAMA =================
+// Saat user membuka "/", tampilkan halaman login langsung
+Route::get('/', function () {
+    return view('login');
+})->name('home');
 
-// Halaman login
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.page');
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+// ================= LOGIN & LOGOUT (sementara tanpa validasi) =================
+// Klik tombol login langsung menuju dashboard tanpa autentikasi
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
 
-// Logout sementara
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/login', function () {
+    return redirect('/dashboard');
+})->name('login.submit');
 
-// Halaman dashboard
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// Logout dummy (belum aktif)
+Route::post('/logout', function () {
+    return redirect('/login');
+})->name('logout');
 
-// ================= MAILING LIST =================
-Route::get('/mailing-list', [MailingListController::class, 'index'])
-    ->name('mailing.index'); // <--- titik koma ditambahkan
+// ================= DASHBOARD =================
+// Arahkan langsung ke view dashboard.blade.php tanpa middleware auth
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
 
-// ================= UPLOAD DATA =================
-Route::get('/upload-data', [UploadDataController::class, 'index'])
-    ->name('upload.index'); // <--- titik koma ditambahkan
+// ================= MODULES =================
+Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
+Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
 
-// ================= LAPORAN (HARIAN & BULANAN) =================
-Route::prefix('laporan')->middleware('auth')->group(function () {
+// ================= LAPORAN =================
+Route::prefix('laporan')->group(function () {
     Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
     Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
 });
 
 // ================= KELOLA AKUN =================
-Route::get('/kelola-akun', [UserController::class, 'index'])
-    ->name('user.index'); // <--- titik koma ditambahkan
+Route::get('/kelola-akun', [UserController::class, 'index'])->name('user.index');
 
-// ================= PROFIL & PENGATURAN =================
-Route::get('/profil', [ProfileController::class, 'index'])
-    ->name('profile.index'); // <--- titik koma ditambahkan
+// ================= PROFIL =================
+Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
 
 // ================= SUCCESS PAGE =================
-Route::get('/success', function () {
-    return view('success');
-});
+Route::get('/success', fn() => view('success'))->name('success');
