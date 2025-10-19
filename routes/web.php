@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MailingListController;
 use App\Http\Controllers\UploadDataController;
@@ -9,65 +9,49 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes - BPPC Telkom
-|--------------------------------------------------------------------------
-| Semua halaman utama sistem Business Process Payment & Collection.
-| Gunakan middleware auth nanti setelah login siap.
-|--------------------------------------------------------------------------
-*/
+Route::get('/', function () {
+    return view('login');
+})->name('home');
 
-// ========== LOGIN & LOGOUT ==========
-Route::get('/', [AuthController::class, 'login'])->name('login');
-Route::get('/login', [AuthController::class, 'login'])->name('login.page');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
 
-// ========== DASHBOARD ==========
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::post('/login', function () {
+    return redirect()->route('dashboard');
+})->name('login.submit');
 
-// ========== MAILING LIST REMINDER ==========
-Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
+Route::post('/logout', function () {
+    return redirect()->route('login');
+})->name('logout');
 
-// ========== UPLOAD DATA ==========
-Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
 
-// ========== LAPORAN (HARIAN & BULANAN) ==========
+Route::get('/mailing-list', function () {
+    return view('mailing_list');
+})->name('mailing.index');
+
+Route::get('/upload-data', function () {
+    return view('upload_data');
+})->name('upload.index');
+
 Route::prefix('laporan')->group(function () {
     Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
     Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
 });
 
-// ========== KELOLA AKUN ==========
-Route::get('/kelola-akun', [UserController::class, 'index'])->name('kelola.index');
-Route::get('/kelola-akun/create', [UserController::class, 'create'])->name('kelola.create');
-Route::post('/kelola-akun', [UserController::class, 'store'])->name('kelola.store');
-
-Route::get('/mailing-list', function () {
-    return view('mailing_list');
-});
-
-Route::get('/upload-data', function () {
-    return view('upload_data');
-});
-
-Route::get('/harian', function () {
-    return view('harian');
-});
-
-Route::get('/bulanan', function () {
-    return view('bulanan');
-});
-
 Route::get('/kelola-akun', function () {
     return view('kelola-akun');
-});
+})->name('user.index');
 
-Route::get('/profil-pengaturan', function () {
+Route::get('/profil', function () {
     return view('profil_pengaturan');
-});
+})->name('profile.index');
 
-// ========== SUCCESS PAGE (notifikasi sukses / upload dsb) ==========
+Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
+
 Route::get('/success', function () {
     return view('success');
 })->name('success');
