@@ -1,28 +1,36 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Upload Data - PayColl PT. Telkom</title>
-  <link rel="stylesheet" href="{{ asset('css/uploaddata.css') }}">
-</head>
-<body>
+@extends('layouts.app')
 
-    <x-sidebar /> 
+@section('title', 'Judul Halaman - PayColl PT. Telkom')
 
-  <div class="main-wrapper">
-    <main class="main">
-      <h1>Upload Data</h1>
-      <div class="upload-container">
-        <a href="{{ url('/harian') }}" class="upload-btn">Harian <span>⭡</span></a>
-        <a href="{{ url('/bulanan') }}" class="upload-btn">Bulanan <span>⭡</span></a>
-      </div>
-    </main>
+{{-- Optional: Header halaman --}}
+@section('header-title', 'Judul Halaman')
+@section('header-subtitle', 'Deskripsi singkat halaman jika ada.')
 
-    <x-footer/>
-    
+@section('content')
+  {{-- Konten utama bisa ditambahkan di sini --}}
+  <div class="blank-page">
+    <p>Ini adalah halaman kosong. Tambahkan konten Anda di sini.</p>
   </div>
+@endsection
 
-  <script src="{{ asset('js/updata.js') }}"></script>
-</body>
-</html>
+@push('styles')
+<style>
+/* ===== Style khusus halaman kosong ===== */
+.blank-page {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  min-height: 300px;
+  font-size: 1rem;
+  color: #333;
+}
+</style>
+@endpush
+
+@push('scripts')
+<script>
+// Script khusus halaman ini bisa ditambahkan di sini
+console.log('Halaman kosong siap digunakan.');
+</script>
+@endpush

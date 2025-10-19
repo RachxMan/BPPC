@@ -30,23 +30,29 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::post('/login', function () {
-    return redirect('/dashboard');
+    return redirect()->route('dashboard');
 })->name('login.submit');
 
 // Logout dummy (belum aktif)
 Route::post('/logout', function () {
-    return redirect('/login');
+    return redirect()->route('login');
 })->name('logout');
 
 // ================= DASHBOARD =================
-// Arahkan langsung ke view dashboard.blade.php tanpa middleware auth
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
 // ================= MODULES =================
-Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
-Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
+// Mailing List
+Route::get('/mailing-list', function () {
+    return view('mailing_list');
+})->name('mailing.index');
+
+// Upload Data
+Route::get('/upload-data', function () {
+    return view('upload_data');
+})->name('upload.index');
 
 // ================= LAPORAN =================
 Route::prefix('laporan')->group(function () {
@@ -55,12 +61,18 @@ Route::prefix('laporan')->group(function () {
 });
 
 // ================= KELOLA AKUN =================
-Route::get('/kelola-akun', [UserController::class, 'index'])->name('user.index');
+Route::get('/kelola-akun', function () {
+    return view('kelola-akun');
+})->name('user.index');
 
 // ================= PROFIL =================
-Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
-Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+Route::get('/profil', function () {
+    return view('profil_pengaturan');
+})->name('profile.index');
+
 Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
 
 // ================= SUCCESS PAGE =================
-Route::get('/success', fn() => view('success'))->name('success');
+Route::get('/success', function () {
+    return view('success');
+})->name('success');
