@@ -10,7 +10,7 @@
   @stack('styles')
 
   <style>
-    /* ===== STRUKTUR DASAR ===== */
+    /* ===== Struktur Dasar ===== */
     html, body {
       margin: 0;
       padding: 0;
@@ -22,6 +22,7 @@
 
     body {
       display: flex;
+      flex-direction: row; /* sidebar + main content */
       min-height: 100vh;
     }
 
@@ -31,7 +32,7 @@
       top: 0;
       left: 0;
       width: 260px;
-      height: 100%;
+      height: 100vh;
       background: #121212;
       color: #f0f0f0;
       display: flex;
@@ -41,14 +42,20 @@
     }
 
     /* Konten utama */
-    main.main {
+    main.main-wrapper {
+      margin-left: 260px; /* beri ruang sidebar */
       flex: 1;
-      margin-left: 260px; /* memberi ruang sidebar */
-      padding: 2rem 3rem;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
       transition: all 0.3s ease;
+    }
+
+    main.main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 3rem;
     }
 
     /* Header halaman */
@@ -65,18 +72,6 @@
       color: #666;
       margin-top: 0.3rem;
       font-size: 0.95rem;
-    }
-
-    /* Footer */
-    .footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 1rem 0;
-      background: #fff;
-      border-top: 1px solid #e5e5e5;
-      font-size: 0.9rem;
-      color: #666;
-      z-index: 50; /* di belakang sidebar */
     }
 
     /* Tombol hamburger mobile */
@@ -116,8 +111,11 @@
         left: 0;
       }
 
-      main.main {
+      main.main-wrapper {
         margin-left: 0;
+      }
+
+      main.main {
         padding: 1.5rem;
       }
 
@@ -137,20 +135,22 @@
   <button id="hamburger" class="hamburger" aria-label="Buka menu">☰</button>
   <div id="overlay" class="overlay hidden"></div>
 
-  {{-- Konten Utama --}}
-  <main class="main" id="main-content">
-    {{-- Header Halaman --}}
-    @hasSection('header-title')
-      <header class="page-header">
-        <h1>@yield('header-title')</h1>
-        @hasSection('header-subtitle')
-          <p>@yield('header-subtitle')</p>
-        @endif
-      </header>
-    @endif
+  {{-- Konten + Footer wrapper --}}
+  <main class="main-wrapper">
+    <main class="main" id="main-content">
+      {{-- Header Halaman --}}
+      @hasSection('header-title')
+        <header class="page-header">
+          <h1>@yield('header-title')</h1>
+          @hasSection('header-subtitle')
+            <p>@yield('header-subtitle')</p>
+          @endif
+        </header>
+      @endif
 
-    {{-- Konten Halaman --}}
-    @yield('content')
+      {{-- Konten Halaman --}}
+      @yield('content')
+    </main>
 
     {{-- Footer --}}
     @include('layouts.footer')
