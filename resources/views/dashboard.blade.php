@@ -7,8 +7,9 @@
   <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 </head>
 <body>
-  
-    <x-sidebar />
+
+  {{-- Sidebar --}}
+  @include('layouts.sidebar')
 
   <main class="main" id="main">
     <header class="header">
@@ -16,8 +17,10 @@
       <p class="subtitle">Welcome back! Here's what's happening with your network today.</p>
     </header>
 
+    {{-- Area KPI --}}
     <section class="cards" id="kpiArea"></section>
 
+    {{-- Grafik --}}
     <section class="charts">
       <div class="chart card">
         <h3>Status Pembayaran</h3>
@@ -29,6 +32,7 @@
       </div>
     </section>
 
+    {{-- Tabel --}}
     <section class="tables">
       <div class="table-container card">
         <h3>Belum Follow Up</h3>
@@ -67,9 +71,8 @@
     </section>
   </main>
 
-
-    <x-footer/>
-    
+  {{-- Footer --}}
+  @include('layouts.footer')
 
   <script src="{{ asset('js/dashboard.js') }}"></script>
 </body>

@@ -18,11 +18,13 @@ use App\Http\Controllers\ProfileController;
 */
 
 // ================= HALAMAN UTAMA =================
+// Saat user membuka "/", tampilkan halaman login langsung
 Route::get('/', function () {
     return view('login');
 })->name('home');
 
 // ================= LOGIN & LOGOUT (sementara tanpa validasi) =================
+// Klik tombol login langsung menuju dashboard tanpa autentikasi
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -31,11 +33,13 @@ Route::post('/login', function () {
     return redirect('/dashboard');
 })->name('login.submit');
 
+// Logout dummy (belum aktif)
 Route::post('/logout', function () {
     return redirect('/login');
 })->name('logout');
 
 // ================= DASHBOARD =================
+// Arahkan langsung ke view dashboard.blade.php tanpa middleware auth
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
@@ -52,11 +56,11 @@ Route::prefix('laporan')->group(function () {
 
 // ================= KELOLA AKUN =================
 Route::get('/kelola-akun', [UserController::class, 'index'])->name('user.index');
-Route::get('/kelola-akun/create', [UserController::class, 'create'])->name('kelola.create');
-Route::post('/kelola-akun', [UserController::class, 'store'])->name('kelola.store');
 
 // ================= PROFIL =================
 Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
 
 // ================= SUCCESS PAGE =================
 Route::get('/success', fn() => view('success'))->name('success');

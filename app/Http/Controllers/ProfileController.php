@@ -1,18 +1,24 @@
 <?php
 
-namespace Tests\Unit;
+namespace App\Http\Controllers;
 
-use PHPUnit\Framework\TestCase;
-use App\Http\Controllers\ProfileController;
+use Illuminate\Http\Request;
 
-class ProfileControllerTest extends TestCase
+class ProfileController extends Controller
 {
-    /** @test */
-    public function it_returns_profile_view()
+    public function index()
     {
-        $controller = new ProfileController();
-        $response = $controller->index();
+        return view('profil_pengaturan');
+    }
 
-        $this->assertEquals('profile.index', $response->name());
+    public function update(Request $request)
+    {
+        // Simulasi penyimpanan data sementara (belum pakai database)
+        $data = $request->only(['first_name', 'last_name', 'email', 'mobile', 'gender', 'address']);
+        
+        // Bisa tambahkan log atau dd() untuk debugging
+        // dd($data);
+
+        return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui!');
     }
 }
