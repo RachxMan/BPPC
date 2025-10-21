@@ -6,9 +6,10 @@
 @section('header-subtitle', "Welcome back! Here's what's happening with your network today.")
 
 @section('content')
+
   {{-- Area KPI --}}
   <section class="cards" id="kpiArea">
-    {{-- Data KPI akan dimuat lewat JS --}}
+    {{-- Data KPI dimuat lewat JS --}}
   </section>
 
   {{-- Grafik --}}
@@ -60,82 +61,14 @@
       </div>
     </div>
   </section>
+
 @endsection
 
+
 @push('styles')
-<style>
-/* ===== Layout khusus konten dashboard ===== */
-.main {
-  padding: 2rem;
-  background: #f8f9fa;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  padding: 1.2rem;
-}
-
-.charts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.chart h3 {
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.tables {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
-}
-
-.table-container h3 {
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.table-scroll {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-table thead {
-  background: #d32f2f;
-  color: white;
-}
-
-table th, table td {
-  padding: 0.8rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-table tbody tr:hover {
-  background: #fff3f3;
-}
-</style>
+  <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 @endpush
 
 @push('scripts')
-<script src="{{ asset('js/dashboard.js') }}"></script>
+  <script src="{{ asset('js/dashboard.js') }}"></script>
 @endpush
