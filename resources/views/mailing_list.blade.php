@@ -30,6 +30,11 @@
 @push('scripts')
 <script>
 
+  @push('styles')
+  <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+@endpush
+
+
 console.log('Halaman kosong siap digunakan.');
 </script>
 @endpush
