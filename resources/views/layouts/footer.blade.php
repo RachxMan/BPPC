@@ -3,18 +3,32 @@
 </footer>
 
 <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .main-wrapper {
+    flex: 1;
+  }
+
   .footer {
-    width: 100%;            /* penuh wrapper main-wrapper */
-    background: #000;       /* hitam */
+    width: 100%;
+    background: #000;
     color: #fff;
     text-align: center;
     padding: 1rem 0;
     font-size: 0.9rem;
     border-top: 1px solid #333;
-    flex-shrink: 0;         /* agar tidak mengecil */
+    flex-shrink: 0;
   }
 
-  /* Responsif */
   @media (max-width: 768px) {
     .footer {
       font-size: 0.8rem;
