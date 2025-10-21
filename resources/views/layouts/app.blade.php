@@ -7,10 +7,10 @@
 
   {{-- Global CSS --}}
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
   @stack('styles')
 
   <style>
-    /* ===== Struktur Dasar ===== */
     html, body {
       margin: 0;
       padding: 0;
@@ -22,11 +22,10 @@
 
     body {
       display: flex;
-      flex-direction: row; /* sidebar + main content */
+      flex-direction: row; 
       min-height: 100vh;
     }
 
-    /* Sidebar */
     .sidebar {
       position: fixed;
       top: 0;
@@ -41,9 +40,7 @@
       transition: all 0.3s ease;
     }
 
-    /* Konten utama */
     main.main-wrapper {
-      margin-left: 260px; /* beri ruang sidebar */
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -58,7 +55,6 @@
       padding: 2rem 3rem;
     }
 
-    /* Header halaman */
     .page-header {
       margin-bottom: 2rem;
     }
@@ -74,7 +70,6 @@
       font-size: 0.95rem;
     }
 
-    /* Tombol hamburger mobile */
     .hamburger {
       display: none;
       position: fixed;
@@ -101,7 +96,6 @@
       display: none;
     }
 
-    /* Responsif */
     @media (max-width: 992px) {
       .sidebar {
         left: -260px;
@@ -128,17 +122,14 @@
 
 <body>
 
-  {{-- Sidebar --}}
   @include('layouts.sidebar')
 
-  {{-- Tombol Hamburger & Overlay --}}
   <button id="hamburger" class="hamburger" aria-label="Buka menu">☰</button>
   <div id="overlay" class="overlay hidden"></div>
 
-  {{-- Konten + Footer wrapper --}}
   <main class="main-wrapper">
     <main class="main" id="main-content">
-      {{-- Header Halaman --}}
+
       @hasSection('header-title')
         <header class="page-header">
           <h1>@yield('header-title')</h1>
@@ -148,15 +139,12 @@
         </header>
       @endif
 
-      {{-- Konten Halaman --}}
       @yield('content')
     </main>
 
-    {{-- Footer --}}
     @include('layouts.footer')
   </main>
 
-  {{-- Script Global --}}
   <script>
     const sidebar = document.querySelector('.sidebar');
     const hamburger = document.getElementById('hamburger');
