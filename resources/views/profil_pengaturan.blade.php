@@ -11,7 +11,6 @@
     <div class="sidebar-tab">
       <button class="tab active">Profile Settings</button>
       <button class="tab">Password</button>
-      <button class="tab">Notifications</button>
     </div>
 
     <div class="form-container">
@@ -27,28 +26,28 @@
         @csrf
         <div class="form-row">
           <label>First Name*</label>
-          <input type="text" name="first_name" value="Eman">
+          <input type="text" name="first_name">
         </div>
 
         <div class="form-row">
           <label>Last Name*</label>
-          <input type="text" name="last_name" value="Tegalakur">
+          <input type="text" name="last_name">
         </div>
 
         <div class="form-row">
           <label>Email*</label>
-          <input type="email" name="email" value="eman@example.com">
+          <input type="email" name="email" >
         </div>
 
         <div class="form-row">
           <label>Mobile Number*</label>
-          <input type="text" name="mobile" value="(555) 555-5555">
+          <input type="text" name="mobile" >
         </div>
 
         <div class="form-row">
           <label>Gender</label>
           <div class="gender">
-            <input type="radio" id="male" name="gender" checked>
+            <input type="radio" id="male" name="gender">
             <label for="male">Male</label>
             <input type="radio" id="female" name="gender">
             <label for="female">Female</label>
@@ -57,7 +56,7 @@
 
         <div class="form-row">
           <label>Address</label>
-          <textarea name="address">545 Radja Al-Mota, New Jersey 45453</textarea>
+          <textarea name="address"></textarea>
         </div>
 
         <button type="submit" class="save-btn">Save Changes</button>

@@ -18,7 +18,6 @@
 
       <div class="form-header">
         <button type="button" class="role-btn active" data-role="Admin">Admin</button>
-        <button type="button" class="role-btn" data-role="Agent">Agent</button>
       </div>
 
       <form id="loginForm" class="form active">

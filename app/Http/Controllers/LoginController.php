@@ -9,7 +9,7 @@ class LoginController extends Controller
     // Tampilkan halaman login
     public function showLoginForm()
     {
-        return view('login'); // resources/views/login.blade.php
+        return view('login');
     }
 
     // Proses login sementara (tanpa validasi)

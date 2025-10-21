@@ -46,6 +46,7 @@
     <div class="table-container card">
       <h3>Data Pelanggan</h3>
       <div class="table-scroll">
+
         <table id="customerTable">
           <thead>
             <tr>

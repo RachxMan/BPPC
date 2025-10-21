@@ -6,35 +6,76 @@ use Illuminate\Http\Request;
 
 class KelolaAkunController extends Controller
 {
+    // Dummy data pengguna
+    private $users = [
+        [
+            'nama' => 'Syarifuddin',
+            'email' => 'udin@gmail.com',
+            'username' => 'taylorsweepp21',
+            'role' => 'Administrator',
+            'status' => 'Aktif'
+        ],
+        [
+            'nama' => 'Ji Chang Wook',
+            'email' => 'wookiee@gmail.com',
+            'username' => 'wookieee',
+            'role' => 'Collection Agent',
+            'status' => 'Aktif'
+        ],
+        [
+            'nama' => 'Isnin bin Khamis',
+            'email' => 'tokdalanggans2000@gmail.com',
+            'username' => 'kampungdurianrunutuh',
+            'role' => 'Collection Agent',
+            'status' => 'Nonaktif'
+        ]
+    ];
+
     /**
-     * Tampilkan halaman kelola akun.
+     * Tampilkan halaman Kelola Akun
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('users.index');
+        $users = $this->users;
+
+        // Ambil tab aktif dari session atau query param (opsional)
+        $activeTab = $request->query('tab', $request->session()->get('active_tab', 'daftar'));
+
+        // Ambil pesan sukses (jika ada)
+        $successMessage = $request->session()->get('success');
+
+        return view('kelola-akun', compact('users', 'activeTab', 'successMessage'));
     }
 
     /**
-     * Tambah akun baru (opsional, bisa dikembangkan nanti).
+     * Simulasi penyimpanan akun baru
      */
     public function store(Request $request)
     {
-        // Validasi dasar
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users',
-        ]);
+        // Ambil data dari form
+        $dataBaru = $request->all();
 
-        // Simulasi penyimpanan (nanti diganti dengan model User)
-        return response()->json(['message' => 'Akun berhasil dibuat']);
+        // Biasanya disimpan ke database
+        // User::create([...]);
+
+        // Redirect ke halaman kelola akun dengan tab registrasi tetap aktif
+        return redirect()->route('user.index', ['tab' => 'registrasi'])
+                         ->with('success', 'Akun baru berhasil ditambahkan!');
     }
 
     /**
-     * Hapus akun (opsional untuk pengembangan berikutnya).
+     * Switch tab manual via URL (opsional)
      */
-    public function destroy($id)
+    public function switchTab($tab)
     {
-        // Simulasi penghapusan
-        return response()->json(['message' => "Akun dengan ID {$id} dihapus"]);
+        // Validasi tab
+        if (!in_array($tab, ['daftar', 'registrasi'])) {
+            $tab = 'daftar';
+        }
+
+        $users = $this->users;
+
+        // Gunakan query param agar konsisten dengan index()
+        return redirect()->route('user.index', ['tab' => $tab]);
     }
 }
