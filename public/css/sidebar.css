@@ -1,0 +1,240 @@
+/* ===== Sidebar PayColl PT. Telkom ===== */
+:root {
+  --telkom-red: #e74c3c;
+  --sidebar-bg: #1c1c1c;
+  --sidebar-text: #eaeaea;
+}
+
+
+.sidebar {
+  width: 250px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  transition: left 0.28s ease;
+  z-index: 1000;
+}
+
+/* ===== Logo Section ===== */
+.sidebar-header,
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.sidebar-logo,
+.logo img {
+  width: 60px;
+  height: auto;
+  margin-bottom: 6px;
+}
+
+.sidebar-title,
+.logo p {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+  color: var(--telkom-red);
+}
+
+.sidebar-subtitle {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+/* ===== Profile Section ===== */
+.sidebar-profile,
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-profile img,
+.profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--telkom-red);
+  margin-right: 10px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.status-badge,
+.online {
+  font-size: 0.8rem;
+  color: #2ecc71;
+}
+
+/* ===== Search Box ===== */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #222;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.search-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--sidebar-text);
+  padding: 6px;
+  font-size: 0.9rem;
+}
+
+.search-box button {
+  background: #333;
+  border: none;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===== Navigation Menu ===== */
+.sidebar-menu,
+.menu {
+  list-style: none;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  padding: 0;
+}
+
+.sidebar-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+.sidebar-menu li,
+.menu li {
+  border-radius: 6px;
+}
+
+.sidebar-menu a,
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu li.active a,
+.menu li.active a {
+  background: var(--telkom-red);
+  color: #fff;
+  font-weight: 600;
+}
+
+.icon {
+  font-size: 1.1rem;
+}
+
+/* ===== Footer (Logout Button) ===== */
+.sidebar-footer {
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
+  width: 100%;
+  border: none;
+  background: var(--telkom-red);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.7rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #d32f2f;
+}
+
+/* ===== Responsive (Mobile) ===== */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1100;
+  background: var(--sidebar-bg);
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 900;
+  transition: opacity 0.2s;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    left: -260px;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .overlay.hidden {
+    display: none;
+  }
+
+  .overlay.show {
+    display: block;
+  }
+}
