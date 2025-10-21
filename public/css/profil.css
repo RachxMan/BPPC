@@ -1,142 +1,118 @@
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background-color: #f9f9f9;
-  display: flex;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 250px;
-  background: #181818;
-  color: #fff;
-  height: 100vh;
-  padding: 20px;
-  position: fixed;
-  left: 0;
-  top: 0;
-}
-
-.sidebar .logo img {
-  width: 50px;
-}
-.sidebar .logo p {
-  font-size: 14px;
-  margin: 10px 0;
-}
-
-.profile {
-  text-align: center;
-  margin: 20px 0;
-}
-.profile img {
-  width: 70px;
-  border-radius: 50%;
-}
-.profile-name {
-  font-weight: bold;
-  margin-top: 5px;
-}
-.online {
-  color: limegreen;
-  font-size: 12px;
-}
-
-.search-box {
-  display: flex;
-  margin: 10px 0;
-}
-.search-box input {
-  width: 100%;
-  padding: 5px;
-  border-radius: 3px 0 0 3px;
-  border: none;
-}
-.search-box button {
-  padding: 5px;
-  background: red;
-  border: none;
-  color: white;
-  border-radius: 0 3px 3px 0;
-}
-
-.menu {
-  list-style: none;
   padding: 0;
-}
-.menu li {
-  margin: 15px 0;
-}
-.menu a {
-  color: white;
-  text-decoration: none;
-  display: block;
-  padding: 8px 10px;
-  border-radius: 4px;
-}
-.menu .active a {
-  background: #e53935;
+  font-family: Inter, Arial, sans-serif;
 }
 
-/* Content */
-.content {
-  margin-left: 270px;
-  padding: 30px;
+:root {
+  --telkom-red: #e74c3c;
+  --telkom-orange: #f39c12;
+  --bg: #f5f5f5;
+  --card: #ffffff;
+  --muted: #7a7a7a;
+  --success: #2ecc71;
+  --warning: #f1c40f;
+  --danger: #e74c3c;
+  --sidebar-bg: #1c1c1c;
+  --sidebar-text: #eaeaea;
 }
-.content h1 {
-  color: #e53935;
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  color: #222;
+}
+
+.content {
+  margin-left: 260px;
+  padding: 40px 50px;
+  box-sizing: border-box;
+  width: calc(100% - 260px);
+}
+
+.header-title,
+.header-subtitle,
+.page-header {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  box-sizing: border-box;
+}
+
+.page-header h1,
+.header-title {
+  color: var(--telkom-red);
+  font-weight: 600;
+}
+
+.header-subtitle {
+  color: #666;
+  margin-top: 5px;
 }
 
 .profile-container {
-  display: flex;
-  gap: 30px;
-  margin-top: 20px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-tab {
-  width: 200px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
 }
+
 .tab {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  text-align: left;
-  border: none;
   background: #f1f1f1;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
 }
+
 .tab.active {
-  background: #e53935;
-  color: white;
-  font-weight: bold;
+  background: var(--telkom-red);
+  color: #fff;
 }
 
 .form-container {
-  flex: 1;
-  background: white;
-  padding: 20px;
+  background: #fff;
+  padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
 }
 
 .profile-photo {
   text-align: center;
+  margin-bottom: 25px;
 }
+
 .profile-photo img {
   width: 120px;
   border-radius: 50%;
+  border: 2px solid #ccc;
 }
+
 .upload-btn {
   margin-top: 10px;
 }
+
 .btn-red {
-  background: #e53935;
+  background: var(--telkom-red);
   color: white;
   border: none;
   padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
 }
+
 .btn-gray {
   background: gray;
   color: white;
@@ -151,46 +127,44 @@ body {
   display: flex;
   flex-direction: column;
 }
-.form-row input, textarea {
+
+.form-row input,
+.form-row textarea {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 .save-btn {
-  margin-top: 20px;
-  background: #e53935;
+  margin-top: 25px;
+  background: var(--telkom-red);
   color: white;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
+
 .save-btn:hover {
   background: #d32f2f;
 }
 
-/* Responsive */
-.hamburger {
-  display: none;
-}
-@media (max-width: 768px) {
-  .sidebar {
-    left: -250px;
-    transition: left 0.3s;
+@media (max-width: 900px) {
+  .content {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
   }
-  .sidebar.show {
-    left: 0;
+
+  .profile-container {
+    padding: 20px;
   }
-  .hamburger {
-    display: block;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 10;
-    background: #e53935;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
+
+  .header-title,
+  .header-subtitle,
+  .page-header {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
   }
 }
