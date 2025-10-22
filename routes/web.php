@@ -8,6 +8,7 @@ use App\Http\Controllers\UploadDataController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\KelolaController;
 
 Route::get('/', function () {
     return view('login');
@@ -42,9 +43,19 @@ Route::prefix('laporan')->group(function () {
     Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
 });
 
-Route::get('/kelola-akun', function () {
-    return view('kelola-akun');
-})->name('user.index');
+// Halaman Kelola Akun
+Route::prefix('kelola-akun')->name('kelola.')->group(function () {
+    Route::get('/', [KelolaController::class, 'index'])->name('index');
+    Route::get('/create', [KelolaController::class, 'create'])->name('create');
+    Route::post('/', [KelolaController::class, 'store'])->name('store');
+    Route::get('/{user}/edit', [KelolaController::class, 'edit'])->name('edit');
+    Route::put('/{user}', [KelolaController::class, 'update'])->name('update');
+    Route::delete('/{user}', [KelolaController::class, 'destroy'])->name('destroy');
+    Route::patch('/{user}/toggle', [KelolaController::class, 'toggleStatus'])->name('toggle');
+    Route::get('/kelola-akun/{user}/edit', [KelolaAkunController::class, 'edit'])->name('kelola.edit');
+
+});
+
 
 Route::get('/profil', function () {
     return view('profil_pengaturan');

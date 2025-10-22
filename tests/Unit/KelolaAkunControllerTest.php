@@ -3,16 +3,21 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use App\Http\Controllers\KelolaAkunController;
+use App\Http\Controllers\KelolaController;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\View\View;
 
 class KelolaAkunControllerTest extends TestCase
 {
+    use RefreshDatabase; // <-- Tambahkan ini
+
     /** @test */
     public function it_returns_kelola_akun_view()
     {
-        $controller = new KelolaAkunController();
+        $controller = new KelolaController();
         $response = $controller->index();
 
-        $this->assertEquals('users.index', $response->name());
+        $this->assertInstanceOf(View::class, $response);
+        $this->assertEquals('kelola.index', $response->name());
     }
 }
