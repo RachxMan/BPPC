@@ -52,8 +52,6 @@ Route::prefix('kelola-akun')->name('kelola.')->group(function () {
     Route::put('/{user}', [KelolaController::class, 'update'])->name('update');
     Route::delete('/{user}', [KelolaController::class, 'destroy'])->name('destroy');
     Route::patch('/{user}/toggle', [KelolaController::class, 'toggleStatus'])->name('toggle');
-    Route::get('/kelola-akun/{user}/edit', [KelolaAkunController::class, 'edit'])->name('kelola.edit');
-
 });
 
 
