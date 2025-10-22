@@ -15,7 +15,9 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin BPPC',
+                'nama_lengkap' => 'Admin BPPC',
+                'username' => 'admin',
+                'no_telp' => '081234567890',
                 'email_verified_at' => now(),
                 'password' => Hash::make('password123'),
                 'remember_token' => Str::random(10),
@@ -25,21 +27,23 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // CA
+        // CA (Collection Agent)
         User::updateOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => 'ca@example.com'],
             [
-                'name' => 'Test CA',
+                'nama_lengkap' => 'Collection Agent',
+                'username' => 'ca_user',
+                'no_telp' => '081298765432',
                 'email_verified_at' => now(),
                 'password' => Hash::make('password123'),
                 'remember_token' => Str::random(10),
-                'role' => 'CA',
+                'role' => 'ca',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]
         );
 
-        // 5 dummy user tambahan
+        // Dummy users (opsional)
         User::factory()->count(2)->create();
     }
 }
