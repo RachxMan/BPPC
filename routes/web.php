@@ -21,21 +21,15 @@ use App\Http\Controllers\ProfileController;
 // ======================
 // 🔹 AUTENTIKASI
 // ======================
-Route::get('/', function () {
-    return redirect()->route('login');
-});
-
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
+Route::get('/', fn() => redirect()->route('login'));
 
 // --- Login ---
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
 // --- Register ---
-Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.form');
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
-
 
 // --- Logout ---
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

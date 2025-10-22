@@ -20,15 +20,13 @@
         <button type="button" class="role-btn active" data-role="Admin">Admin</button>
       </div>
 
-      <form id="loginForm" class="form active" method="POST" action="{{ route('login.submit') }}">
+<form id="loginForm" class="form active" method="POST" action="{{ route('login.submit') }}">
     @csrf
-    <h2 class="login-title">Login</h2>
-
+    <h2 class="login-title">Log In</h2>
     <div class="input-group">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" placeholder="Enter username" value="{{ old('username') }}" required>
     </div>
-
     <div class="input-group">
       <label for="password">Password</label>
       <div class="password-wrapper">
@@ -38,12 +36,10 @@
         </span>
       </div>
     </div>
-
     <div class="options">
       <label><input type="checkbox" name="remember"> Ingat saya</label>
       <a href="#">Lupa password?</a>
     </div>
-
     <button type="submit" class="btn">Login</button>
 
     @if($errors->any())
@@ -56,10 +52,10 @@
         </div>
     @endif
 
-    <p class="toggle-link">Belum punya akun? <span id="showRegisterBtn">Daftar</span></p>
+    <p class="toggle-link">Belum punya akun? <a href="{{ route('register.show') }}">Daftar</a></p>
 </form>
 
-    
+
     </div>
   </div>
 
