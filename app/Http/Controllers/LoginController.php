@@ -18,12 +18,18 @@ class LoginController extends Controller
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'role' => 'required|in:admin,ca',
         ]);
 
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+
+            if ($user->role !== $request->role) {
+                Auth::logout();
+                return redirect()->route('login')->withErrors(['role' => 'Username tidak terdaftar sebagai role ' . ($request->role === 'admin' ? 'Admin' : 'CA') . '.']);
+            }
 
             if ($user->role === 'admin') {
                 return redirect()->route('dashboard')->with('success', 'Selamat datang Admin!');

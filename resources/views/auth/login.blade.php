@@ -16,20 +16,32 @@
 
     <div class="form-box">
 
-      <!-- <div class="form-header">
-        <button type="button" class="role-btn active" data-role="Admin">Admin</button>
-      </div> -->
+      <div class="form-header">
+        <button type="button" class="role-btn active" data-role="admin">Admin</button>
+        <button type="button" class="role-btn" data-role="ca">CA</button>
+      </div>
 
-      <form id="loginForm" class="form active">
+      <form id="loginForm" method="POST" action="{{ route('login.submit') }}" class="form active">
+        @csrf
+        @if ($errors->any())
+          <div class="error-messages">
+            <ul>
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
         <h2 class="login-title">Login</h2>
+        <input type="hidden" name="role" id="selectedRole" value="admin">
         <div class="input-group">
           <label for="username">Username</label>
-          <input type="text" id="username" placeholder="Enter username" required>
+          <input type="text" id="username" name="username" placeholder="Enter username" required>
         </div>
         <div class="input-group">
           <label for="password">Password</label>
           <div class="password-wrapper">
-            <input type="password" id="password" placeholder="Enter password" required>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
             <span class="toggle-password" data-target="password">
               <img src="{{ asset('img/eye-close-svgrepo-com.svg') }}" alt="show/hide">
             </span>
