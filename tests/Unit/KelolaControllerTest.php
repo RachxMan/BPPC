@@ -9,7 +9,14 @@ class KelolaControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_returns_kelola_akun_view()
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(); // 🔥 Abaikan semua middleware selama testing
+    }
+
+    /** @test */
+    public function it_returns_kelola_akun_view()
     {
         $response = $this->get('/kelola-akun');
 

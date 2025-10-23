@@ -1,32 +1,32 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
 use Tests\TestCase;
+use App\Models\User;
 
 class ReportControllerTest extends TestCase
 {
-    /**
-     * Pastikan halaman report harian dapat diakses
-     *
-     * @return void
-     */
-    public function test_harian_page_displays_correctly()
+    protected function setUp(): void
     {
-        $response = $this->get('/report/harian');
+        parent::setUp();
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
+    }
+
+    #[PHPUnit\Framework\Attributes\Test]
+    public function harian_page_displays_correctly()
+    {
+        $response = $this->get('/laporan/harian');
 
         $response->assertStatus(200); // cek HTTP 200 OK
         $response->assertViewIs('report.harian'); // cek view yang dikembalikan
     }
 
-    /**
-     * Pastikan halaman report bulanan dapat diakses
-     *
-     * @return void
-     */
-    public function test_bulanan_page_displays_correctly()
+    #[PHPUnit\Framework\Attributes\Test]
+    public function bulanan_page_displays_correctly()
     {
-        $response = $this->get('/report/bulanan');
+        $response = $this->get('/laporan/bulanan');
 
         $response->assertStatus(200); // cek HTTP 200 OK
         $response->assertViewIs('report.bulanan'); // cek view yang dikembalikan
