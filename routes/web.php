@@ -31,15 +31,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/kelola-akun/switch-tab/{tab}', [KelolaAkunController::class, 'switchTab'])->name('kelola-akun.switchTab');
     });
 
-    Route::middleware(['role:ca'])->group(function () {
+    Route::middleware(['role:admin'])->group(function () {
         Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
+        Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
     });
 
-    Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
-
-    Route::prefix('laporan')->group(function () {
-        Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
-        Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
+    Route::middleware(['role:admin'])->group(function () {
+        Route::prefix('laporan')->group(function () {
+            Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
+            Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
+        });
     });
 
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
