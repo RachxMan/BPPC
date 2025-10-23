@@ -9,9 +9,13 @@ return new class extends Migration {
         Schema::create('uploaded_files', function (Blueprint $table) {
             $table->id();
             $table->string('filename');
+            $table->string('path'); // kolom path untuk lokasi file
             $table->enum('type', ['harian','bulanan']);
-            $table->string('uploaded_by')->nullable();
+            $table->unsignedBigInteger('uploaded_by')->nullable(); // bisa foreign key ke users
             $table->timestamps();
+
+            // Optional: jika ingin pakai foreign key
+            // $table->foreign('uploaded_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 

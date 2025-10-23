@@ -20,34 +20,37 @@
         <a href="{{ url('/dashboard') }}">Dashboard</a>
       </li>
 
-<li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
-  <a href="javascript:void(0)" class="dropdown-toggle" id="caring-toggle">
-    Caring Pelanggan <span class="arrow">▾</span>
-  </a>
-  <ul class="dropdown-menu">
-    <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
-      <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
-    </li>
+      @if(Auth::user()->role === 'admin')
+      {{-- Caring Pelanggan --}}
+      <li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
+        <a href="javascript:void(0)" class="dropdown-toggle" id="caring-toggle">
+          Caring Pelanggan <span class="arrow">▾</span>
+        </a>
+        <ul class="dropdown-menu">
+          <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
+            <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
+          </li>
+          {{-- future menu
+          <li class="{{ request()->is('caring/wa') ? 'active' : '' }}">
+            <a href="{{ url('/caring/wa') }}">Caring WA</a>
+          </li>
+          <li class="{{ request()->is('caring/email') ? 'active' : '' }}">
+            <a href="{{ url('/caring/email') }}">Caring Email</a>
+          </li>
+          --}}
+        </ul>
+      </li>
 
-    {{-- 
-    <li class="{{ request()->is('caring/wa') ? 'active' : '' }}">
-      <a href="{{ url('/caring/wa') }}">Caring WA</a>
-    </li>
-    <li class="{{ request()->is('caring/email') ? 'active' : '' }}">
-      <a href="{{ url('/caring/email') }}">Caring Email</a>
-    </li>
-    --}}
-  </ul>
-</li>
+      {{-- Upload Data --}}
+      <li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
+        <a href="{{ route('upload.index') }}">Upload Data</a>
+      </li>
 
-      {{-- Upload Data Menu Biasa --}}
-<li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
-    <a href="{{ route('upload.index') }}">Upload Data</a>
-</li>
-
+      {{-- Kelola Akun --}}
       <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
         <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
       </li>
+      @endif
 
       <li class="{{ request()->is('profil') ? 'active' : '' }}">
         <a href="{{ url('/profil') }}">Profil & Pengaturan</a>
@@ -78,34 +81,34 @@
       <a href="{{ url('/dashboard') }}">Dashboard</a>
     </li>
 
-<li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
-  <a href="javascript:void(0)" class="dropdown-toggle" id="mobile-caring-toggle">
-    Caring Pelanggan <span class="arrow">▾</span>
-  </a>
-  <ul class="dropdown-menu">
-    <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
-      <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
+    @if(Auth::user()->role === 'admin')
+    <li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
+      <a href="javascript:void(0)" class="dropdown-toggle" id="mobile-caring-toggle">
+        Caring Pelanggan <span class="arrow">▾</span>
+      </a>
+      <ul class="dropdown-menu">
+        <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
+          <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
+        </li>
+        {{-- future menu
+        <li class="{{ request()->is('caring/wa') ? 'active' : '' }}">
+          <a href="{{ url('/caring/wa') }}">Caring WA</a>
+        </li>
+        <li class="{{ request()->is('caring/email') ? 'active' : '' }}">
+          <a href="{{ url('/caring/email') }}">Caring Email</a>
+        </li>
+        --}}
+      </ul>
     </li>
 
-    {{-- 
-    <li class="{{ request()->is('caring/wa') ? 'active' : '' }}">
-      <a href="{{ url('/caring/wa') }}">Caring WA</a>
+    <li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
+      <a href="{{ route('upload.index') }}">Upload Data</a>
     </li>
-    <li class="{{ request()->is('caring/email') ? 'active' : '' }}">
-      <a href="{{ url('/caring/email') }}">Caring Email</a>
-    </li>
-    --}}
-  </ul>
-</li>
-
-    {{-- Upload Data Menu Biasa --}}
-<li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
-    <a href="{{ route('upload.index') }}">Upload Data</a>
-</li>
 
     <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
       <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
     </li>
+    @endif
 
     <li class="{{ request()->is('profil') ? 'active' : '' }}">
       <a href="{{ url('/profil') }}">Profil & Pengaturan</a>
@@ -142,11 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Mobile dropdown toggle
   const mobileCaringToggle = document.getElementById('mobile-caring-toggle');
-  mobileCaringToggle.addEventListener('click', () => {
-    const parent = mobileCaringToggle.parentElement;
-    parent.classList.toggle('open');
-    mobileCaringToggle.querySelector('.arrow').textContent = parent.classList.contains('open') ? '▲' : '▾';
-  });
+  if(mobileCaringToggle){
+    mobileCaringToggle.addEventListener('click', () => {
+      const parent = mobileCaringToggle.parentElement;
+      parent.classList.toggle('open');
+      mobileCaringToggle.querySelector('.arrow').textContent = parent.classList.contains('open') ? '▲' : '▾';
+    });
+  }
 
   // Reset mobile menu saat resize
   window.addEventListener('resize', () => {

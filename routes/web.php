@@ -4,88 +4,79 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MailingListController;
-use App\Http\Controllers\KelolaAkunController;
-use App\Http\Controllers\Admin\UploadDataController;
-use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\UploadDataController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Routing untuk seluruh halaman aplikasi BPPC
-|
-*/
+use App\Http\Controllers\KelolaController;
+use App\Http\Controllers\Auth\RegisterController;
 
 // ======================
-// Halaman Auth
+// Auth Routes
 // ======================
-Route::get('/', fn() => view('login'))->name('home');
-Route::get('/login', fn() => view('login'))->name('login');
-Route::post('/login', fn() => redirect()->route('dashboard'))->name('login.submit');
-Route::post('/logout', fn() => redirect()->route('login'))->name('logout');
+Route::get('/', fn() => redirect()->route('login'))->name('home');
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Register routes
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.show');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
 
 // ======================
-// Halaman Dashboard
+// Protected Routes
 // ======================
-Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+Route::middleware(['auth'])->group(function () {
 
-// ======================
-// Halaman Mailing List
-// ======================
-Route::get('/mailing-list', fn() => view('mailing_list'))->name('mailing.index');
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// ======================
-// Halaman Upload Data (Admin)
-// ======================
-Route::prefix('upload-data')->group(function () {
+    // Upload Data
+    Route::prefix('upload-data')->group(function () {
+        Route::get('/', [UploadDataController::class, 'index'])->name('upload.index');
 
-    // ------------------------------
-    // Halaman utama Upload Data
-    // ------------------------------
-    Route::get('/', [UploadDataController::class, 'index'])->name('upload.index');
+        // Harian
+        Route::prefix('harian')->group(function () {
+            Route::get('/', [UploadDataController::class, 'harian'])->name('upload.harian');
+            Route::post('/import', [UploadDataController::class, 'importHarian'])->name('upload.harian.import');
+            Route::get('/review/{fileId}', [UploadDataController::class, 'reviewHarian'])->name('upload.harian.review');
+            Route::post('/submit/{fileId}', [UploadDataController::class, 'submitHarian'])->name('upload.harian.submit');
+            Route::post('/combineCA', [UploadDataController::class, 'combineCA'])->name('upload.combineCA');
+        });
 
-    // ------------------------------
-    // Upload Data Harian
-    // ------------------------------
-    Route::prefix('harian')->group(function () {
-        Route::get('/', [UploadDataController::class, 'harian'])->name('upload.harian');
-        Route::post('/import', [UploadDataController::class, 'importHarian'])->name('upload.harian.import');
-        Route::get('/review/{fileId}', [UploadDataController::class, 'reviewHarian'])->name('upload.harian.review');
-        Route::post('/submit/{fileId}', [UploadDataController::class, 'submitHarian'])->name('upload.harian.submit');
-
-        // 🔹 Kombinasi Data Harian ke CA (Admin + CA)
-        Route::post('/combineCA', [UploadDataController::class, 'combineCA'])->name('upload.combineCA');
+        // Bulanan
+        Route::prefix('bulanan')->group(function () {
+            Route::get('/', [UploadDataController::class, 'bulanan'])->name('upload.bulanan');
+            Route::post('/import', [UploadDataController::class, 'importBulanan'])->name('upload.bulanan.import');
+            Route::get('/review/{fileId}', [UploadDataController::class, 'reviewBulanan'])->name('upload.bulanan.review');
+            Route::post('/submit/{fileId}', [UploadDataController::class, 'submitBulanan'])->name('upload.bulanan.submit');
+        });
     });
 
-    // ------------------------------
-    // Upload Data Bulanan
-    // ------------------------------
-    Route::prefix('bulanan')->group(function () {
-        Route::get('/', [UploadDataController::class, 'bulanan'])->name('upload.bulanan');
-        Route::post('/import', [UploadDataController::class, 'importBulanan'])->name('upload.bulanan.import');
-        Route::get('/review/{fileId}', [UploadDataController::class, 'reviewBulanan'])->name('upload.bulanan.review');
-        Route::post('/submit/{fileId}', [UploadDataController::class, 'submitBulanan'])->name('upload.bulanan.submit');
+    // Kelola Akun
+    Route::prefix('kelola-akun')->name('kelola.')->group(function () {
+        Route::get('/', [KelolaController::class, 'index'])->name('index');
+        Route::get('/create', [KelolaController::class, 'create'])->name('create');
+        Route::post('/', [KelolaController::class, 'store'])->name('store');
+        Route::get('/{user}/edit', [KelolaController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [KelolaController::class, 'update'])->name('update');
+        Route::delete('/{user}', [KelolaController::class, 'destroy'])->name('destroy');
+        Route::patch('/{user}/toggle', [KelolaController::class, 'toggleStatus'])->name('toggle');
     });
+
+    // Laporan
+    Route::prefix('laporan')->group(function () {
+        Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
+        Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
+    });
+
+    // Mailing List
+    Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
+
+    // Profil
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Success
+    Route::get('/success', fn() => view('success'))->name('success');
 });
-
-// ======================
-// Halaman Kelola Akun
-// ======================
-Route::prefix('kelola-akun')->group(function () {
-    Route::get('/', [KelolaAkunController::class, 'index'])->name('user.index');
-    Route::post('/tambah', [KelolaAkunController::class, 'store'])->name('kelola-akun.store');
-    Route::get('/switch-tab/{tab}', [KelolaAkunController::class, 'switchTab'])->name('kelola-akun.switchTab');
-});
-
-// ======================
-// Halaman Profil Pengguna
-// ======================
-Route::get('/profil', fn() => view('profil_pengaturan'))->name('profile.index');
-Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
-
-// ======================
-// Halaman Success
-// ======================
-Route::get('/success', fn() => view('success'))->name('success');

@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use App\Models\User;
 
 class LoginControllerTest extends TestCase
 {
@@ -14,52 +15,56 @@ class LoginControllerTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        $response->assertViewIs('login');
+        $response->assertViewIs('auth.login');
     }
 
     #[Test]
     public function it_can_login_and_redirect_to_dashboard(): void
     {
-        // Karena login saat ini dummy, kita tidak buat user
-        // Langsung kirim POST ke /login dan pastikan redirect
-        $response = $this->post('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'password123',
+        $user = User::factory()->create([
+            'username' => 'admin3',
+            'password' => bcrypt('password123'),
+            'role' => 'admin'
         ]);
 
-        // Login dummy selalu redirect ke dashboard
-        $response->assertRedirect('/dashboard');
+        $response = $this->post('/login', [
+            'username' => 'admin3',
+            'password' => 'password123',
+            'role' => 'admin',
+        ]);
 
-        // Tidak perlu autentikasi, cukup pastikan redirect sukses
-        $this->assertTrue(true);
+        $response->assertRedirect('/dashboard');
+        $this->assertAuthenticatedAs($user);
     }
 
     #[Test]
     public function it_redirects_to_dashboard_even_with_wrong_credentials(): void
     {
-        // Kirim POST dengan password salah
-        $response = $this->post('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'wrongpassword',
+        $user = User::factory()->create([
+            'username' => 'admin4',
+            'password' => bcrypt('password123'),
+            'role' => 'admin'
         ]);
 
-        // Karena login dummy, tetap redirect ke dashboard
-        $response->assertRedirect('/dashboard');
+        $response = $this->post('/login', [
+            'username' => 'admin4',
+            'password' => 'wrongpassword',
+            'role' => 'admin',
+        ]);
 
-        // Tidak ada autentikasi yang dicek
-        $this->assertTrue(true);
+        $response->assertRedirect('/');
+        $this->assertGuest();
     }
 
     #[Test]
     public function it_can_logout(): void
     {
-        // Logout dummy: hanya redirect ke /login
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
+
         $response = $this->post('/logout');
 
-        // Pastikan diarahkan kembali ke halaman login
         $response->assertRedirect('/login');
-
-        // Tidak perlu cek Auth
-        $this->assertTrue(true);
+        $this->assertGuest();
     }
 }

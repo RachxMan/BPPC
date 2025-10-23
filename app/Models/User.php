@@ -11,16 +11,24 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Kolom yang dapat diisi massal
+     * Kolom yang dapat diisi massal / The attributes that are mass assignable.
+     *
+     * @var array<int,string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
+        'nama_lengkap',
+        'no_telp',
         'password',
+        'role',
+        'status',
     ];
 
     /**
-     * Kolom yang disembunyikan saat serialisasi
+     * Kolom yang disembunyikan saat serialisasi / The attributes that should be hidden for serialization.
+     *
+     * @var array<int,string>
      */
     protected $hidden = [
         'password',
@@ -28,15 +36,14 @@ class User extends Authenticatable
     ];
 
     /**
-     * Casting atribut
+     * Casting atribut / The attributes that should be cast.
+     *
+     * @var array<string,string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     /**
      * Relasi Many-to-Many ke tabel harian melalui tabel pivot harian_user
