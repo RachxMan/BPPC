@@ -7,16 +7,18 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 class Kernel extends HttpKernel
 {
     /**
-     * The application's global HTTP middleware stack.
+     * Global HTTP middleware stack.
      *
-     * These middleware are run during every request to your application.
+     * Middleware ini dijalankan di setiap permintaan ke aplikasi.
      *
      * @var array<int, class-string|string>
      */
     protected $middleware = [
-        // Menangani permintaan HTTP umum
+        // Menangani proxy & CORS
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
+
+        // Middleware inti Laravel
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
@@ -24,7 +26,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's route middleware groups.
+     * Middleware groups untuk aplikasi.
      *
      * @var array<string, array<int, class-string|string>>
      */
@@ -39,16 +41,15 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // Gunakan throttle limit default
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
 
     /**
-     * The application's route middleware.
+     * Route middleware individu.
      *
-     * These middleware may be assigned to groups or used individually.
+     * Middleware ini dapat digunakan secara spesifik di route.
      *
      * @var array<string, class-string|string>
      */
@@ -63,7 +64,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-        // 🔹 Tambahkan middleware role custom kamu
+        // ✅ Custom Middleware Role
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'status' => \App\Http\Middleware\StatusMiddleware::class,
     ];
