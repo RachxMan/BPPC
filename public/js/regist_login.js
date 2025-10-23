@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Toggle password visibility
   document.querySelectorAll(".toggle-password").forEach(btn => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.target;
@@ -19,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Format phone input (hanya jika ada)
   const phoneInput = document.getElementById("phone");
   if (phoneInput) {
     phoneInput.addEventListener("input", function () {
@@ -28,23 +26,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Handle role button clicks on login page
   const roleButtons = document.querySelectorAll('.role-btn');
   const selectedRoleInput = document.getElementById('selectedRole');
   if (roleButtons.length > 0 && selectedRoleInput) {
     roleButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        // Remove active class from all buttons
         roleButtons.forEach(b => b.classList.remove('active'));
-        // Add active class to clicked button
+
         btn.classList.add('active');
-        // Update hidden input value
+
         selectedRoleInput.value = btn.dataset.role;
       });
     });
   }
 
-  // Handle register link click on login page
+
   const showRegisterBtn = document.getElementById('showRegisterBtn');
   if (showRegisterBtn) {
     showRegisterBtn.addEventListener('click', () => {
@@ -52,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Handle login link click on register page
   const showLoginBtn = document.getElementById('showLoginBtn');
   if (showLoginBtn) {
     showLoginBtn.addEventListener('click', () => {

@@ -10,7 +10,6 @@ use App\Http\Controllers\UploadDataController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 
-
 Route::get('/', fn() => redirect()->route('login'));
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -25,22 +24,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::middleware(['role:admin'])->group(function () {
-        Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('user.index');
-        Route::post('/kelola-akun/tambah', [KelolaAkunController::class, 'store'])->name('kelola-akun.store');
-        Route::get('/kelola-akun/switch-tab/{tab}', [KelolaAkunController::class, 'switchTab'])->name('kelola-akun.switchTab');
-    });
+    // Semua user login bisa akses ini
+    Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('user.index');
+    Route::post('/kelola-akun/tambah', [KelolaAkunController::class, 'store'])->name('kelola-akun.store');
+    Route::get('/kelola-akun/switch-tab/{tab}', [KelolaAkunController::class, 'switchTab'])->name('kelola-akun.switchTab');
 
-    Route::middleware(['role:admin'])->group(function () {
-        Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
-        Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
-    });
+    Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
+    Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
 
-    Route::middleware(['role:admin'])->group(function () {
-        Route::prefix('laporan')->group(function () {
-            Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
-            Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
-        });
+    Route::prefix('laporan')->group(function () {
+        Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
+        Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
     });
 
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
