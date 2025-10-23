@@ -5,6 +5,7 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/kelola.css') }}">
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endpush
 
 @section('content')
@@ -56,14 +57,13 @@
           @forelse($users as $user)
             <tr>
               <td>{{ $loop->iteration }}</td>
-              <td class="fw-semibold">{{ $user->name }}</td>
+              <td class="fw-semibold">{{ $user->nama_lengkap }}</td>
               <td>{{ $user->username }}</td>
               <td>{{ $user->email }}</td>
               <td>
-                <span class="badge {{ $user->role === 'Administrator' ? 'bg-danger' : 'bg-secondary' }}">
-                  {{ $user->role }}
+                <span class="badge {{ $user->role === 'admin' ? 'bg-danger' : 'bg-secondary' }}">
+                  {{ $user->role === 'admin' ? 'Administrator' : 'Collection Agent' }}
                 </span>
-              </td>
               <td>
                 <form action="{{ route('kelola.toggle', $user->id) }}" method="POST" class="d-inline">
                   @csrf
