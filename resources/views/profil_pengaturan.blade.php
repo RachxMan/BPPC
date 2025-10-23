@@ -5,8 +5,8 @@
 @section('content')
 <div class="content">
   <section class="profile-container">
-    <div class="sidebar-tab">
-      <button class="tab active" data-target="profile">Profile Settings</button>
+      <div class="sidebar-tab">
+      <button class="tab active" data-target="profile">Pengaturan Profil</button>
       <button class="tab" data-target="password">Password</button>
     </div>
 
@@ -14,7 +14,7 @@
     <div id="profileTab" class="form-container tab-content" style="display:block;">
       <div class="profile-photo-container">
         <div class="profile-photo-wrapper">
-          <img id="profilePhoto"
+          <img id="profilePhoto" class="profile-photo"
                src="{{ $user->profile_photo ? asset('storage/profile_photos/'.$user->profile_photo) : asset('img/1594252-200.png') }}"
                alt="Profile">
           <div class="hover-overlay">
@@ -23,17 +23,17 @@
         </div>
       </div>
 
-      <form action="{{ route('profile.update') }}" method="POST" class="profile-form">
+      <form action="{{ route('profile.update') }}" method="POST" class="profile-form" id="profileForm" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="form-row">
-          <label>First Name*</label>
-          <input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}">
+          <label>Nama Lengkap*</label>
+          <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $user->nama_lengkap) }}">
         </div>
 
         <div class="form-row">
-          <label>Last Name*</label>
-          <input type="text" name="last_name" value="{{ old('last_name', $user->last_name) }}">
+          <label>Username*</label>
+          <input type="text" name="username" value="{{ old('username', $user->username) }}">
         </div>
 
         <div class="form-row">
@@ -42,16 +42,16 @@
         </div>
 
         <div class="form-row">
-          <label>Mobile Number*</label>
-          <input type="text" name="mobile" value="{{ old('mobile', $user->mobile) }}">
+          <label>No. Telepon</label>
+          <input type="text" name="no_telp" value="{{ old('no_telp', $user->no_telp) }}">
         </div>
 
         <div class="form-row">
-          <label>Address</label>
-          <textarea name="address">{{ old('address', $user->address) }}</textarea>
+          <label>Alamat</label>
+          <textarea name="alamat">{{ old('alamat', $user->alamat) }}</textarea>
         </div>
 
-        <button type="submit" class="save-btn">Save Changes</button>
+        <button type="submit" class="save-btn" id="saveBtn">Simpan Perubahan</button>
       </form>
     </div>
 
@@ -60,16 +60,21 @@
       <form action="{{ route('profile.password.update') }}" method="POST" class="profile-form">
         @csrf
         <div class="form-row">
-          <label>New Password*</label>
+          <label>Password Lama*</label>
+          <input type="password" name="current_password" required>
+        </div>
+
+        <div class="form-row">
+          <label>Password Baru*</label>
           <input type="password" name="new_password" required>
         </div>
 
         <div class="form-row">
-          <label>Confirm Password*</label>
+          <label>Konfirmasi Password*</label>
           <input type="password" name="confirm_password" required>
         </div>
 
-        <button type="submit" class="save-btn">Save Changes</button>
+        <button type="submit" class="save-btn" id="saveBtn">Simpan Perubahan</button>
       </form>
     </div>
   </section>
@@ -85,17 +90,9 @@
   </div>
 </div>
 
-<!-- FORM UPLOAD FOTO -->
-<form id="photoForm" action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" style="display:none;">
-  @csrf
-  <input type="file" id="photoInput" name="profile_photo" accept="image/*" />
-</form>
-
-<!-- FORM HAPUS FOTO -->
-<form id="deletePhotoForm" action="{{ route('profile.update') }}" method="POST" style="display:none;">
-  @csrf
-  <input type="hidden" name="delete_photo" value="1">
-</form>
+<!-- INPUT FOTO (hidden, akan diisi saat pilih) -->
+<input type="file" id="photoInput" name="profile_photo" accept="image/*" style="display:none;" />
+<input type="hidden" id="deletePhotoInput" name="delete_photo" value="0" />
 @endsection
 
 @push('styles')
@@ -103,5 +100,8 @@
 @endpush
 
 @push('scripts')
+<script>
+  const defaultPhotoUrl = "{{ asset('img/1594252-200.png') }}";
+</script>
 <script src="{{ asset('js/profil.js') }}"></script>
 @endpush

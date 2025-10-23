@@ -59,7 +59,7 @@ Route::middleware(['auth','status'])->group(function () {
     });
 
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
-    Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::match(['post', 'put'], '/profil/update', [ProfileController::class, 'update'])->name('profile.update');
 
     // 🔹 Tambahkan route update password di sini
     Route::post('/profil/update-password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');

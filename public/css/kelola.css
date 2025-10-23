@@ -233,16 +233,26 @@
   opacity: 1;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
+/* Responsive Design */
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+  .profile-container {
+    padding: 14px;
+  }
+
   .header-section {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .header-section h4 {
+    font-size: 16px;
   }
 
   .btn-red {
-    width: 100%;
-    justify-content: center;
+    padding: 8px 16px;
+    font-size: 13px;
   }
 
   .user-table {
@@ -252,6 +262,277 @@
   .user-table thead th,
   .user-table tbody td {
     padding: 10px 8px;
+  }
+
+  .badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .toggle-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  .btn-sm {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .header-section h4 {
+    font-size: 15px;
+  }
+
+  .header-section .text-muted {
+    font-size: 12px;
+  }
+
+  .btn-red {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .btn-back {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .alert {
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .table-responsive {
+    margin-top: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .user-table {
+    min-width: 600px; /* Ensure table doesn't shrink too much */
+    font-size: 12px;
+  }
+
+  .user-table thead th,
+  .user-table tbody td {
+    padding: 8px 6px;
+    white-space: nowrap;
+  }
+
+  .user-table thead th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .user-table tbody td {
+    font-size: 12px;
+  }
+
+  .fw-semibold {
+    font-size: 13px;
+  }
+
+  .badge {
+    padding: 3px 6px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .toggle-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    min-width: 60px;
+  }
+
+  .btn-sm {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .py-4 {
+    padding: 16px 0;
+  }
+
+  /* Form Styles for Mobile */
+  .form-kelola {
+    max-width: 100%;
+    margin-top: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .form-control {
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  .form-text {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .btn-cancel {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* Error Card Mobile */
+  .error-card {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+
+  .error-header {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .error-list li {
+    font-size: 13px;
+    margin: 3px 0;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 10px;
+  }
+
+  .header-section {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+
+  .header-section h4 {
+    font-size: 14px;
+  }
+
+  .header-section .text-muted {
+    font-size: 11px;
+  }
+
+  .btn-red {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .alert {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .user-table {
+    min-width: 500px;
+    font-size: 11px;
+  }
+
+  .user-table thead th,
+  .user-table tbody td {
+    padding: 6px 4px;
+  }
+
+  .user-table thead th {
+    font-size: 10px;
+  }
+
+  .user-table tbody td {
+    font-size: 11px;
+  }
+
+  .badge {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+
+  .toggle-btn {
+    padding: 3px 6px;
+    font-size: 10px;
+    min-width: 50px;
+  }
+
+  .btn-sm {
+    padding: 3px 5px;
+    font-size: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+  }
+
+  .form-control {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .form-text {
+    font-size: 10px;
+  }
+
+  .form-actions {
+    margin-top: 16px;
+  }
+
+  .btn-cancel {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .error-card {
+    padding: 10px 12px;
+  }
+
+  .error-header {
+    font-size: 13px;
+  }
+
+  .error-list li {
+    font-size: 12px;
   }
 }
 
