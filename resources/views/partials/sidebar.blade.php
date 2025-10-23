@@ -10,6 +10,7 @@
         <li class="nav-item"><a href="{{ route('upload.index') }}" class="nav-link text-white {{ request()->is('upload-data*') ? 'bg-danger fw-bold' : '' }}">Upload Data</a></li>
         <li class="nav-item"><a href="{{ route('user.index') }}" class="nav-link text-white {{ request()->is('kelola-akun*') ? 'bg-danger fw-bold' : '' }}">Kelola Akun</a></li>
         <li class="nav-item"><a href="{{ route('profile.index') }}" class="nav-link text-white {{ request()->is('profil*') ? 'bg-danger fw-bold' : '' }}">Profil & Pengaturan</a></li>
+        <li class="nav-item"><a href="{{ route('activity-log.index') }}" class="nav-link text-white {{ request()->is('activity-log') ? 'bg-danger fw-bold' : '' }}">Activity Log</a></li>
         <li class="nav-item">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
