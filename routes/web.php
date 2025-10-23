@@ -12,9 +12,9 @@ use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
-| Routes Web
+| Web Routes
 |--------------------------------------------------------------------------
-| Semua route aplikasi web, termasuk login, register, dashboard, dan fitur admin/ca.
+| Semua route aplikasi web, termasuk login, register, dashboard, dan fitur admin/CA.
 |--------------------------------------------------------------------------
 */
 
@@ -25,9 +25,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
-
 // --- Login ---
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
@@ -35,7 +32,6 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 // --- Register ---
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.form');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
-
 
 // --- Logout ---
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -72,6 +68,9 @@ Route::middleware(['auth'])->group(function () {
     // --- Profil & Pengaturan ---
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
     Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
+
+    // 🔹 Tambahkan route update password di sini
+    Route::post('/profil/update-password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
     // --- Halaman sukses umum ---
     Route::get('/success', fn() => view('success'))->name('success');
