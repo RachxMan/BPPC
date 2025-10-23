@@ -3,14 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
+    /**
+     * Tampilkan halaman profil & pengaturan.
+     */
     public function index()
     {
-        return view('profil_pengaturan');
+        $user = Auth::user();
+        return view('profil_pengaturan', compact('user'));
     }
 
+    /**
+     * Update data profil & foto.
+     */
     public function update(Request $request)
     {
         $validated = $request->validate([

@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\RegisterController;
 // ======================
 Route::get('/', fn() => redirect()->route('login'))->name('home');
 
+// --- Login ---
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -60,5 +61,9 @@ Route::middleware(['auth','status'])->group(function () {
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
     Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
 
+    // 🔹 Tambahkan route update password di sini
+    Route::post('/profil/update-password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+    // --- Halaman sukses umum ---
     Route::get('/success', fn() => view('success'))->name('success');
 });
