@@ -104,7 +104,8 @@
 .review-container {
     max-width: 95%;
     margin: 20px auto;
-    padding-left: 250px;
+    padding-left: 0;
+    padding-right: 20px;
 }
 .action-buttons {
     display: flex;
@@ -236,14 +237,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.success) {
                 alert('✅ ' + (data.message || 'Data berhasil digabungkan!'));
-                backBtn.disabled = false; // aktifkan tombol kembali
+                // Redirect otomatis ke halaman Upload Harian
+                window.location.href = "{{ route('upload.harian') }}";
             } else {
                 alert('⚠️ ' + (data.message || 'Proses gabung gagal.'));
+                combineBtn.disabled = false;
+                combineBtn.textContent = '🔄 Gabungkan Data Harian + Users (CA)';
             }
         } catch (err) {
             console.error(err);
             alert('❌ Terjadi kesalahan saat menggabungkan data.');
-        } finally {
             combineBtn.disabled = false;
             combineBtn.textContent = '🔄 Gabungkan Data Harian + Users (CA)';
         }
