@@ -49,7 +49,12 @@
   </div>
   <div class="input-group">
     <label for="confirm-password">Confirm Password</label>
-    <input type="password" id="confirm-password" name="password_confirmation" placeholder="Confirm Password" required>
+    <div class="password-wrapper">
+      <input type="password" id="confirm-password" name="password_confirmation" placeholder="Confirm Password" required>
+      <span class="toggle-password" data-target="confirm-password">
+        <img src="{{ asset('img/eye-close-svgrepo-com.svg') }}" alt="show/hide">
+      </span>
+    </div>
   </div>
   <div class="input-group">
     <label for="fullname">Nama Lengkap</label>
