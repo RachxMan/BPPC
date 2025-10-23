@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MailingListController;
-use App\Http\Controllers\UploadDataController;
+use App\Http\Controllers\Admin\UploadDataController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KelolaController;
@@ -23,10 +23,21 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','status'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
+    Route::prefix('upload-data')->name('upload.')->group(function () {
+        Route::get('/', [UploadDataController::class, 'index'])->name('index');
+        Route::get('/harian', [UploadDataController::class, 'harian'])->name('harian');
+        Route::get('/bulanan', [UploadDataController::class, 'bulanan'])->name('bulanan');
+        Route::post('/harian/import', [UploadDataController::class, 'importHarian'])->name('harian.import');
+        Route::post('/bulanan/import', [UploadDataController::class, 'importBulanan'])->name('bulanan.import');
+        Route::get('/harian/review/{fileId}', [UploadDataController::class, 'reviewHarian'])->name('harian.review');
+        Route::get('/bulanan/review/{fileId}', [UploadDataController::class, 'reviewBulanan'])->name('bulanan.review');
+        Route::post('/harian/submit/{fileId}', [UploadDataController::class, 'submitHarian'])->name('harian.submit');
+        Route::post('/bulanan/submit/{fileId}', [UploadDataController::class, 'submitBulanan'])->name('bulanan.submit');
+        Route::post('/combine-ca', [UploadDataController::class, 'combineCA'])->name('combine.ca');
+    });
     Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
 
     // Kelola Akun (pindah ke luar dari 'laporan')
