@@ -10,6 +10,7 @@ use App\Http\Controllers\UploadDataController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 
+
 Route::get('/', fn() => redirect()->route('login'));
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
