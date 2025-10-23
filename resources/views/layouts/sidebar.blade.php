@@ -9,7 +9,7 @@
   <div class="sidebar-profile">
     <img src="{{ asset('img/1594252-200.png') }}" alt="Admin" class="profile-photo">
     <div class="profile-info">
-      <p class="profile-name">{{ Auth::user()->name ?? 'Administrator' }}</p>
+      <p class="profile-name">{{ Auth::user()->nama_lengkap ?? 'Administrator' }}</p>
       <span class="status-badge">● Online</span>
     </div>
   </div>
