@@ -3,10 +3,18 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use App\Models\User;
 
 class KelolaAkunControllerTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
+    }
+
+    #[PHPUnit\Framework\Attributes\Test]
     public function it_returns_kelola_akun_view()
     {
         // Simulasi akses halaman /kelola-akun
@@ -28,7 +36,7 @@ class KelolaAkunControllerTest extends TestCase
         $this->assertEquals('daftar', $response->viewData('activeTab'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[PHPUnit\Framework\Attributes\Test]
     public function it_sets_active_tab_to_registrasi_after_store()
     {
         // Simulasi submit form registrasi akun baru
@@ -47,7 +55,7 @@ class KelolaAkunControllerTest extends TestCase
         $response->assertSessionHas('success', 'Akun baru berhasil ditambahkan!');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[PHPUnit\Framework\Attributes\Test]
     public function it_redirects_to_index_when_switching_tab()
     {
         // Simulasi akses /kelola-akun/switch-tab/registrasi

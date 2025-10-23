@@ -3,10 +3,18 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use App\Models\User;
 
 class ProfileControllerTest extends TestCase
 {
-    /** @test */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user);
+    }
+
+    #[PHPUnit\Framework\Attributes\Test]
     public function it_can_render_profile_view()
     {
         // Uji apakah halaman profil bisa diakses
@@ -16,7 +24,7 @@ class ProfileControllerTest extends TestCase
         $response->assertViewIs('profil_pengaturan');
     }
 
-    /** @test */
+    #[PHPUnit\Framework\Attributes\Test]
     public function it_can_update_profile_and_redirect_back()
     {
         // Uji apakah form update profil bisa dijalankan dan redirect kembali
