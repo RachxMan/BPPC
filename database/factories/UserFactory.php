@@ -2,25 +2,38 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
 {
-    public function definition(): array
+    protected $model = User::class;
+
+    public function definition()
     {
         return [
-            'nama_lengkap' => $this->faker->name(),
-            'username' => $this->faker->unique()->userName(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'no_telp' => $this->faker->numerify('08##########'),
-            'email_verified_at' => now(),
-            'password' => Hash::make('password123'), // default password
-            'remember_token' => Str::random(10),
-            'role' => $this->faker->randomElement(['admin', 'ca']),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'username' => $this->faker->userName,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => bcrypt('password'), // default password
+            'role' => $this->faker->randomElement(['admin', 'ca']), // random role (admin or collection agent)
+            'nama_lengkap' => $this->faker->name,
+            'no_telp' => $this->faker->phoneNumber,
         ];
     }
+
+    public function admin()
+    {
+        return $this->state([
+            'role' => 'admin',
+        ]);
+    }
+
+    public function collectionAgent()
+    {
+        return $this->state([
+            'role' => 'ca',
+        ]);
+    }
 }
+

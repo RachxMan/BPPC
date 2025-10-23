@@ -9,22 +9,27 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    // Tampilkan form register
     public function showRegisterForm()
     {
         return view('auth.register');
     }
 
-    // Proses penyimpanan data
     public function register(Request $request)
     {
         $request->validate([
             'username' => 'required|unique:users,username',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:users,email|ends_with:@gmail.com',
             'nama_lengkap' => 'required|string|max:255',
-            'no_telp' => 'required|string|max:20',
-            'password' => 'required|min:6|confirmed',
-            'role' => 'required|in:admin,ca'
+            'no_telp' => 'required|string|min:10|max:15',
+            'password' => [
+                'required',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*?&,._]/'
+            ],
+            'role' => 'required|in:admin',
         ]);
 
         User::create([
@@ -39,3 +44,4 @@ class RegisterController extends Controller
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 }
+

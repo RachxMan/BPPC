@@ -16,14 +16,20 @@
 
     <div class="form-box">
 
-      <div class="form-header">
-        <button type="button" class="role-btn active" data-role="Admin">Admin</button>
-      </div>
-
-
   <form id="registerForm" method="POST" action="{{ route('register.store') }}">
   @csrf
+  <input type="hidden" name="role" value="admin">
   <h2 class="login-title">Register</h2>
+
+  @if($errors->any())
+    <div class="error-messages">
+      <ul>
+        @foreach($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
   <div class="input-group">
     <label for="email">Email</label>
     <input type="email" id="email" name="email" placeholder="Email" required>
@@ -43,7 +49,12 @@
   </div>
   <div class="input-group">
     <label for="confirm-password">Confirm Password</label>
-    <input type="password" id="confirm-password" name="password_confirmation" placeholder="Confirm Password" required>
+    <div class="password-wrapper">
+      <input type="password" id="confirm-password" name="password_confirmation" placeholder="Confirm Password" required>
+      <span class="toggle-password" data-target="confirm-password">
+        <img src="{{ asset('img/eye-close-svgrepo-com.svg') }}" alt="show/hide">
+      </span>
+    </div>
   </div>
   <div class="input-group">
     <label for="fullname">Nama Lengkap</label>
@@ -55,13 +66,6 @@
       <span class="prefix">+62</span>
       <input type="tel" id="phone" name="no_telp" placeholder="8123456789" required inputmode="numeric" pattern="[0-9]*">
     </div>
-  </div>
-  <div class="input-group">
-    <label for="role">Role</label>
-    <select name="role" id="role" required>
-      <option value="ca">CA</option>
-      <option value="admin">Admin</option>
-    </select>
   </div>
   <button type="submit" class="btn">Daftar</button>
   <p class="toggle-link">Sudah punya akun? <span id="showLoginBtn">Login</span></p>

@@ -117,6 +117,12 @@
         display: block;
       }
     }
+
+    @media (min-width: 993px) {
+      main.main-wrapper {
+        margin-left: 260px;
+      }
+    }
   </style>
 </head>
 

@@ -7,31 +7,30 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /**
-     * Tampilkan form login
-     */
+
     public function showLoginForm()
     {
-        return view('login');
+        return view('auth.login');
     }
 
-    /**
-     * Proses login user
-     */
     public function login(Request $request)
     {
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'role' => 'required|in:admin,ca',
         ]);
 
-        // Coba login berdasarkan username
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // Arahkan sesuai role
+            if ($user->role !== $request->role) {
+                Auth::logout();
+                return redirect()->route('login')->withErrors(['role' => 'Username tidak terdaftar sebagai role ' . ($request->role === 'admin' ? 'Admin' : 'CA') . '.']);
+            }
+
             if ($user->role === 'admin') {
                 return redirect()->route('dashboard')->with('success', 'Selamat datang Admin!');
             } elseif ($user->role === 'ca') {
@@ -42,15 +41,11 @@ class LoginController extends Controller
             }
         }
 
-        // Jika gagal login
         return back()->withErrors([
             'username' => 'Username atau password salah.',
         ])->withInput();
     }
 
-    /**
-     * Logout user
-     */
     public function logout(Request $request)
     {
         Auth::logout();

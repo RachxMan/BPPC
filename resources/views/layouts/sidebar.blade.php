@@ -24,6 +24,7 @@
       <li class="{{ request()->is('dashboard') ? 'active' : '' }}">
         <a href="{{ url('/dashboard') }}">Dashboard</a>
       </li>
+      @if(Auth::user()->role === 'admin')
       <li class="{{ request()->is('mailing-list') ? 'active' : '' }}">
         <a href="{{ url('/mailing-list') }}">Mailing List Reminder</a>
       </li>
@@ -33,6 +34,7 @@
       <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
         <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
       </li>
+      @endif
       <li class="{{ request()->is('profil') ? 'active' : '' }}">
         <a href="{{ url('/profil') }}">Profil & Pengaturan</a>
       </li>
