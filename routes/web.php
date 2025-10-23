@@ -19,13 +19,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegisterForm'])->name('register.show');
 Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register'])->name('register.store');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'status'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
     Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
 
-    // Kelola Akun (pindah ke luar dari 'laporan')
     Route::prefix('kelola-akun')->name('kelola.')->group(function () {
         Route::get('/', [KelolaController::class, 'index'])->name('index');
         Route::get('/create', [KelolaController::class, 'create'])->name('create');
@@ -42,8 +41,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
     });
 
-    Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
-    Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
-
-    Route::get('/success', fn() => view('success'))->name('success');
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
 });
