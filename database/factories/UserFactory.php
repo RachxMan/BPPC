@@ -14,9 +14,11 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
+            'username' => $this->faker->userName(),           // optional, sesuai tabelmu
+            'nama_lengkap' => $this->faker->name(),           // ganti dari 'name'
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'no_telp' => $this->faker->phoneNumber(),        // kolom no_telp sesuai tabel
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
             'role' => 'CA', // default dummy user
