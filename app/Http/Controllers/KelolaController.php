@@ -51,11 +51,11 @@ class KelolaController extends Controller
         ]);
 
         User::create([
-            'name' => $validated['name'],
+            'nama_lengkap' => $validated['name'],
             'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
+            'role' => $validated['role'] === 'Administrator' ? 'admin' : 'ca',
             'status' => 'Aktif', // Default status
         ]);
 
@@ -94,6 +94,7 @@ class KelolaController extends Controller
             ],
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|in:Administrator,Collection Agent',
+            'status' => 'required|in:Aktif,Nonaktif',
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'username.required' => 'Username wajib diisi.',
@@ -104,12 +105,14 @@ class KelolaController extends Controller
             'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required' => 'Role wajib dipilih.',
+            'status.required' => 'Status wajib dipilih.',
         ]);
 
-        $user->name = $validated['name'];
+        $user->nama_lengkap = $validated['name'];
         $user->username = $validated['username'];
         $user->email = $validated['email'];
-        $user->role = $validated['role'];
+        $user->role = $validated['role'] === 'Administrator' ? 'admin' : 'ca';
+        $user->status = $validated['status'];
 
         // Only update password if provided
         if ($request->filled('password')) {
