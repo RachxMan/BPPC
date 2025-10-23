@@ -25,6 +25,7 @@
 
       <form action="{{ route('profile.update') }}" method="POST" class="profile-form">
         @csrf
+        @method('PUT')
         <div class="form-row">
           <label>First Name*</label>
           <input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}">

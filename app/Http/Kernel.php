@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
 
         // ✅ Custom Middleware Role
         'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'status' => \App\Http\Middleware\StatusMiddleware::class,
     ];
 }

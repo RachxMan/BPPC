@@ -1,55 +1,50 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MailingListController;
-use App\Http\Controllers\KelolaAkunController;
 use App\Http\Controllers\UploadDataController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\KelolaController;
+use App\Http\Controllers\Auth\RegisterController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-| Semua route aplikasi web, termasuk login, register, dashboard, dan fitur admin/CA.
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/', fn() => redirect()->route('login'));
+// ======================
+// Auth Routes
+// ======================
+Route::get('/', fn() => redirect()->route('login'))->name('home');
 
 // --- Login ---
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Register routes
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
 
-// --- Logout ---
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
 Route::middleware(['auth'])->group(function () {
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::middleware(['role:admin'])->group(function () {
-        Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('user.index');
-        Route::post('/kelola-akun/tambah', [KelolaAkunController::class, 'store'])->name('kelola-akun.store');
-        Route::get('/kelola-akun/switch-tab/{tab}', [KelolaAkunController::class, 'switchTab'])->name('kelola-akun.switchTab');
+    Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
+    Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
+
+    // Kelola Akun (pindah ke luar dari 'laporan')
+    Route::prefix('kelola-akun')->name('kelola.')->group(function () {
+        Route::get('/', [KelolaController::class, 'index'])->name('index');
+        Route::get('/create', [KelolaController::class, 'create'])->name('create');
+        Route::post('/', [KelolaController::class, 'store'])->name('store');
+        Route::get('/{user}/edit', [KelolaController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [KelolaController::class, 'update'])->name('update');
+        Route::delete('/{user}', [KelolaController::class, 'destroy'])->name('destroy');
+        Route::patch('/{user}/toggle', [KelolaController::class, 'toggleStatus'])->name('toggle');
     });
 
-    Route::middleware(['role:admin'])->group(function () {
-        Route::get('/upload-data', [UploadDataController::class, 'index'])->name('upload.index');
-        Route::get('/mailing-list', [MailingListController::class, 'index'])->name('mailing.index');
-    });
-
-    Route::middleware(['role:admin'])->group(function () {
-        Route::prefix('laporan')->group(function () {
-            Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
-            Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
-        });
+    // Laporan
+    Route::prefix('laporan')->group(function () {
+        Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
+        Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
     });
 
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');

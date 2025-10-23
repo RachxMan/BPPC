@@ -23,64 +23,32 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::user();
-
-        $request->validate([
-            'first_name'    => 'nullable|string|max:100',
-            'last_name'     => 'nullable|string|max:100',
-            'email'         => 'required|email',
-            'mobile'        => 'nullable|string|max:20',
-            'gender'        => 'nullable|string',
-            'address'       => 'nullable|string',
-            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
+            'mobile' => 'nullable|string|max:20',
+            'gender' => 'nullable|in:Male,Female',
+            'address' => 'nullable|string|max:500',
+        ], [
+            'first_name.required' => 'Nama depan wajib diisi.',
+            'last_name.required' => 'Nama belakang wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan.',
+            'mobile.max' => 'Nomor telepon maksimal 20 karakter.',
+            'gender.in' => 'Jenis kelamin tidak valid.',
+            'address.max' => 'Alamat maksimal 500 karakter.',
         ]);
 
-        // --- Hapus foto jika tombol hapus ditekan ---
-        if ($request->has('delete_photo')) {
-            if ($user->profile_photo && Storage::exists('public/profile_photos/' . $user->profile_photo)) {
-                Storage::delete('public/profile_photos/' . $user->profile_photo);
-            }
-            $user->profile_photo = null;
-        }
-
-        // --- Upload foto baru ---
-        if ($request->hasFile('profile_photo')) {
-            if ($user->profile_photo && Storage::exists('public/profile_photos/' . $user->profile_photo)) {
-                Storage::delete('public/profile_photos/' . $user->profile_photo);
-            }
-
-            $file = $request->file('profile_photo');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/profile_photos', $filename);
-            $user->profile_photo = $filename;
-        }
-
-        // --- Update data lainnya ---
-        $user->first_name = $request->first_name;
-        $user->last_name  = $request->last_name;
-        $user->email      = $request->email;
-        $user->mobile     = $request->mobile;
-        $user->gender     = $request->gender;
-        $user->address    = $request->address;
+        $user = auth()->user();
+        $user->nama_lengkap = $validated['first_name'] . ' ' . $validated['last_name'];
+        $user->email = $validated['email'];
+        $user->no_telp = $validated['mobile'];
+        $user->jenis_kelamin = $validated['gender'];
+        $user->alamat = $validated['address'];
         $user->save();
 
-        return back()->with('success', 'Profil berhasil diperbarui!');
-    }
-
-    /**
-     * Update password pengguna.
-     */
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'new_password'      => 'required|min:8',
-            'confirm_password'  => 'required|same:new_password',
-        ]);
-
-        $user = Auth::user();
-        $user->password = Hash::make($request->new_password);
-        $user->save();
-
-        return back()->with('success', 'Password berhasil diperbarui!');
+        return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
     }
 }

@@ -7,8 +7,9 @@
 
 @section('content')
   <div class="upload-container">
-    <a href="{{ url('/laporan/harian') }}" class="upload-btn">Harian <span>⭡</span></a>
-    <a href="{{ url('/laporan/bulanan') }}" class="upload-btn">Bulanan <span>⭡</span></a>
+    {{-- arahkan ke route upload.harian dan upload.bulanan --}}
+    <a href="{{ route('upload.harian') }}" class="upload-btn">Harian <span>⭡</span></a>
+    <a href="{{ route('upload.bulanan') }}" class="upload-btn">Bulanan <span>⭡</span></a>
   </div>
 @endsection
 
