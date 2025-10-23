@@ -51,8 +51,17 @@ class Harian extends Model
     ];
 
     /**
-     * Relasi Many-to-Many ke tabel users melalui tabel pivot harian_user
-     * Setiap data harian bisa dimiliki oleh lebih dari satu user (misalnya CA)
+     * Relasi ke CaringTelepon (One-to-Many)
+     * Satu data Harian bisa memiliki banyak entry di tabel caring_telepon
+     */
+    public function caringTelepon()
+    {
+        return $this->hasMany(CaringTelepon::class, 'harian_snd', 'snd');
+    }
+
+    /**
+     * Relasi Many-to-Many ke tabel users melalui pivot harian_user
+     * Opsional: hapus jika tidak diperlukan lagi
      */
     public function users()
     {
