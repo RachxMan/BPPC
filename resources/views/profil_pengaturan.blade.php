@@ -24,6 +24,7 @@
 
       <form action="{{ route('profile.update') }}" method="POST">
         @csrf
+        @method('PUT')
         <div class="form-row">
           <label>First Name*</label>
           <input type="text" name="first_name">
