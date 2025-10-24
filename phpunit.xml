@@ -26,14 +26,10 @@
        <env name="APP_KEY" value="base64:lrnDUM+ZtaZu8ERToyHmot6szgmE8rw57SGyJDrRPrs="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
 
-        <!-- Database Testing -->
-        <env name="DB_CONNECTION" value="mysql"/>
-        <env name="DB_HOST" value="127.0.0.1"/>
-        <env name="DB_PORT" value="3306"/>
-        <env name="DB_DATABASE" value="bppc_test"/>
-        <env name="DB_USERNAME" value="root"/>
-        <env name="DB_PASSWORD" value=""/>
-        <env name="DB_FOREIGN_KEYS" value="true"/>
+    <!-- Database Testing: use in-memory SQLite so tests don't require a running MySQL server -->
+    <env name="DB_CONNECTION" value="sqlite"/>
+    <env name="DB_DATABASE" value=":memory:"/>
+    <env name="DB_FOREIGN_KEYS" value="true"/>
 
         <!-- Laravel Testing Optimizations -->
         <env name="CACHE_DRIVER" value="array"/>

@@ -5,9 +5,11 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LoginControllerTest extends TestCase
 {
+    use RefreshDatabase;
     #[Test]
     public function it_displays_the_login_page(): void
     {
