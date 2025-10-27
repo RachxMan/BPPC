@@ -1,3 +1,7 @@
+@php
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'Tambah Akun - PayColl PT. Telkom')
@@ -25,6 +29,10 @@
         <i class="fa-solid fa-arrow-left me-2"></i> Kembali
       </a>
     </div>
+
+    @php
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag;
+@endphp
 
     @if($errors->any())
       <div class="error-card">
