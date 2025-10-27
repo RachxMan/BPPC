@@ -5,7 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CaringController;
 use App\Http\Controllers\Admin\UploadDataController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KelolaController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -84,6 +84,7 @@ Route::middleware(['auth', 'status'])->group(function () {
     Route::prefix('laporan')->group(function () {
         Route::get('/harian', [ReportController::class, 'harian'])->name('report.harian');
         Route::get('/bulanan', [ReportController::class, 'bulanan'])->name('report.bulanan');
+        
     });
 
     // ======================

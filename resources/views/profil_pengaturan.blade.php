@@ -10,7 +10,6 @@
       <button class="tab" data-target="password">Password</button>
     </div>
 
-    <!-- =================== PROFILE SETTINGS =================== -->
     <div id="profileTab" class="form-container tab-content" style="display:block;">
       <div class="profile-photo-container">
         <div class="profile-photo-wrapper">
@@ -26,6 +25,9 @@
       <form action="{{ route('profile.update') }}" method="POST" class="profile-form" id="profileForm" enctype="multipart/form-data">
         @csrf
         @method('PUT')
+        <!-- INPUT FOTO (moved inside form) -->
+        <input type="file" id="photoInput" name="profile_photo" accept="image/*" style="display:none;" />
+        <input type="hidden" id="deletePhotoInput" name="delete_photo" value="0" />
         <div class="form-row">
           <label>Nama Lengkap*</label>
           <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $user->nama_lengkap) }}">
@@ -57,7 +59,7 @@
 
     <!-- =================== PASSWORD SETTINGS =================== -->
     <div id="passwordTab" class="form-container tab-content" style="display:none;">
-      <form action="{{ route('profile.password.update') }}" method="POST" class="profile-form">
+      <form action="{{ route('profile.password.update') }}" method="POST" class="profile-form" id="passwordForm">
         @csrf
         <div class="form-row">
           <label>Password Lama*</label>
@@ -71,10 +73,10 @@
 
         <div class="form-row">
           <label>Konfirmasi Password*</label>
-          <input type="password" name="confirm_password" required>
+          <input type="password" name="new_password_confirmation" required>
         </div>
 
-        <button type="submit" class="save-btn" id="saveBtn">Simpan Perubahan</button>
+        <button type="submit" class="save-btn" id="savePasswordBtn">Simpan Perubahan</button>
       </form>
     </div>
   </section>
@@ -90,9 +92,26 @@
   </div>
 </div>
 
-<!-- INPUT FOTO (hidden, akan diisi saat pilih) -->
-<input type="file" id="photoInput" name="profile_photo" accept="image/*" style="display:none;" />
-<input type="hidden" id="deletePhotoInput" name="delete_photo" value="0" />
+<!-- MODAL KONFIRMASI -->
+<div id="confirmModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <h3 id="confirmTitle">Konfirmasi</h3>
+    <p id="confirmMessage">Apakah Anda yakin ingin menyimpan perubahan?</p>
+    <button id="confirmYesBtn" class="btn btn-red" type="button">Ya</button>
+    <button id="confirmNoBtn" class="btn btn-gray" type="button">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL NOTIFIKASI -->
+<div id="notificationModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <h3 id="notificationTitle">Notifikasi</h3>
+    <p id="notificationMessage"></p>
+    <button id="notificationCloseBtn" class="btn btn-red" type="button">Tutup</button>
+  </div>
+</div>
+
+
 @endsection
 
 @push('styles')
