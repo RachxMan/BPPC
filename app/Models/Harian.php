@@ -25,7 +25,7 @@ class Harian extends Model
     public $incrementing = false;
 
     /**
-     * Tipe data primary key (string)
+     * Tipe data primary key
      */
     protected $keyType = 'string';
 
@@ -48,11 +48,17 @@ class Harian extends Model
         'no_hp',
         'nama_real',
         'segmen_real',
+        'keterangan',     // tambahkan jika akan disimpan keterangan
+        'status_call',    // tambahkan jika akan disimpan status call
     ];
 
     /**
-     * Relasi ke CaringTelepon (One-to-Many)
-     * Satu data Harian bisa memiliki banyak entry di tabel caring_telepon
+     * RELASI
+     */
+
+    /**
+     * One-to-Many ke CaringTelepon
+     * Satu Harian bisa memiliki banyak entry di tabel caring_telepon
      */
     public function caringTelepon()
     {
@@ -60,17 +66,22 @@ class Harian extends Model
     }
 
     /**
-     * Relasi Many-to-Many ke tabel users melalui pivot harian_user
-     * Opsional: hapus jika tidak diperlukan lagi
+     * Many-to-Many ke User melalui pivot harian_user
+     * Digunakan untuk assign Harian ke CA/Admin
+     * Pivot table: harian_user, kolom: snd, user_id
      */
-    public function users()
+    public function assignedUsers()
     {
         return $this->belongsToMany(User::class, 'harian_user', 'snd', 'user_id')
                     ->withTimestamps();
     }
 
     /**
-     * Scope untuk filter data harian berdasarkan witel
+     * SCOPE / QUERY BUILDER HELPERS
+     */
+
+    /**
+     * Filter data berdasarkan witel
      */
     public function scopeByWitel($query, $witel)
     {
@@ -78,10 +89,28 @@ class Harian extends Model
     }
 
     /**
-     * Scope untuk filter data berdasarkan status bayar
+     * Filter data berdasarkan status bayar
      */
     public function scopeByStatusBayar($query, $status)
     {
         return $query->where('status_bayar', $status);
+    }
+
+    /**
+     * Ambil data Harian yang assigned ke user tertentu
+     */
+    public function scopeAssignedToUser($query, $userId)
+    {
+        return $query->whereHas('assignedUsers', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        });
+    }
+
+    /**
+     * Ambil kolom kontak (prioritas cp > no_hp)
+     */
+    public function getKontakAttribute()
+    {
+        return $this->cp ?? $this->no_hp ?? '-';
     }
 }

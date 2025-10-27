@@ -30,14 +30,6 @@
           <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
             <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
           </li>
-          {{-- future menu
-          <li class="{{ request()->is('caring/wa') ? 'active' : '' }}">
-            <a href="{{ url('/caring/wa') }}">Caring WA</a>
-          </li>
-          <li class="{{ request()->is('caring/email') ? 'active' : '' }}">
-            <a href="{{ url('/caring/email') }}">Caring Email</a>
-          </li>
-          --}}
         </ul>
       </li>
 
@@ -90,14 +82,6 @@
         <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
           <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
         </li>
-        {{-- future menu
-        <li class="{{ request()->is('caring/wa') ? 'active' : '' }}">
-          <a href="{{ url('/caring/wa') }}">Caring WA</a>
-        </li>
-        <li class="{{ request()->is('caring/email') ? 'active' : '' }}">
-          <a href="{{ url('/caring/email') }}">Caring Email</a>
-        </li>
-        --}}
       </ul>
     </li>
 
@@ -126,7 +110,6 @@
 {{-- Script toggle sidebar & mobile menu --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Sidebar dropdown (desktop)
   const caringToggle = document.getElementById('caring-toggle');
   if(caringToggle){
     caringToggle.addEventListener('click', () => {
@@ -136,14 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Mobile menu toggle
   const hamburger = document.getElementById('hamburger');
   const mobileMenu = document.getElementById('mobile-menu');
   hamburger.addEventListener('click', () => {
     mobileMenu.classList.toggle('active');
   });
 
-  // Mobile dropdown toggle
   const mobileCaringToggle = document.getElementById('mobile-caring-toggle');
   if(mobileCaringToggle){
     mobileCaringToggle.addEventListener('click', () => {
@@ -153,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Reset mobile menu saat resize
   window.addEventListener('resize', () => {
     if(window.innerWidth >= 768){
       mobileMenu.classList.remove('active');

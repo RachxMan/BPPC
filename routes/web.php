@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\CaringController;
 use App\Http\Controllers\Admin\UploadDataController;
 use App\Http\Controllers\Admin\ReportController;
@@ -25,7 +25,7 @@ Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('
 Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
 
 // ======================
-// Protected Routes
+// Protected Routes (auth + status)
 // ======================
 Route::middleware(['auth', 'status'])->group(function () {
 
@@ -41,27 +41,28 @@ Route::middleware(['auth', 'status'])->group(function () {
     });
 
     // ======================
-    // Upload Data
+    // Upload Data (Admin Only, kontrol di Controller)
     // ======================
-    Route::prefix('upload-data')->group(function () {
-
-        Route::get('/', [UploadDataController::class, 'index'])->name('upload.index');
+    Route::prefix('upload-data')->name('upload.')->group(function () {
+        // Halaman utama Upload Data
+        Route::get('/', [UploadDataController::class, 'index'])->name('index');
+        Route::post('/store', [UploadDataController::class, 'store'])->name('store');
 
         // Harian
         Route::prefix('harian')->group(function () {
-            Route::get('/', [UploadDataController::class, 'harian'])->name('upload.harian');
-            Route::post('/import', [UploadDataController::class, 'importHarian'])->name('upload.harian.import');
-            Route::get('/review/{fileId}', [UploadDataController::class, 'reviewHarian'])->name('upload.harian.review');
-            Route::post('/submit/{fileId}', [UploadDataController::class, 'submitHarian'])->name('upload.harian.submit');
-            Route::post('/combineCA', [UploadDataController::class, 'combineCA'])->name('upload.combineCA');
+            Route::get('/', [UploadDataController::class, 'harian'])->name('harian');
+            Route::post('/import', [UploadDataController::class, 'importHarian'])->name('harian.import');
+            Route::get('/review/{fileId}', [UploadDataController::class, 'reviewHarian'])->name('harian.review');
+            Route::post('/submit/{fileId}', [UploadDataController::class, 'submitHarian'])->name('harian.submit');
+            Route::post('/combineCA', [UploadDataController::class, 'combineCA'])->name('combineCA');
         });
 
         // Bulanan
         Route::prefix('bulanan')->group(function () {
-            Route::get('/', [UploadDataController::class, 'bulanan'])->name('upload.bulanan');
-            Route::post('/import', [UploadDataController::class, 'importBulanan'])->name('upload.bulanan.import');
-            Route::get('/review/{fileId}', [UploadDataController::class, 'reviewBulanan'])->name('upload.bulanan.review');
-            Route::post('/submit/{fileId}', [UploadDataController::class, 'submitBulanan'])->name('upload.bulanan.submit');
+            Route::get('/', [UploadDataController::class, 'bulanan'])->name('bulanan');
+            Route::post('/import', [UploadDataController::class, 'importBulanan'])->name('bulanan.import');
+            Route::get('/review/{fileId}', [UploadDataController::class, 'reviewBulanan'])->name('bulanan.review');
+            Route::post('/submit/{fileId}', [UploadDataController::class, 'submitBulanan'])->name('bulanan.submit');
         });
     });
 
@@ -88,7 +89,7 @@ Route::middleware(['auth', 'status'])->group(function () {
     });
 
     // ======================
-    // Profil
+    // Profil & Pengaturan
     // ======================
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
     Route::match(['post', 'put'], '/profil/update', [ProfileController::class, 'update'])->name('profile.update');
