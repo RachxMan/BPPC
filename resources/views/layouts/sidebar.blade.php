@@ -21,6 +21,18 @@
       </li>
 
       @if(Auth::user()->role === 'admin')
+      {{-- Upload Data --}}
+      <li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
+        <a href="{{ route('upload.index') }}">Upload Data</a>
+      </li>
+
+      {{-- Kelola Akun --}}
+      <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
+        <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
+      </li>
+      @endif
+
+      @if(Auth::user()->role === 'admin' || Auth::user()->role === 'ca')
       {{-- Caring Pelanggan --}}
       <li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
         <a href="javascript:void(0)" class="dropdown-toggle" id="caring-toggle">
@@ -31,16 +43,6 @@
             <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
           </li>
         </ul>
-      </li>
-
-      {{-- Upload Data --}}
-      <li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
-        <a href="{{ route('upload.index') }}">Upload Data</a>
-      </li>
-
-      {{-- Kelola Akun --}}
-      <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
-        <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
       </li>
       @endif
 
@@ -74,6 +76,16 @@
     </li>
 
     @if(Auth::user()->role === 'admin')
+    <li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
+      <a href="{{ route('upload.index') }}">Upload Data</a>
+    </li>
+
+    <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
+      <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
+    </li>
+    @endif
+
+    @if(Auth::user()->role === 'admin' || Auth::user()->role === 'ca')
     <li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
       <a href="javascript:void(0)" class="dropdown-toggle" id="mobile-caring-toggle">
         Caring Pelanggan <span class="arrow">▾</span>
@@ -83,14 +95,6 @@
           <a href="{{ url('/caring/telepon') }}">Caring Telepon</a>
         </li>
       </ul>
-    </li>
-
-    <li class="{{ request()->is('upload-data*') ? 'active' : '' }}">
-      <a href="{{ route('upload.index') }}">Upload Data</a>
-    </li>
-
-    <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
-      <a href="{{ url('/kelola-akun') }}">Kelola Akun</a>
     </li>
     @endif
 
