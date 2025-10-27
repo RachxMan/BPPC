@@ -49,10 +49,10 @@
         </div>
         <div class="options">
           <label><input type="checkbox"> Ingat saya</label>
-          <a href="#">Lupa password?</a>
+          {{-- <a href="#">Lupa password?</a> --}}
         </div>
         <button type="submit" class="btn">Login</button>
-        <p class="toggle-link">Belum punya akun? <span id="showRegisterBtn">Daftar</span></p>
+        {{-- <p class="toggle-link">Belum punya akun? <span id="showRegisterBtn">Daftar</span></p> --}}
       </form>
 
     
