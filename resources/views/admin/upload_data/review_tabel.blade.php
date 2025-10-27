@@ -24,9 +24,9 @@
     {{-- Tombol Navigasi --}}
     <div class="action-buttons mb-3">
         <a href="{{ $type === 'bulanan' ? route('upload.bulanan') : route('upload.harian') }}" 
-           id="backBtn" class="btn btn-secondary" disabled>⬅️ Back to Upload</a>
+           id="backBtn" class="btn btn-secondary">⬅️ Back to Upload</a>
         <button type="button" id="combineDataBtn" class="btn btn-info" disabled>
-            🔄 Gabungkan Data Harian + Users (CA)
+            🔄 Distribusi Data Random ke CA/Admin
         </button>
     </div>
 
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.success) {
                 alert('✅ ' + (data.message || 'Data berhasil disimpan ke database!'));
-                combineBtn.disabled = false; // aktifkan tombol gabung
+                combineBtn.disabled = false; // aktifkan tombol distribusi
             } else {
                 alert('⚠️ ' + (data.message || 'Gagal menyimpan data.'));
             }
@@ -216,12 +216,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Gabungkan Data Harian + Users
+    // Distribusi Data Random ke CA/Admin
     combineBtn.addEventListener('click', async function () {
-        if (!confirm('Yakin ingin membagikan data ke seluruh CA dan Admin (dibagi rata secara acak)?')) return;
+        if (!confirm('Yakin ingin mendistribusikan data ke semua CA/Admin secara random?')) return;
 
         combineBtn.disabled = true;
-        combineBtn.textContent = '🔄 Menggabungkan...';
+        combineBtn.textContent = '🔄 Membagi data...';
 
         try {
             const res = await fetch("{{ route('upload.combineCA') }}", {
@@ -230,25 +230,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({})
+                body: JSON.stringify({ file_id: '{{ $fileId }}' })
             });
 
             const data = await res.json();
 
             if (data.success) {
-                alert('✅ ' + (data.message || 'Data berhasil digabungkan!'));
-                // Redirect otomatis ke halaman Upload Harian
+                alert('✅ ' + (data.message || 'Data berhasil dibagi ke seluruh CA/Admin!'));
                 window.location.href = "{{ route('upload.harian') }}";
             } else {
-                alert('⚠️ ' + (data.message || 'Proses gabung gagal.'));
+                alert('⚠️ ' + (data.message || 'Distribusi gagal.'));
                 combineBtn.disabled = false;
-                combineBtn.textContent = '🔄 Gabungkan Data Harian + Users (CA)';
+                combineBtn.textContent = '🔄 Distribusi Data Random ke CA/Admin';
             }
         } catch (err) {
             console.error(err);
-            alert('❌ Terjadi kesalahan saat menggabungkan data.');
+            alert('❌ Terjadi kesalahan saat mendistribusikan data.');
             combineBtn.disabled = false;
-            combineBtn.textContent = '🔄 Gabungkan Data Harian + Users (CA)';
+            combineBtn.textContent = '🔄 Distribusi Data Random ke CA/Admin';
         }
     });
 

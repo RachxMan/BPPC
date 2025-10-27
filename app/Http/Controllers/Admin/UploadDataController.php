@@ -24,7 +24,11 @@ class UploadDataController extends Controller
     // =======================
     public function index()
     {
-        return view('admin.upload_data.upload_data');
+        $uploads = DB::table('uploaded_files')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.upload_data.upload_data', compact('uploads'));
     }
 
     public function harian()
@@ -93,9 +97,6 @@ class UploadDataController extends Controller
         }
 
         $filename = DB::table('uploaded_files')->where('id', $fileId)->value('filename');
-        $fileRecord = DB::table('uploaded_files')->where('id', $fileId)->first();
-        $isImported = $fileRecord->imported_at ?? null;
-        $importedCount = $fileRecord->imported_count ?? 0;
         $dataExists = $type === 'harian' ? Harian::exists() : Bulanan::exists();
 
         return view('admin.upload_data.review_tabel', [
@@ -104,8 +105,6 @@ class UploadDataController extends Controller
             'filename' => $filename,
             'type' => $type,
             'dataExists' => $dataExists,
-            'isImported' => (bool) $isImported,
-            'importedCount' => $importedCount,
         ]);
     }
 
@@ -127,15 +126,8 @@ class UploadDataController extends Controller
         try {
             $count = $this->saveRowsToDatabase($fileId, $modelClass, $importClass);
 
-            DB::table('uploaded_files')->where('id', $fileId)->update([
-                'imported_at' => now(),
-                'imported_count' => $count,
-                'updated_at' => now(),
-            ]);
+            $message = "✅ Data $typeName berhasil disimpan ke database.";
 
-            $message = "✅ Data $typeName berhasil disimpan ke database. Klik 'Gabungkan Data Harian + Users (CA)' jika perlu.";
-
-            // selalu return JSON agar JS fetch berhasil
             return response()->json(['success' => true, 'message' => $message, 'imported' => $count]);
         } catch (\Throwable $e) {
             Log::error("submitData gagal ($typeName): " . $e->getMessage());
@@ -144,7 +136,7 @@ class UploadDataController extends Controller
     }
 
     // =======================
-    // Kombinasi ke CA (Admin + CA)
+    // Distribusi Random ke CA/Admin
     // =======================
     public function combineCA(Request $request)
     {
@@ -154,43 +146,28 @@ class UploadDataController extends Controller
                 return response()->json(['success' => false, 'message' => 'Tidak ada user dengan role CA atau Admin ditemukan.'], 400);
             }
 
-            $data = Harian::inRandomOrder()->get();
-            if ($data->isEmpty()) {
-                return response()->json(['success' => false, 'message' => 'Tidak ada data harian untuk dibagikan.'], 400);
-            }
+            // Ambil data harian yang belum dibagi ke user
+            $data = Harian::doesntHave('assignedUsers')->get();
 
-            $totalUsers = $users->count();
-            $assignments = [];
             $assignedCount = 0;
+            DB::beginTransaction();
 
-            try {
-                DB::table('harian_user')->truncate();
-            } catch (\Throwable $e) {
-                DB::table('harian_user')->delete();
-            }
-
-            foreach ($data as $index => $row) {
-                $assignedUser = $users[$index % $totalUsers];
-                $assignments[] = [
-                    'snd' => $row->snd,
-                    'user_id' => $assignedUser->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+            foreach ($data as $row) {
+                $randomUser = $users->random();
+                $row->assignedUsers()->attach($randomUser->id);
                 $assignedCount++;
             }
 
-            foreach (array_chunk($assignments, 500) as $chunk) {
-                DB::table('harian_user')->insert($chunk);
-            }
+            DB::commit();
 
-            Log::info("✅ Kombinasi CA berhasil: {$assignedCount} data dibagikan ke {$totalUsers} user.");
+            Log::info("✅ Distribusi CA/Admin berhasil: {$assignedCount} data dibagikan ke seluruh CA/Admin.");
 
             return response()->json([
                 'success' => true,
-                'message' => "Berhasil membagikan {$assignedCount} data ke {$totalUsers} user."
+                'message' => "Berhasil mendistribusikan {$assignedCount} data ke seluruh CA/Admin."
             ]);
         } catch (\Throwable $e) {
+            DB::rollBack();
             Log::error("combineCA gagal: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Proses gagal: ' . $e->getMessage()], 500);
         }
@@ -237,7 +214,10 @@ class UploadDataController extends Controller
             return null;
         }
 
-        return $collection->filter(fn($row) => !empty($row['account_num']))->values()->toArray();
+        return $collection->map(function($row) {
+            if (isset($row['no_hp'])) $row['no_hp'] = (string)$row['no_hp'];
+            return $row;
+        })->filter(fn($row) => !empty($row['account_num']))->values()->toArray();
     }
 
     private function saveRowsToDatabase($fileId, $modelClass, $importClass)
@@ -300,11 +280,11 @@ class UploadDataController extends Controller
             }
         }
 
-        $date = \DateTime::createFromFormat('d/m/Y', $value);
-        if ($date) return $date->format('Y-m-d');
-
-        $date = \DateTime::createFromFormat('d-m-Y', $value);
-        if ($date) return $date->format('Y-m-d');
+        $formats = ['d/m/Y', 'd-m-Y', 'Y-m-d'];
+        foreach ($formats as $fmt) {
+            $date = \DateTime::createFromFormat($fmt, $value);
+            if ($date) return $date->format('Y-m-d');
+        }
 
         $timestamp = strtotime($value);
         return $timestamp ? date('Y-m-d', $timestamp) : null;

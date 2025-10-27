@@ -24,84 +24,72 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         try {
-            $user = auth()->user();
+            $user = Auth::user();
 
-            // Handle profile photo upload only
+            // Validasi data umum profil
+            $validated = $request->validate([
+                'nama_lengkap' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+                'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+                'no_telp' => 'nullable|string|max:20',
+                'alamat' => 'nullable|string|max:500',
+                'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ], [
+                'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+                'username.required' => 'Username wajib diisi.',
+                'username.unique' => 'Username sudah digunakan.',
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+                'email.unique' => 'Email sudah digunakan.',
+                'profile_photo.image' => 'File harus berupa gambar.',
+                'profile_photo.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
+                'profile_photo.max' => 'Ukuran gambar maksimal 2MB.',
+            ]);
+
+            // Update data umum
+            $user->fill([
+                'nama_lengkap' => $validated['nama_lengkap'],
+                'username' => $validated['username'],
+                'email' => $validated['email'],
+                'no_telp' => $validated['no_telp'] ?? null,
+                'alamat' => $validated['alamat'] ?? null,
+            ]);
+
+            // === Upload foto baru ===
             if ($request->hasFile('profile_photo')) {
-                $validated = $request->validate([
-                    'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-                ], [
-                    'profile_photo.required' => 'File foto profil wajib dipilih.',
-                    'profile_photo.image' => 'File harus berupa gambar.',
-                    'profile_photo.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
-                    'profile_photo.max' => 'Ukuran gambar maksimal 2MB.',
-                ]);
-
-                // Delete old photo if exists
-                if ($user->profile_photo && Storage::exists('public/profile_photos/' . $user->profile_photo)) {
-                    Storage::delete('public/profile_photos/' . $user->profile_photo);
+                // Hapus foto lama jika ada
+                if ($user->profile_photo && Storage::disk('public')->exists('profile_photos/' . $user->profile_photo)) {
+                    Storage::disk('public')->delete('profile_photos/' . $user->profile_photo);
                 }
 
                 $file = $request->file('profile_photo');
-                $filename = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('public/profile_photos', $filename);
-                $user->profile_photo = $filename;
-                $user->save();
+                $filename = uniqid() . '_' . preg_replace('/[^A-Za-z0-9\-.]/', '_', $file->getClientOriginalName());
+                $file->storeAs('profile_photos', $filename, 'public');
 
-                if ($request->ajax()) {
-                    $photoUrl = asset('storage/profile_photos/' . $user->profile_photo);
-                    return response()->json(['success' => true, 'profile_photo_url' => $photoUrl]);
-                }
+                $user->profile_photo = $filename;
             }
 
-            // Handle delete photo only
+            // === Hapus foto jika diminta ===
             if ($request->input('delete_photo')) {
-                if ($user->profile_photo && Storage::exists('public/profile_photos/' . $user->profile_photo)) {
-                    Storage::delete('public/profile_photos/' . $user->profile_photo);
+                if ($user->profile_photo && Storage::disk('public')->exists('profile_photos/' . $user->profile_photo)) {
+                    Storage::disk('public')->delete('profile_photos/' . $user->profile_photo);
                 }
                 $user->profile_photo = null;
-                $user->save();
-
-                if ($request->ajax()) {
-                    $photoUrl = asset('img/1594252-200.png');
-                    return response()->json(['success' => true, 'profile_photo_url' => $photoUrl]);
-                }
             }
 
-            // Handle profile data update
-            if ($request->has(['nama_lengkap', 'username', 'email']) || $request->hasFile('profile_photo') || $request->input('delete_photo')) {
-                if ($request->has(['nama_lengkap', 'username', 'email'])) {
-                    $validated = $request->validate([
-                        'nama_lengkap' => 'required|string|max:255',
-                        'username' => 'required|string|max:255|unique:users,username,' . auth()->id(),
-                        'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
-                        'no_telp' => 'nullable|string|max:20',
-                        'alamat' => 'nullable|string|max:500',
-                    ], [
-                        'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
-                        'username.required' => 'Username wajib diisi.',
-                        'username.unique' => 'Username sudah digunakan.',
-                        'email.required' => 'Email wajib diisi.',
-                        'email.email' => 'Format email tidak valid.',
-                        'email.unique' => 'Email sudah digunakan.',
-                        'no_telp.max' => 'Nomor telepon maksimal 20 karakter.',
-                        'alamat.max' => 'Alamat maksimal 500 karakter.',
-                    ]);
-                }
+            $user->save();
 
-                if (isset($validated)) {
-                    $user->nama_lengkap = $validated['nama_lengkap'];
-                    $user->username = $validated['username'];
-                    $user->email = $validated['email'];
-                    $user->no_telp = $validated['no_telp'];
-                    $user->alamat = $validated['alamat'];
-                }
-                $user->save();
-            }
-
+            // === Balasan untuk AJAX ===
             if ($request->ajax()) {
-                $photoUrl = $user->profile_photo ? asset('storage/profile_photos/' . $user->profile_photo) : asset('img/1594252-200.png');
-                return response()->json(['success' => true, 'profile_photo_url' => $photoUrl]);
+                $photoUrl = $user->profile_photo
+                    ? asset('storage/profile_photos/' . $user->profile_photo)
+                    : asset('img/1594252-200.png');
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Profil berhasil diperbarui!',
+                    'profile_photo_url' => $photoUrl
+                ]);
             }
 
             return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui!');
@@ -112,7 +100,10 @@ class ProfileController extends Controller
             throw $e;
         } catch (\Exception $e) {
             if ($request->ajax()) {
-                return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat memperbarui profil: ' . $e->getMessage()], 500);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ], 500);
             }
             throw $e;
         }
@@ -133,17 +124,17 @@ class ProfileController extends Controller
             'new_password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
 
-        // Check if current password is correct
+        // Cek password lama
         if (!Hash::check($validated['current_password'], $user->password)) {
-            return redirect()->back()->withErrors(['current_password' => 'Password saat ini salah.']);
+            return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 
         // Update password
         $user->password = Hash::make($validated['new_password']);
         $user->save();
 
-        return redirect()->route('profile')->with('success', 'Password berhasil diperbarui!');
+        return redirect()->route('profile.index')->with('success', 'Password berhasil diperbarui!');
     }
 }
