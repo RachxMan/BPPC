@@ -73,19 +73,23 @@
                   </button>
                 </form>
               </td>
-              <td class="text-center">
-                <a href="{{ route('kelola.edit', $user->id) }}" class="btn btn-sm btn-outline-primary me-2">
-                  <i class="fa-solid fa-pen"></i>
-                </a>
-                <form action="{{ route('kelola.destroy', $user->id) }}" method="POST" class="d-inline"
-                      onsubmit="return confirm('Yakin ingin menghapus akun ini?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </form>
-              </td>
+        <td>
+          <div class="action-buttons">
+            <a href="{{ route('kelola.edit', $user->id) }}" class="btn-action edit" title="Edit Akun">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <form action="{{ route('kelola.destroy', $user->id) }}" method="POST" 
+                  onsubmit="return confirm('Yakin ingin menghapus akun ini?');">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn-action delete" title="Hapus Akun">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+
+
             </tr>
           @empty
             <tr>

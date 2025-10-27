@@ -656,4 +656,57 @@
   gap: 6px;
   margin: 4px 0;
 }
+/* Tombol Aksi agar rata tengah dan sejajar */
+.action-buttons {
+  display: flex;
+  justify-content: center;   /* tombol di tengah horizontal */
+  align-items: center;       /* sejajar vertikal */
+  gap: 8px;                  /* jarak antar tombol */
+  height: 100%;              /* ambil tinggi penuh baris */
+}
+
+/* Pastikan tombol dan form tidak mengganggu layout */
+.action-buttons form {
+  margin: 0;
+  padding: 0;
+  height: auto;
+}
+
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+/* Warna tombol edit & delete */
+.btn-action.edit {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-action.edit:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.btn-action.delete {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.btn-action.delete:hover {
+  background-color: #b3242e;
+  transform: scale(1.05);
+}
+
+.btn-action i {
+  font-size: 15px;
+  pointer-events: none;
+}
 

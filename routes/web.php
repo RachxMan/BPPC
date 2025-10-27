@@ -79,6 +79,7 @@ Route::middleware(['auth', 'status'])->group(function () {
         Route::patch('/{user}/toggle', [KelolaController::class, 'toggleStatus'])->name('toggle');
     });
 
+    
     // ======================
     // Laporan
     // ======================

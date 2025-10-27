@@ -1,3 +1,7 @@
+@php
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'Edit Akun - PayColl PT. Telkom')
@@ -41,47 +45,57 @@
       </div>
     @endif
 
-    <form action="{{ route('kelola.update', $user->id) }}" method="POST" class="form-kelola">
-      @csrf
-      @method('PUT')
+    <form action="{{ route('kelola.update', $user->id) }}" method="POST">
+        @csrf
+        @method('PUT')
 
-      <div class="form-group">
-        <label for="name">Nama Lengkap</label>
-        <input type="text" id="name" name="name" class="form-control" value="{{ old('name', $user->nama_lengkap) }}" required>
-      </div>
+        <div class="form-group">
+          <label for="name">Nama Lengkap</label>
+          <input type="text" id="name" name="name" class="form-control" value="{{ old('name', $user->nama_lengkap) }}" required>
+        </div>
 
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" class="form-control" value="{{ old('username', $user->username) }}" required>
-      </div>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" class="form-control" value="{{ old('username', $user->username) }}" required>
+        </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
-      </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
+        </div>
 
-      <div class="form-group">
-        <label for="role">Role</label>
-        <select id="role" name="role" class="form-control" required>
-          <option value="Administrator" {{ old('role', $user->role == 'admin' ? 'Administrator' : 'Collection Agent') == 'Administrator' ? 'selected' : '' }}>Administrator</option>
-          <option value="Collection Agent" {{ old('role', $user->role == 'admin' ? 'Administrator' : 'Collection Agent') == 'Collection Agent' ? 'selected' : '' }}>Collection Agent</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="password">Password Baru (jika diperlukan)</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Masukkan password baru (biarkan kosong jika tidak ingin mengganti)">
+        </div>
 
-      <div class="form-group">
-        <label for="status">Status</label>
-        <select id="status" name="status" class="form-control" required>
-          <option value="Aktif" {{ old('status', $user->status) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-          <option value="Nonaktif" {{ old('status', $user->status) == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="password_confirmation">Konfirmasi Password Baru</label>
+          <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="Ulangi password baru">
+        </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn-red">
-          <i class="fa-solid fa-save me-2"></i> Simpan Perubahan
-        </button>
-        <a href="{{ route('kelola.index') }}" class="btn-cancel">Batal</a>
-      </div>
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role" name="role" class="form-control" required>
+            <option value="Administrator" {{ old('role', $user->role === 'admin' ? 'Administrator' : 'Collection Agent') == 'Administrator' ? 'selected' : '' }}>Administrator</option>
+            <option value="Collection Agent" {{ old('role', $user->role === 'admin' ? 'Administrator' : 'Collection Agent') == 'Collection Agent' ? 'selected' : '' }}>Collection Agent</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status" class="form-control" required>
+            <option value="Aktif" {{ old('status', $user->status) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+            <option value="Nonaktif" {{ old('status', $user->status) == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-red">
+            <i class="fa-solid fa-save me-2"></i> Simpan Perubahan
+          </button>
+          <a href="{{ route('kelola.index') }}" class="btn-cancel">Batal</a>
+        </div>
     </form>
   </section>
 </main>
