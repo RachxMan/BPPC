@@ -93,9 +93,6 @@ class UploadDataController extends Controller
         }
 
         $filename = DB::table('uploaded_files')->where('id', $fileId)->value('filename');
-        $fileRecord = DB::table('uploaded_files')->where('id', $fileId)->first();
-        $isImported = $fileRecord->imported_at ?? null;
-        $importedCount = $fileRecord->imported_count ?? 0;
         $dataExists = $type === 'harian' ? Harian::exists() : Bulanan::exists();
 
         return view('admin.upload_data.review_tabel', [
@@ -104,8 +101,6 @@ class UploadDataController extends Controller
             'filename' => $filename,
             'type' => $type,
             'dataExists' => $dataExists,
-            'isImported' => (bool) $isImported,
-            'importedCount' => $importedCount,
         ]);
     }
 
@@ -127,15 +122,8 @@ class UploadDataController extends Controller
         try {
             $count = $this->saveRowsToDatabase($fileId, $modelClass, $importClass);
 
-            DB::table('uploaded_files')->where('id', $fileId)->update([
-                'imported_at' => now(),
-                'imported_count' => $count,
-                'updated_at' => now(),
-            ]);
+            $message = "✅ Data $typeName berhasil disimpan ke database.";
 
-            $message = "✅ Data $typeName berhasil disimpan ke database. Klik 'Gabungkan Data Harian + Users (CA)' jika perlu.";
-
-            // selalu return JSON agar JS fetch berhasil
             return response()->json(['success' => true, 'message' => $message, 'imported' => $count]);
         } catch (\Throwable $e) {
             Log::error("submitData gagal ($typeName): " . $e->getMessage());
