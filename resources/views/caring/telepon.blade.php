@@ -1,17 +1,35 @@
 @extends('layouts.app')
 
 @section('title', 'Caring Telepon - PayColl PT. Telkom')
-@section('header-title', 'Caring Telepon')
-@section('header-subtitle', 'Daftar pelanggan yang harus dihubungi oleh CA/Admin.')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/caring.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endpush
 
 @section('content')
-<div class="container">
+<main class="main" id="main">
+  <header class="header">
+    <h1>Caring Telepon</h1>
+    <p class="subtitle">Daftar pelanggan yang harus dihubungi oleh CA/Admin.</p>
+  </header>
+
+  <section class="profile-container">
+    <div class="header-section">
+      <div>
+        <h4 class="fw-bold mb-1" style="color: #333;">Daftar Caring Telepon</h4>
+        <p class="text-muted mb-0">Kelola dan pantau status panggilan pelanggan.</p>
+      </div>
+    </div>
 
     {{-- Search & Limit & Total --}}
     <div class="top-controls" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
-        <form method="GET" style="display:flex; align-items:center; gap:10px;">
+        <form id="search-form" method="GET" style="display:flex; align-items:center; gap:10px;">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pelanggan..." class="search-input">
-            <button type="submit" class="btn-search">Search</button>
+            <button type="submit" class="btn-red">
+              <i class="fa-solid fa-search me-2"></i> Cari Pelanggan
+            </button>
             @if(request('search'))
                 <a href="{{ route('caring.telepon') }}" class="reset-link">Reset</a>
             @endif
@@ -32,8 +50,8 @@
     </div>
 
     {{-- Table --}}
-    <div class="table-wrapper">
-        <table class="caring-table">
+    <div class="table-responsive mt-4">
+        <table class="user-table align-middle">
             <thead>
                 <tr>
                     <th style="width:40px;">No</th>
@@ -44,7 +62,6 @@
                     <th style="width:120px;">Kontak</th>
                     <th style="width:120px;">Payment Date</th>
                     <th style="width:100px;">Status Bayar</th>
-                    <th style="width:150px;">Nama CA</th>
                     <th style="width:180px;">Status Call</th>
                     <th style="width:200px;">Keterangan</th>
                 </tr>
@@ -62,13 +79,12 @@
                             <div class="kontak">
                                 <span>{{ $kontak }}</span>
                                 @if($kontak !== '-')
-                                    <button type="button" onclick="copyNumber('{{ $kontak }}')">Copy</button>
+                                    <i class="fas fa-copy copy-icon" onclick="copyNumber('{{ $kontak }}')" title="Copy nomor"></i>
                                 @endif
                             </div>
                         </td>
                         <td>{{ $row->payment_date ?? '-' }}</td>
                         <td>{{ $row->status_bayar ?? '-' }}</td>
-                        <td>{{ $row->user->nama_lengkap ?? '-' }}</td>
 
                         {{-- Status Call --}}
                         <td>
@@ -111,7 +127,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" style="text-align:center;">Tidak ada data pelanggan</td>
+                        <td colspan="10" style="text-align:center;">Tidak ada data pelanggan</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -119,42 +135,68 @@
     </div>
 
     {{-- Pagination --}}
-    <div class="pagination-container" style="display:flex; justify-content:flex-end; align-items:center; gap:10px; flex-wrap:wrap;">
+    <div class="pagination-container" style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px;">
         {{ $data->withQueryString()->links('pagination::bootstrap-4') }}
     </div>
+  </section>
+</main>
 
-</div>
 
-{{-- Styles --}}
-<style>
-.container { max-width: 100%; margin:20px auto; padding:20px; font-family:Arial,sans-serif; background-color:#FDFCF9; }
-.search-input { padding:6px 10px; width:300px; border-radius:4px; border:1px solid #ccc; }
-.btn-search { padding:6px 10px; background-color:#E60012; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-.btn-search:hover { background-color:#B0000E; }
-.reset-link { color:#E60012; text-decoration:underline; }
-.table-wrapper { overflow-x:auto; margin-bottom:20px; }
-.caring-table { width:100%; min-width:1500px; border-collapse:collapse; font-size:14px; table-layout:fixed; }
-.caring-table th, .caring-table td { border:1px solid #ccc; padding:8px; text-align:left; vertical-align:top; word-wrap:break-word; }
-.caring-table th { background-color:#E60012; color:#fff; text-transform:uppercase; font-weight:bold; font-size:12px; }
-.caring-table tr.even { background-color:#F5F5F5; }
-.caring-table tr.odd { background-color:#FFF9F5; }
-.caring-table tr:hover { background-color:#FFE5E0; }
-.kontak { display:flex; align-items:center; gap:5px; }
-.kontak button { background-color:#E60012; color:#fff; border:none; padding:3px 6px; font-size:12px; border-radius:3px; cursor:pointer; }
-.kontak button:hover { background-color:#B0000E; }
-textarea { width:100%; padding:4px; border-radius:3px; border:1px solid #ccc; font-size:12px; resize:vertical; }
-select { padding:3px 5px; font-size:12px; border-radius:3px; border:1px solid #ccc; width:100%; }
-button { cursor:pointer; }
-.pagination-container .page-link { color:#fff; background-color:#E60012; border-radius:4px; padding:4px 8px; text-decoration:none; }
-.pagination-container .page-item.active .page-link { background-color:#B0000E; }
-.pagination-container .page-link:hover { background-color:#9A000C; }
-</style>
 
 {{-- Scripts --}}
 <script>
 function copyNumber(number) {
     if(!number) return;
-    navigator.clipboard.writeText(number).then(()=>alert('Nomor berhasil disalin: '+number));
+    navigator.clipboard.writeText(number).then(()=>{
+        showNotification('Nomor berhasil disalin: ' + number);
+    });
+}
+
+function showNotification(message) {
+    // Remove existing notification if any
+    const existing = document.querySelector('.copy-notification');
+    if (existing) existing.remove();
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'copy-notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: -350px;
+        background: #28a745;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-size: 14px;
+        max-width: 300px;
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
+    `;
+
+    document.body.appendChild(notification);
+
+    // Trigger slide-in animation
+    setTimeout(() => {
+        notification.style.right = '20px';
+        notification.style.opacity = '1';
+    }, 10);
+
+    // Auto remove after 2 seconds with slide-out
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.right = '-350px';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 2000);
 }
 
 // Status Call dynamic dropdown
