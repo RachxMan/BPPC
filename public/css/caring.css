@@ -1,0 +1,378 @@
+/* Kelola Akun Styles - Mengikuti pola dashboard.css */
+
+.profile-container {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.header-section h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.header-section .text-muted {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.btn-red {
+  background-color: var(--telkom-red);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-red:hover {
+  background-color: #c0392b;
+  transform: translateY(-1px);
+}
+
+.alert {
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  border: none;
+  font-size: 14px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  float: right;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  margin-top: 18px;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f1f1f1;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+}
+
+.user-table thead th {
+  text-align: left;
+  padding: 16px;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  color: #555;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.user-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f1f1;
+  color: #333;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.user-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+/* Pagination Styling */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+
+.pagination li {
+  display: inline-block;
+}
+
+.pagination a,
+.pagination span {
+  display: block;
+  padding: 8px 14px;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.pagination a:hover {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}
+
+.pagination .active span {
+  background-color: var(--telkom-red);
+  color: white;
+  border-color: var(--telkom-red);
+}
+
+/* Responsive pagination */
+@media (max-width: 768px) {
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .pagination a,
+  .pagination span {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+
+/* ======================================================= */
+
+.fw-semibold {
+  font-weight: 600;
+  color: #222;
+}
+
+.badge {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: inline-block;
+}
+
+.bg-danger {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.bg-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.toggle-btn {
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background-color: var(--danger);
+  color: #fff;
+  font-weight: 500;
+}
+
+.toggle-btn.active {
+  background-color: var(--success);
+}
+
+.toggle-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-outline-primary {
+  color: #007bff;
+  border: 1px solid #007bff;
+  background: transparent;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  background: transparent;
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-4 {
+  padding: 22px 0;
+}
+
+.mt-3 {
+  margin-top: 14px;
+}
+
+.mt-4 {
+  margin-top: 18px;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-1 {
+  margin-bottom: 4px;
+}
+
+.me-2 {
+  margin-right: 8px;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.fw-bold {
+  font-weight: 700;
+}
+
+/* Tombol Aksi agar rata tengah dan sejajar */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+
+.action-buttons form {
+  margin: 0;
+  padding: 0;
+  height: auto;
+}
+
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+.btn-action.edit {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-action.edit:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.btn-action.delete {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.btn-action.delete:hover {
+  background-color: #b3242e;
+  transform: scale(1.05);
+}
+
+.btn-action i {
+  font-size: 15px;
+  pointer-events: none;
+}
+
+/* Copy Icon Styles */
+.kontak {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copy-icon {
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.2s ease;
+}
+
+.copy-icon:hover {
+  color: #495057;
+}
