@@ -59,8 +59,23 @@ class UploadDataController extends Controller
         $request->validate(['file' => 'required|mimes:xlsx,csv']);
         $fileId = $this->storeFile($request->file('file'), 'harian');
 
+        // Save data to database
+        $result = $this->saveRowsToDatabase($fileId, Harian::class, HarianImport::class);
+        $count = $result['processed'];
+        $duplicates = $result['duplicates'];
+
+        // Distribute to CA/Admin
+        $this->combineCA($request);
+
+        $message = "File Harian berhasil diupload! {$count} data baru berhasil disimpan ke database dan didistribusikan ke CA/Admin.";
+
+        if (!empty($duplicates)) {
+            $duplicateList = implode(', ', array_unique($duplicates));
+            $message .= " Account number yang sudah ada dan dilewati: {$duplicateList}.";
+        }
+
         return redirect()->route('upload.harian')
-            ->with('success', 'File Harian berhasil diupload!')
+            ->with('success', $message)
             ->with('uploaded_file_name', $request->file('file')->getClientOriginalName())
             ->with('lastFileId', $fileId);
     }
@@ -70,8 +85,20 @@ class UploadDataController extends Controller
         $request->validate(['file' => 'required|mimes:xlsx,csv']);
         $fileId = $this->storeFile($request->file('file'), 'bulanan');
 
+        // Save data to database
+        $result = $this->saveRowsToDatabase($fileId, Bulanan::class, BulananImport::class);
+        $count = $result['processed'];
+        $duplicates = $result['duplicates'];
+
+        $message = "File Bulanan berhasil diupload! {$count} data baru berhasil disimpan ke database.";
+
+        if (!empty($duplicates)) {
+            $duplicateList = implode(', ', array_unique($duplicates));
+            $message .= " Account number yang sudah ada dan dilewati: {$duplicateList}.";
+        }
+
         return redirect()->route('upload.bulanan')
-            ->with('success', 'File Bulanan berhasil diupload!')
+            ->with('success', $message)
             ->with('uploaded_file_name', $request->file('file')->getClientOriginalName())
             ->with('lastFileId', $fileId);
     }
@@ -124,11 +151,24 @@ class UploadDataController extends Controller
     private function submitData(Request $request, $fileId, $modelClass, $importClass, $typeName)
     {
         try {
-            $count = $this->saveRowsToDatabase($fileId, $modelClass, $importClass);
+            $result = $this->saveRowsToDatabase($fileId, $modelClass, $importClass);
+            $count = $result['processed'];
+            $duplicates = $result['duplicates'];
 
-            $message = "✅ Data $typeName berhasil disimpan ke database.";
+            $message = "✅ {$count} data $typeName baru berhasil disimpan ke database.";
 
-            return response()->json(['success' => true, 'message' => $message, 'imported' => $count]);
+            if (!empty($duplicates)) {
+                $duplicateList = implode(', ', array_unique($duplicates));
+                $message .= " Account number yang sudah ada dan dilewati: {$duplicateList}.";
+            }
+
+            // For harian, automatically distribute to CA/Admin after successful submit
+            if ($typeName === 'Harian') {
+                $this->combineCA($request);
+                $message .= " Data telah didistribusikan ke CA/Admin.";
+            }
+
+            return response()->json(['success' => true, 'message' => $message, 'imported' => $count, 'duplicates' => $duplicates]);
         } catch (\Throwable $e) {
             Log::error("submitData gagal ($typeName): " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Gagal menyimpan data: ' . $e->getMessage()], 500);
@@ -202,15 +242,30 @@ class UploadDataController extends Controller
     private function getRowsFromFile($fileId, $importClass)
     {
         $fileRecord = DB::table('uploaded_files')->where('id', $fileId)->first();
-        if (!$fileRecord) return null;
+        if (!$fileRecord) {
+            Log::error("getRowsFromFile: File record not found for fileId: $fileId");
+            return null;
+        }
 
         $filePath = storage_path('app/public/' . $fileRecord->path);
-        if (!file_exists($filePath)) return null;
+        if (!file_exists($filePath)) {
+            Log::error("getRowsFromFile: File does not exist at path: $filePath");
+            return null;
+        }
 
         try {
             $collection = Excel::toCollection(new $importClass, $filePath)[0];
-        } catch (\Throwable $e) {
-            Log::error("getRowsFromFile gagal: " . $e->getMessage());
+        } catch (\Maatwebsite\Excel\Exceptions\SheetNotFoundException $e) {
+            Log::error("getRowsFromFile: Sheet not found in Excel file: " . $e->getMessage());
+            return null;
+        } catch (\Maatwebsite\Excel\Exceptions\NoTypeDetectedException $e) {
+            Log::error("getRowsFromFile: No type detected for Excel file: " . $e->getMessage());
+            return null;
+        } catch (\Maatwebsite\Excel\Exceptions\UnreadableFileException $e) {
+            Log::error("getRowsFromFile: Unreadable Excel file: " . $e->getMessage());
+            return null;
+        } catch (\Exception $e) {
+            Log::error("getRowsFromFile: General error parsing Excel: " . $e->getMessage());
             return null;
         }
 
@@ -223,9 +278,10 @@ class UploadDataController extends Controller
     private function saveRowsToDatabase($fileId, $modelClass, $importClass)
     {
         $rows = $this->getRowsFromFile($fileId, $importClass);
-        if (!$rows) return 0;
+        if (!$rows) return ['processed' => 0, 'duplicates' => []];
 
         $processed = 0;
+        $duplicates = [];
         DB::beginTransaction();
         try {
             foreach ($rows as $row) {
@@ -253,14 +309,17 @@ class UploadDataController extends Controller
                 if (empty($rowData['account_num'])) continue;
 
                 $existing = $modelClass::where('account_num', $rowData['account_num'])->first();
-                if ($existing) $existing->update($rowData);
-                else $modelClass::create($rowData);
-
-                $processed++;
+                if ($existing) {
+                    $duplicates[] = $rowData['account_num'];
+                    continue; // Skip updating existing records
+                } else {
+                    $modelClass::create($rowData);
+                    $processed++;
+                }
             }
 
             DB::commit();
-            return $processed;
+            return ['processed' => $processed, 'duplicates' => $duplicates];
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("saveRowsToDatabase gagal: " . $e->getMessage());
