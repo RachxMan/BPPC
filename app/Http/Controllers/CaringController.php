@@ -17,65 +17,65 @@ class CaringController extends Controller
         $user = Auth::user();
 
         // ===========================
-        // Sinkronisasi Harian -> CaringTelepon
+        // Sinkronisasi Harian -> CaringTelepon (dengan chunking untuk menghindari limit memori/waktu)
         // ===========================
-        $harianUsers = Harian::with('assignedUsers')->get();
+        Harian::with('assignedUsers')->chunk(100, function ($harianUsers) {
+            foreach ($harianUsers as $h) {
+                // 1. Update semua record existing untuk snd ini (update status_bayar, payment_date)
+                CaringTelepon::where('snd', $h->snd)
+                    ->update([
+                        'status_bayar'   => $h->status_bayar,
+                        'payment_date'   => $h->payment_date,
+                        'witel'          => $h->witel,
+                        'type'           => $h->type,
+                        'produk_bundling'=> $h->produk_bundling,
+                        'fi_home'        => $h->fi_home,
+                        'account_num'    => $h->account_num,
+                        'snd_group'      => $h->snd_group,
+                        'nama'           => $h->nama,
+                        'cp'             => $h->cp,
+                        'datel'          => $h->datel,
+                        'no_hp'          => $h->no_hp,
+                        'nama_real'      => $h->nama_real,
+                        'segmen_real'    => $h->segmen_real,
+                    ]);
 
-        foreach ($harianUsers as $h) {
-            // 1. Update semua record existing untuk snd ini (update status_bayar, payment_date)
-            CaringTelepon::where('snd', $h->snd)
-                ->update([
-                    'status_bayar'   => $h->status_bayar,
-                    'payment_date'   => $h->payment_date,
-                    'witel'          => $h->witel,
-                    'type'           => $h->type,
-                    'produk_bundling'=> $h->produk_bundling,
-                    'fi_home'        => $h->fi_home,
-                    'account_num'    => $h->account_num,
-                    'snd_group'      => $h->snd_group,
-                    'nama'           => $h->nama,
-                    'cp'             => $h->cp,
-                    'datel'          => $h->datel,
-                    'no_hp'          => $h->no_hp,
-                    'nama_real'      => $h->nama_real,
-                    'segmen_real'    => $h->segmen_real,
-                ]);
-
-            // 2. Tambahkan record untuk assigned users yang belum ada
-            if ($h->assignedUsers && $h->assignedUsers->count() > 0) {
-                foreach ($h->assignedUsers as $assignedUser) {
-                    CaringTelepon::updateOrCreate(
-                        [
-                            'snd'     => $h->snd,
-                            'user_id' => $assignedUser->id
-                        ],
-                        [
-                            'witel'          => $h->witel,
-                            'type'           => $h->type,
-                            'produk_bundling'=> $h->produk_bundling,
-                            'fi_home'        => $h->fi_home,
-                            'account_num'    => $h->account_num,
-                            'snd_group'      => $h->snd_group,
-                            'nama'           => $h->nama,
-                            'cp'             => $h->cp,
-                            'datel'          => $h->datel,
-                            'payment_date'   => $h->payment_date,
-                            'status_bayar'   => $h->status_bayar,
-                            'no_hp'          => $h->no_hp,
-                            'nama_real'      => $h->nama_real,
-                            'segmen_real'    => $h->segmen_real,
-                            // Hanya simpan status_call & keterangan jika belum ada
-                            'status_call'    => CaringTelepon::where('snd', $h->snd)
-                                                           ->where('user_id', $assignedUser->id)
-                                                           ->value('status_call') ?? $h->status_call ?? null,
-                            'keterangan'     => CaringTelepon::where('snd', $h->snd)
-                                                           ->where('user_id', $assignedUser->id)
-                                                           ->value('keterangan') ?? $h->keterangan ?? null,
-                        ]
-                    );
+                // 2. Tambahkan record untuk assigned users yang belum ada
+                if ($h->assignedUsers && $h->assignedUsers->count() > 0) {
+                    foreach ($h->assignedUsers as $assignedUser) {
+                        CaringTelepon::updateOrCreate(
+                            [
+                                'snd'     => $h->snd,
+                                'user_id' => $assignedUser->id
+                            ],
+                            [
+                                'witel'          => $h->witel,
+                                'type'           => $h->type,
+                                'produk_bundling'=> $h->produk_bundling,
+                                'fi_home'        => $h->fi_home,
+                                'account_num'    => $h->account_num,
+                                'snd_group'      => $h->snd_group,
+                                'nama'           => $h->nama,
+                                'cp'             => $h->cp,
+                                'datel'          => $h->datel,
+                                'payment_date'   => $h->payment_date,
+                                'status_bayar'   => $h->status_bayar,
+                                'no_hp'          => $h->no_hp,
+                                'nama_real'      => $h->nama_real,
+                                'segmen_real'    => $h->segmen_real,
+                                // Hanya simpan status_call & keterangan jika belum ada
+                                'status_call'    => CaringTelepon::where('snd', $h->snd)
+                                                               ->where('user_id', $assignedUser->id)
+                                                               ->value('status_call') ?? $h->status_call ?? null,
+                                'keterangan'     => CaringTelepon::where('snd', $h->snd)
+                                                               ->where('user_id', $assignedUser->id)
+                                                               ->value('keterangan') ?? $h->keterangan ?? null,
+                            ]
+                        );
+                    }
                 }
             }
-        }
+        });
 
         // ===========================
         // Limit & Search
