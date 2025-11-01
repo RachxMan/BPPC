@@ -2,7 +2,8 @@
     <div class="text-center mb-4">
         <img src="{{ asset('img/logo.png') }}" alt="Logo" width="100">
         <h6 class="mt-2">PayColl PT. Telkom</h6>
-        <p class="text-success">Administrator • Online</p>
+        <p class="text-success">{{ Auth::user()->nama_lengkap ?? 'Administrator' }}</p>
+        <p class="text-success">Online</p>
     </div>
     <ul class="nav flex-column">
         <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link text-white {{ request()->is('dashboard') ? 'bg-danger fw-bold' : '' }}">Dashboard</a></li>
