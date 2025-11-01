@@ -23,16 +23,18 @@
 
     {{-- Tombol Navigasi --}}
     <div class="action-buttons mb-3">
-        <a href="{{ $type === 'bulanan' ? route('upload.bulanan') : route('upload.harian') }}" 
+        <a href="{{ $type === 'bulanan' ? route('upload.bulanan') : route('upload.harian') }}"
            id="backBtn" class="btn btn-secondary">⬅️ Back to Upload</a>
-        <button type="button" id="combineDataBtn" class="btn btn-info" disabled>
-            🔄 Distribusi Data Random ke CA/Admin
-        </button>
+        @if($type === 'harian')
+            <button type="button" id="combineDataBtn" class="btn btn-info">
+                🔄 Distribusi Data Random ke CA/Admin
+            </button>
+        @endif
     </div>
 
     {{-- Form Submit --}}
-    <form id="submitForm" 
-          action="{{ $type === 'bulanan' ? route('upload.bulanan.submit', $fileId) : route('upload.harian.submit', $fileId) }}" 
+    <form id="submitForm"
+          action="{{ $type === 'bulanan' ? route('upload.bulanan.submit', $fileId) : route('upload.harian.submit', $fileId) }}"
           method="POST">
         @csrf
         <div class="mb-3">
@@ -43,6 +45,9 @@
         <div class="mb-3">
             <button type="submit" id="submitBtn" class="btn btn-success">
                 ✅ Submit Semua Data ke Database
+                @if($type === 'harian')
+                    & Distribusi Otomatis
+                @endif
             </button>
         </div>
 
@@ -98,6 +103,25 @@
     </form>
 </div>
 @endsection
+
+<!-- MODAL KONFIRMASI -->
+<div id="confirmModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <h3 id="confirmTitle">Konfirmasi</h3>
+    <p id="confirmMessage">Apakah Anda yakin ingin menyimpan perubahan?</p>
+    <button id="confirmYesBtn" class="btn btn-red" type="button">Ya</button>
+    <button id="confirmNoBtn" class="btn btn-gray" type="button">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL NOTIFIKASI -->
+<div id="notificationModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <h3 id="notificationTitle">Notifikasi</h3>
+    <p id="notificationMessage"></p>
+    <button id="notificationCloseBtn" class="btn btn-red" type="button">Tutup</button>
+  </div>
+</div>
 
 @push('styles')
 <style>
@@ -163,6 +187,162 @@ table th, table td {
     font-size: 1.2rem;
     cursor: pointer;
 }
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal.hidden {
+    display: none;
+}
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+.modal-content h3 {
+    margin-top: 0;
+}
+.btn {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-red {
+    background-color: #dc3545;
+    color: white;
+}
+.btn-gray {
+    background-color: #6c757d;
+    color: white;
+}
+/* Responsive Design */
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+    .review-container {
+        max-width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    table {
+        font-size: 0.8rem;
+    }
+
+    table th, table td {
+        padding: 6px 8px;
+    }
+
+    .table-wrapper {
+        margin-top: 10px;
+    }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .review-container {
+        margin: 15px auto;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .action-buttons {
+        gap: 8px;
+    }
+
+    .action-buttons .btn {
+        padding: 10px 16px;
+        font-size: 1rem;
+    }
+
+    .table-wrapper {
+        margin-top: 10px;
+        border-radius: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 800px;
+        font-size: 0.75rem;
+    }
+
+    table th, table td {
+        padding: 4px 6px;
+        white-space: nowrap;
+    }
+
+    .table-dark th {
+        font-size: 0.7rem;
+        padding: 6px 8px;
+    }
+
+    .alert {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+    .review-container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .action-buttons .btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    table {
+        min-width: 600px;
+        font-size: 0.7rem;
+    }
+
+    table th, table td {
+        padding: 3px 4px;
+    }
+
+    .table-dark th {
+        font-size: 0.65rem;
+        padding: 4px 6px;
+    }
+
+    .alert {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+}
+
 @media screen and (max-width: 1200px) {
     .review-container { padding-left: 20px; padding-right: 20px; }
 }
@@ -177,78 +357,147 @@ document.addEventListener('DOMContentLoaded', function () {
     const backBtn = document.getElementById('backBtn');
     const form = document.getElementById('submitForm');
 
+    // Modal elements
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmMessage = document.getElementById('confirmMessage');
+    const confirmYesBtn = document.getElementById('confirmYesBtn');
+    const confirmNoBtn = document.getElementById('confirmNoBtn');
+    const notificationModal = document.getElementById('notificationModal');
+    const notificationTitle = document.getElementById('notificationTitle');
+    const notificationMessage = document.getElementById('notificationMessage');
+    const notificationCloseBtn = document.getElementById('notificationCloseBtn');
+
+    // Function to show notification modal
+    function showNotification(title, message) {
+        notificationTitle.textContent = title;
+        notificationMessage.textContent = message;
+        notificationModal.classList.remove('hidden');
+        notificationModal.setAttribute('aria-hidden', 'false');
+    }
+
+    // Function to hide notification modal
+    function hideNotification() {
+        notificationModal.classList.add('hidden');
+        notificationModal.setAttribute('aria-hidden', 'true');
+    }
+
+    // Function to show confirm modal
+    function showConfirm(title, message, onYes) {
+        confirmTitle.textContent = title;
+        confirmMessage.textContent = message;
+        confirmModal.classList.remove('hidden');
+        confirmModal.setAttribute('aria-hidden', 'false');
+
+        const handleYes = () => {
+            confirmModal.classList.add('hidden');
+            confirmModal.setAttribute('aria-hidden', 'true');
+            confirmYesBtn.removeEventListener('click', handleYes);
+            onYes();
+        };
+
+        confirmYesBtn.addEventListener('click', handleYes);
+    }
+
+    // Hide confirm modal on No
+    confirmNoBtn.addEventListener('click', () => {
+        confirmModal.classList.add('hidden');
+        confirmModal.setAttribute('aria-hidden', 'true');
+    });
+
+    // Hide notification modal
+    notificationCloseBtn.addEventListener('click', hideNotification);
+
+    // Click outside to close modals
+    confirmModal.addEventListener('click', (e) => {
+        if (e.target === confirmModal) {
+            confirmModal.classList.add('hidden');
+            confirmModal.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    notificationModal.addEventListener('click', (e) => {
+        if (e.target === notificationModal) {
+            hideNotification();
+        }
+    });
+
     // Submit Semua Data ke Database
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        if (!confirm('Yakin ingin menyimpan semua data ke database?')) return;
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = '⏳ Menyimpan...';
-
-        try {
-            const res = await fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form)
-            });
-
-            const text = await res.text();
-            let data;
+        showConfirm('Konfirmasi', 'Yakin ingin menyimpan semua data ke database?', async () => {
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Menyimpan...';
 
             try {
-                data = JSON.parse(text);
-            } catch {
-                console.warn('Response bukan JSON:', text);
-                throw new Error('Response tidak dalam format JSON');
-            }
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form)
+                });
 
-            if (data.success) {
-                alert('✅ ' + (data.message || 'Data berhasil disimpan ke database!'));
-                combineBtn.disabled = false; // aktifkan tombol distribusi
-            } else {
-                alert('⚠️ ' + (data.message || 'Gagal menyimpan data.'));
+                const text = await res.text();
+                let data;
+
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    console.warn('Response bukan JSON:', text);
+                    throw new Error('Response tidak dalam format JSON');
+                }
+
+                if (data.success) {
+                    showNotification('Berhasil', data.message || 'Data berhasil disimpan ke database!');
+                    @if($type === 'harian')
+                        window.location.href = "{{ route('upload.harian') }}";
+                    @else
+                        combineBtn.disabled = false; // aktifkan tombol distribusi
+                    @endif
+                } else {
+                    showNotification('Gagal', data.message || 'Gagal menyimpan data.');
+                }
+            } catch (err) {
+                console.error(err);
+                showNotification('Kesalahan', 'Terjadi kesalahan saat menyimpan data.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Submit Semua Data ke Database';
             }
-        } catch (err) {
-            console.error(err);
-            alert('❌ Terjadi kesalahan saat menyimpan data.');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = '✅ Submit Semua Data ke Database';
-        }
+        });
     });
 
     // Distribusi Data Random ke CA/Admin
     combineBtn.addEventListener('click', async function () {
-        if (!confirm('Yakin ingin mendistribusikan data ke semua CA/Admin secara random?')) return;
+        showConfirm('Konfirmasi', 'Yakin ingin mendistribusikan data ke semua CA/Admin secara random?', async () => {
+            combineBtn.disabled = true;
+            combineBtn.textContent = '🔄 Membagi data...';
 
-        combineBtn.disabled = true;
-        combineBtn.textContent = '🔄 Membagi data...';
+            try {
+                const res = await fetch("{{ route('upload.combineCA') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ file_id: '{{ $fileId }}' })
+                });
 
-        try {
-            const res = await fetch("{{ route('upload.combineCA') }}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ file_id: '{{ $fileId }}' })
-            });
+                const data = await res.json();
 
-            const data = await res.json();
-
-            if (data.success) {
-                alert('✅ ' + (data.message || 'Data berhasil dibagi ke seluruh CA/Admin!'));
-                window.location.href = "{{ route('upload.harian') }}";
-            } else {
-                alert('⚠️ ' + (data.message || 'Distribusi gagal.'));
+                if (data.success) {
+                    showNotification('Berhasil', data.message || 'Data berhasil dibagi ke seluruh CA/Admin!');
+                    window.location.href = "{{ route('upload.harian') }}";
+                } else {
+                    showNotification('Gagal', data.message || 'Distribusi gagal.');
+                    combineBtn.disabled = false;
+                    combineBtn.textContent = '🔄 Distribusi Data Random ke CA/Admin';
+                }
+            } catch (err) {
+                console.error(err);
+                showNotification('Kesalahan', 'Terjadi kesalahan saat mendistribusikan data.');
                 combineBtn.disabled = false;
                 combineBtn.textContent = '🔄 Distribusi Data Random ke CA/Admin';
             }
-        } catch (err) {
-            console.error(err);
-            alert('❌ Terjadi kesalahan saat mendistribusikan data.');
-            combineBtn.disabled = false;
-            combineBtn.textContent = '🔄 Distribusi Data Random ke CA/Admin';
-        }
+        });
     });
 
     // Tombol Back
