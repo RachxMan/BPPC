@@ -118,6 +118,12 @@
       }
     }
 
+    @media (max-width: 768px) {
+      main.main {
+        padding-top: 5rem; /* Add top padding to account for fixed mobile header (~60px) */
+      }
+    }
+
     @media (min-width: 993px) {
       main.main-wrapper {
         margin-left: 260px;
