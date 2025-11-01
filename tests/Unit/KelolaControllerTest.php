@@ -49,7 +49,7 @@ class KelolaControllerTest extends TestCase
         $this->actingAs($admin);
 
         $data = [
-            'nama_lengkap' => 'User Baru',
+            'name' => 'User Baru',
             'username' => 'userbaru',
             'email' => 'userbaru@example.com',
             'password' => 'password123',
