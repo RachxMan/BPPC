@@ -90,6 +90,111 @@
 .mt-3 { margin-top: 1rem; }
 .mt-4 { margin-top: 1.25rem; }
 .text-center { text-align: center; }
+
+/* Responsive Design */
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+    .upload-container {
+        max-width: 700px;
+        padding: 0 20px;
+    }
+
+    .upload-box {
+        min-height: 350px;
+        padding: 40px;
+    }
+
+    .upload-icon {
+        width: 80px;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        font-size: 1rem;
+    }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .upload-container {
+        max-width: 100%;
+        margin: 15px auto;
+        padding: 0 10px;
+    }
+
+    .upload-box {
+        min-height: 300px;
+        padding: 30px 20px;
+        border-radius: 8px;
+    }
+
+    .upload-icon {
+        width: 70px;
+        margin-bottom: 15px;
+    }
+
+    .upload-content p {
+        font-size: 1rem;
+    }
+
+    .support {
+        font-size: 0.8rem;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        margin: 8px 2px;
+        font-size: 1rem;
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .mt-4 {
+        margin-top: 1.5rem;
+    }
+
+    .alert {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+    .upload-container {
+        padding: 0 5px;
+    }
+
+    .upload-box {
+        min-height: 250px;
+        padding: 20px 15px;
+    }
+
+    .upload-icon {
+        width: 60px;
+        margin-bottom: 10px;
+    }
+
+    .upload-content p {
+        font-size: 0.9rem;
+    }
+
+    .support {
+        font-size: 0.75rem;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        margin: 5px 1px;
+    }
+
+    .alert {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+}
 </style>
 @endpush
 
