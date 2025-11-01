@@ -120,6 +120,136 @@
         border-radius: 8px;
     }
 
+/* Responsive Design */
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+    .upload-container {
+        padding: 1rem;
+    }
+
+    .upload-title h1 {
+        font-size: 2rem;
+    }
+
+    .upload-options {
+        gap: 1.5rem;
+    }
+
+    .option-card {
+        flex: 1 1 180px;
+        max-width: 220px;
+        padding: 1.5rem 0.75rem;
+    }
+
+    .option-icon {
+        font-size: 2.5rem;
+    }
+
+    .uploaded-table th,
+    .uploaded-table td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .upload-container {
+        padding: 0.75rem;
+    }
+
+    .upload-title {
+        margin-bottom: 2rem;
+    }
+
+    .upload-title h1 {
+        font-size: 1.75rem;
+    }
+
+    .upload-options {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .option-card {
+        flex: 1 1 250px;
+        max-width: 300px;
+        width: 100%;
+        padding: 1.5rem 1rem;
+    }
+
+    .option-icon {
+        font-size: 2.5rem;
+    }
+
+    .uploaded-data-box {
+        padding: 1rem;
+    }
+
+    .uploaded-data-box h5 {
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .uploaded-table {
+        font-size: 0.8rem;
+    }
+
+    .uploaded-table th,
+    .uploaded-table td {
+        padding: 0.4rem 0.5rem;
+    }
+
+    .download-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+    .upload-container {
+        padding: 0.5rem;
+    }
+
+    .upload-title h1 {
+        font-size: 1.5rem;
+    }
+
+    .option-card {
+        padding: 1.25rem 0.75rem;
+        max-width: 280px;
+    }
+
+    .option-icon {
+        font-size: 2rem;
+    }
+
+    .uploaded-data-box {
+        padding: 0.75rem;
+    }
+
+    .uploaded-data-box h5 {
+        font-size: 1rem;
+    }
+
+    .uploaded-table {
+        font-size: 0.75rem;
+    }
+
+    .uploaded-table th,
+    .uploaded-table td {
+        padding: 0.3rem 0.4rem;
+    }
+
+    .download-btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+}
+
 </style>
 
 <div class="upload-container">
