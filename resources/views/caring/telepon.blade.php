@@ -56,8 +56,8 @@
                 <tr>
                     <th style="width:40px;">No</th>
                     <th style="width:100px;">ID NET (SND)</th>
-                    <th style="width:150px;">Nama</th>
-                    <th style="width:150px;">Nama Real</th>
+                    <th style="width:150px;">Nama PERUSAHAAN</th>
+                    <th style="width:150px;">Nama PIC</th>
                     <th style="width:200px;">Alamat</th>
                     <th style="width:120px;">Kontak</th>
                     <th style="width:120px;">Payment Date</th>

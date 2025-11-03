@@ -31,6 +31,8 @@ Route::middleware(['auth', 'status'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/update-followup-status', [DashboardController::class, 'updateFollowupStatus'])->name('admin.dashboard.updateFollowupStatus');
+    Route::post('/dashboard/update-payment-status', [DashboardController::class, 'updatePaymentStatus'])->name('admin.dashboard.updatePaymentStatus');
 
     // ======================
     // Caring Pelanggan

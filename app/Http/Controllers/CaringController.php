@@ -60,7 +60,7 @@ class CaringController extends Controller
                                 'datel'          => $h->datel,
                                 'payment_date'   => $h->payment_date,
                                 'status_bayar'   => $h->status_bayar,
-                                'no_hp'          => $h->no_hp,
+                                'telp'           => $h->telp,
                                 'nama_real'      => $h->nama_real,
                                 'segmen_real'    => $h->segmen_real,
                                 // Hanya simpan status_call & keterangan jika belum ada

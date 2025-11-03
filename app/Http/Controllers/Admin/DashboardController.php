@@ -26,7 +26,6 @@ class DashboardController extends Controller
             ->whereNotNull('status_call')
             ->count();
 
-        // Jumlah CA dan Admin aktif
         $jumlahCA = DB::table('users')->where('role', 'CA')->where('status', 'active')->count();
         $jumlahAdmin = DB::table('users')->where('role', 'Admin')->where('status', 'active')->count();
 
@@ -37,9 +36,7 @@ class DashboardController extends Controller
         $uncontactOptions = ['RNA', 'Tidak Aktif', 'Nomor Luar Jangkauan', 'Tidak Tersambung'];
 
         $totalCall = DB::table('caring_telepon')->count();
-        $contacted = DB::table('caring_telepon')
-            ->whereIn('status_call', $contactOptions)
-            ->count();
+        $contacted = DB::table('caring_telepon')->whereIn('status_call', $contactOptions)->count();
         $progressCollection = $totalCall > 0 ? round(($contacted / $totalCall) * 100, 2) : 0;
 
         // ==============================
@@ -64,22 +61,25 @@ class DashboardController extends Controller
             ->groupBy('users.id', 'users.nama_lengkap')
             ->get();
 
-        // Kinerja 1 bulan (contact per hari)
+        // ==============================
+        // Kinerja 1 bulan terakhir (tanggal real)
+        // ==============================
         $oneMonthAgo = Carbon::now()->subMonth();
         $caMonthlyPerformance = DB::table('caring_telepon')
             ->select(
                 'user_id',
-                DB::raw('DAY(updated_at) as day'),
+                DB::raw('DATE(updated_at) as date'),
                 DB::raw('COUNT(*) as contacts_per_day')
             )
             ->where('updated_at', '>=', $oneMonthAgo)
             ->whereNotNull('status_call')
-            ->groupBy('user_id', 'day')
+            ->groupBy('user_id', 'date')
+            ->orderBy('date')
             ->get()
             ->groupBy('user_id');
 
         // ==============================
-        // Status Pembayaran (from caring_telepon)
+        // Status Pembayaran
         // ==============================
         $statusBayarRaw = DB::table('caring_telepon')
             ->select('status_bayar', DB::raw('count(*) as total'))
@@ -95,10 +95,10 @@ class DashboardController extends Controller
         }
 
         // ==============================
-        // Progress Collection Mingguan (Senin-Jumat)
+        // Progress Collection Mingguan
         // ==============================
-        $startOfWeek = Carbon::now()->startOfWeek(); // Senin
-        $endOfWeek   = Carbon::now()->startOfWeek()->addDays(4)->endOfDay(); // Jumat
+        $startOfWeek = Carbon::now()->startOfWeek(Carbon::SUNDAY);
+        $endOfWeek   = Carbon::now()->endOfWeek(Carbon::SATURDAY);
 
         $weekDataRaw = DB::table('caring_telepon')
             ->select(
@@ -110,9 +110,8 @@ class DashboardController extends Controller
             ->groupBy('day')
             ->get();
 
-        // Pastikan array Senin-Jumat lengkap
         $weekData = collect();
-        for ($day = 2; $day <= 6; $day++) { // 2=Senin, 6=Jumat
+        for ($day = 1; $day <= 7; $day++) {
             $record = $weekDataRaw->firstWhere('day', $day);
             $weekData->push([
                 'day' => $day,
@@ -122,7 +121,7 @@ class DashboardController extends Controller
         }
 
         // ==============================
-        // Progress Collection (7 hari)
+        // Progress Collection (7 hari terakhir)
         // ==============================
         $sevenDaysAgo = Carbon::now()->subDays(6)->startOfDay();
         $sevenDaysData = DB::table('caring_telepon')
@@ -143,12 +142,11 @@ class DashboardController extends Controller
             ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
             ->whereNull('caring_telepon.status_call')
             ->orderBy('caring_telepon.created_at', 'desc')
-            ->limit(10)
-            ->select('caring_telepon.snd', 'caring_telepon.nama_real', 'caring_telepon.status_call', 'caring_telepon.keterangan', 'users.nama_lengkap as ca_name')
-            ->get();
+            ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama_real', 'caring_telepon.status_call', 'caring_telepon.keterangan', 'users.nama_lengkap as ca_name')
+            ->paginate(10);
 
         // ==============================
-        // Detail Pelanggan - Paket Terlaris
+        // Paket Terlaris
         // ==============================
         $paketTerlaris = DB::table('caring_telepon')
             ->select('type', DB::raw('count(*) as total'))
@@ -159,21 +157,18 @@ class DashboardController extends Controller
             ->get();
 
         // ==============================
-        // Data Pelanggan (10 terbaru dari harian)
+        // Data Pelanggan
         // ==============================
         $dataPelanggan = DB::table('harian')
+            ->where(function($query) {
+                $query->where('status_bayar', '!=', 'paid')
+                      ->orWhereNull('status_bayar');
+            })
+            ->whereNotNull('status_bayar')
             ->orderBy('created_at', 'desc')
-            ->limit(10)
             ->select('snd','nama','datel','cp','no_hp','status_bayar','payment_date')
-            ->get();
+            ->paginate(10);
 
-        // ==============================
-        // Aktivitas Saya (untuk user login, tapi di admin dashboard mungkin tidak perlu, tapi sesuai task)
-        // ==============================
-        // Jika diperlukan, bisa tambahkan logic untuk user login
-
-        // ==============================
-        // Return View
         // ==============================
         return view('admin.dashboard.index', compact(
             'totalPelanggan',
@@ -192,5 +187,44 @@ class DashboardController extends Controller
             'paketTerlaris',
             'dataPelanggan'
         ));
+    }
+
+    public function updateFollowupStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:caring_telepon,id',
+            'status' => 'required|in:belum,sudah'
+        ]);
+
+        $record = \App\Models\CaringTelepon::findOrFail($request->id);
+        if ($request->status === 'belum') {
+            $record->update(['status_call' => null]);
+        } else {
+            $record->update(['status_call' => 'Konfirmasi Pembayaran']);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function updatePaymentStatus(Request $request)
+    {
+        $request->validate([
+            'snd' => 'required|exists:harian,snd',
+            'status' => 'required|in:UNPAID,PAID'
+        ]);
+
+        $status = strtolower($request->status);
+        $updateData = ['status_bayar' => $status];
+        if ($status === 'paid') {
+            $updateData['payment_date'] = now();
+        }
+
+        \App\Models\Harian::where('snd', $request->snd)->update($updateData);
+        \App\Models\CaringTelepon::where('snd', $request->snd)->update($updateData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status pembayaran berhasil diperbarui menjadi ' . strtoupper($status)
+        ]);
     }
 }

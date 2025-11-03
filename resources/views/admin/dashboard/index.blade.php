@@ -4,6 +4,11 @@
 @section('header-title', 'Dashboard')
 @section('header-subtitle', "Welcome back! Here's what's happening with your network today.")
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/caring.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endpush
+
 @section('content')
 <div class="dashboard-container">
 
@@ -81,7 +86,7 @@
             </div>
         </div>
 
-        {{-- 7 Days Chart - Separate Row --}}
+        <!-- {{-- 7 Days Chart - Separate Row --}}
         <div class="seven-days-section">
             <div class="chart card full-width">
                 <h3>Progress Collection (7 Hari Terakhir)</h3>
@@ -107,19 +112,22 @@
                 </div>
                 <canvas id="sevenDaysChart"></canvas>
             </div>
-        </div>
+        </div> -->
 
         {{-- Belum Follow-up --}}
         <div class="table-container card">
             <h3>Belum Follow Up</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div>Total: {{ $belumFollowUp->total() }} data</div>
+            </div>
             <div class="table-scroll">
                 <table class="interactive-table">
                     <thead>
                         <tr>
                             <th>ID NET</th>
-                            <th>NAMA</th>
-                            <th>CA</th>
-                            <th>AKSI</th>
+                            <th>NAMA PERUSAHAAN</th>
+                            <th>USER</th>
+                            <th>STATUS</th>
                             <th>MASALAH</th>
                         </tr>
                     </thead>
@@ -129,14 +137,21 @@
                             <td>{{ $item->snd }}</td>
                             <td>{{ $item->nama_real }}</td>
                             <td>{{ $item->ca_name ?? '-' }}</td>
-                            <td>{{ $item->status_call ?? 'Belum' }}</td>
+                            <td>
+                                <select class="status-dropdown" data-id="{{ $item->id }}" data-type="followup">
+                                    <option value="belum" {{ ($item->status_call == null || !in_array($item->status_call, ['Konfirmasi Pembayaran','Tidak Konfirmasi Pembayaran','Tutup Telpon'])) ? 'selected' : '' }}>Belum</option>
+                                    <option value="sudah" {{ in_array($item->status_call, ['Konfirmasi Pembayaran','Tidak Konfirmasi Pembayaran','Tutup Telpon']) ? 'selected' : '' }}>Sudah</option>
+                                </select>
+                            </td>
                             <td>{{ $item->keterangan ?? '-' }}</td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            <a href="#" class="btn btn-link" onclick="openPopup('belum-followup')">Lihat lebih banyak</a>
+            <div style="display:flex; justify-content:center; margin-top:10px;">
+                {{ $belumFollowUp->withQueryString()->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </section>
 
@@ -153,12 +168,15 @@
         {{-- Data Pelanggan --}}
         <div class="table-container card">
             <h3>Data Pelanggan</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div>Total: {{ $dataPelanggan->total() }} data</div>
+            </div>
             <div class="table-scroll">
                 <table class="interactive-table">
                     <thead>
                         <tr>
                             <th>ID NET</th>
-                            <th>NAMA</th>
+                            <th>NAMA PIC</th>
                             <th>ALAMAT</th>
                             <th>KONTAK</th>
                             <th>STATUS</th>
@@ -172,22 +190,22 @@
                             <td>{{ $pel->nama }}</td>
                             <td>{{ $pel->datel }}</td>
                             <td>{{ $pel->cp ?? $pel->no_hp }}</td>
-                            <td>{{ $pel->status_bayar }}</td>
+                            <td>
+                                <select class="status-dropdown" data-id="{{ $pel->snd }}" data-type="payment">
+                                    <option value="UNPAID" {{ strtolower($pel->status_bayar) == 'unpaid' ? 'selected' : '' }}>UNPAID</option>
+                                    <option value="PAID" {{ strtolower($pel->status_bayar) == 'paid' ? 'selected' : '' }}>PAID</option>
+                                </select>
+                            </td>
                             <td>{{ $pel->payment_date ?? '-' }}</td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            <a href="#" class="btn btn-link" onclick="openPopup('detail-pelanggan')">Lihat lebih banyak</a>
+            <div style="display:flex; justify-content:center; margin-top:10px;">
+                {{ $dataPelanggan->withQueryString()->links('pagination::bootstrap-4') }}
+            </div>
         </div>
-    </section>
-
-    {{-- Aktivitas Saya --}}
-    <section class="aktivitas-saya">
-        <h2>Aktivitas Saya</h2>
-        {{-- User-specific KPIs would go here, but since it's admin dashboard, perhaps show overall or skip --}}
-        <p>Section untuk aktivitas user login. (Implementasi tergantung kebutuhan)</p>
     </section>
 
 </div>
@@ -197,6 +215,19 @@
     <div class="modal-content">
         <span class="close" onclick="closePopup()">&times;</span>
         <div id="popup-content"></div>
+    </div>
+</div>
+
+{{-- Verification Modal for PAID --}}
+<div id="verification-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeVerificationModal()">&times;</span>
+        <h3>Verifikasi Pembayaran</h3>
+        <p>Apakah pelanggan dengan ID NET <span id="verify-snd"></span> sudah benar-benar membayar?</p>
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+            <button onclick="closeVerificationModal()" style="padding:8px 16px; background:#6c757d; color:white; border:none; border-radius:4px;">Batal</button>
+            <button id="confirm-paid" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:4px;">Ya, Sudah Bayar</button>
+        </div>
     </div>
 </div>
 @endsection
@@ -374,6 +405,28 @@
     text-decoration: underline;
 }
 
+/* Status Dropdown Styling */
+.status-dropdown {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 0.9rem;
+    min-width: 100px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.status-dropdown:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.status-dropdown:hover {
+    border-color: #007bff;
+}
+
 /* Modal */
 .modal {
     display: none;
@@ -404,258 +457,267 @@
 .close:hover {
     color: black;
 }
+
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.notification.success {
+    background-color: #28a745;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+.notification button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;
+}
 </style>
 @endpush
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Pie Chart - Status Pembayaran
-    const pieData = {
+// ====== GLOBAL FIXED CHART HEIGHT ======
+const chartCanvases = document.querySelectorAll('canvas');
+chartCanvases.forEach(c => {
+    c.style.maxHeight = '360px';
+    c.style.width = '100%';
+});
+
+// ===== PIE CHART =====
+new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
         labels: ['Paid','Unpaid'],
         datasets: [{
-            data: [
-                {{ $statusBayar['paid'] ?? 0 }},
-                {{ $statusBayar['unpaid'] ?? 0 }}
-            ],
+            data: [{{ $statusBayar['paid'] ?? 0 }}, {{ $statusBayar['unpaid'] ?? 0 }}],
             backgroundColor: ['#4CAF50','#F44336']
         }]
-    };
-    new Chart(document.getElementById('pieChart'), {
-        type: 'pie',
-        data: pieData,
-        options: {
-            animation: {
-                animateScale: true,
-                animateRotate: true,
-                duration: 2000,
-                easing: 'easeInOutQuart'
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom'
-                }
-            }
-        }
-    });
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1200, easing: 'easeOutQuart' },
+        plugins: { legend: { display: true, position: 'bottom' } }
+    }
+});
 
-    // Bar Chart - Progress Collection Mingguan
-    const barData = {
-        labels: ['Senin','Selasa','Rabu','Kamis','Jumat'],
+// ===== BAR CHART - WEEKLY =====
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
         datasets: [
             {
                 label: 'Contacted',
                 backgroundColor: '#4CAF50',
                 data: [
+                    {{ $weekData->where('day',1)->first()['contacted'] ?? 0 }},
                     {{ $weekData->where('day',2)->first()['contacted'] ?? 0 }},
                     {{ $weekData->where('day',3)->first()['contacted'] ?? 0 }},
                     {{ $weekData->where('day',4)->first()['contacted'] ?? 0 }},
                     {{ $weekData->where('day',5)->first()['contacted'] ?? 0 }},
-                    {{ $weekData->where('day',6)->first()['contacted'] ?? 0 }}
+                    {{ $weekData->where('day',6)->first()['contacted'] ?? 0 }},
+                    {{ $weekData->where('day',7)->first()['contacted'] ?? 0 }}
                 ]
             },
             {
                 label: 'Uncontacted',
                 backgroundColor: '#F44336',
                 data: [
+                    {{ $weekData->where('day',1)->first()['uncontacted'] ?? 0 }},
                     {{ $weekData->where('day',2)->first()['uncontacted'] ?? 0 }},
                     {{ $weekData->where('day',3)->first()['uncontacted'] ?? 0 }},
                     {{ $weekData->where('day',4)->first()['uncontacted'] ?? 0 }},
                     {{ $weekData->where('day',5)->first()['uncontacted'] ?? 0 }},
-                    {{ $weekData->where('day',6)->first()['uncontacted'] ?? 0 }}
+                    {{ $weekData->where('day',6)->first()['uncontacted'] ?? 0 }},
+                    {{ $weekData->where('day',7)->first()['uncontacted'] ?? 0 }}
                 ]
             }
         ]
-    };
-    new Chart(document.getElementById('barChart'), {
-        type: 'bar',
-        data: barData,
-        options: {
-            responsive: true,
-            animation: {
-                duration: 2000,
-                easing: 'easeInOutQuart',
-                onComplete: function() {
-                    // Animation complete callback
-                }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            },
-            plugins: {
-                tooltip: {
-                    enabled: true,
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ' + context.raw;
-                        }
-                    }
-                }
-            }
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}` } }
         }
-    });
+    }
+});
 
-    // Bar Chart - Progress Collection 7 Hari
-    const sevenDaysLabels = @json($sevenDaysData->pluck('date'));
-    const sevenDaysContacted = @json($sevenDaysData->pluck('contacted'));
-    const sevenDaysUncontacted = @json($sevenDaysData->pluck('uncontacted'));
-    const sevenDaysDataChart = {
-        labels: sevenDaysLabels,
+// ===== BAR CHART - 7 DAYS =====
+new Chart(document.getElementById('sevenDaysChart'), {
+    type: 'bar',
+    data: {
+        labels: @json($sevenDaysData->pluck('date')),
         datasets: [
-            {
-                label: 'Contacted',
-                backgroundColor: '#4CAF50',
-                data: sevenDaysContacted
-            },
-            {
-                label: 'Uncontacted',
-                backgroundColor: '#F44336',
-                data: sevenDaysUncontacted
-            }
+            { label: 'Contacted', backgroundColor: '#4CAF50', data: @json($sevenDaysData->pluck('contacted')) },
+            { label: 'Uncontacted', backgroundColor: '#F44336', data: @json($sevenDaysData->pluck('uncontacted')) }
         ]
-    };
-    new Chart(document.getElementById('sevenDaysChart'), {
-        type: 'bar',
-        data: sevenDaysDataChart,
-        options: {
-            responsive: true,
-            animation: {
-                duration: 2000,
-                easing: 'easeInOutQuart'
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } },
+        plugins: { legend: { position: 'top' } }
+    }
+});
 
-    // Bar Chart - Paket Terlaris
-    const paketLabels = @json($paketTerlaris->pluck('type'));
-    const paketData = @json($paketTerlaris->pluck('total'));
-    const paketChartData = {
-        labels: paketLabels,
+// ===== BAR CHART - Paket Terlaris =====
+new Chart(document.getElementById('paketChart'), {
+    type: 'bar',
+    data: {
+        labels: @json($paketTerlaris->pluck('type')),
         datasets: [{
             label: 'Jumlah',
             backgroundColor: '#2196F3',
-            data: paketData
+            data: @json($paketTerlaris->pluck('total'))
         }]
-    };
-    new Chart(document.getElementById('paketChart'), {
-        type: 'bar',
-        data: paketChartData,
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+// ===== LINE CHART - CA Performance =====
+// ===== LINE CHART - CA Performance =====
+const allDates = [...new Set(@json(
+    collect($caMonthlyPerformance)->flatten(1)->pluck('date')
+))];
+const caPerformanceData = { labels: allDates, datasets: [] };
+
+@foreach($caMonthlyPerformance as $userId => $data)
+    const caData{{ $userId }} = @json($data);
+    const dataPoints{{ $userId }} = allDates.map(date => {
+        const found = caData{{ $userId }}.find(d => d.date === date);
+        return found ? found.contacts_per_day : 0;
+    });
+    caPerformanceData.datasets.push({
+        label: 'CA {{ $userId }}',
+        data: dataPoints{{ $userId }},
+        borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16),
+        borderWidth: 2,
+        tension: 0.3,
+        fill: false
+    });
+@endforeach
+
+if (caPerformanceData.datasets.length > 0) {
+    new Chart(document.getElementById('caPerformanceChart'), {
+        type: 'line',
+        data: caPerformanceData,
         options: {
             responsive: true,
-            animation: {
-                duration: 2000,
-                easing: 'easeInOutQuart',
-                delay: function(context) {
-                    return context.dataIndex * 200;
-                }
-            },
+            maintainAspectRatio: false,
             scales: {
-                y: { beginAtZero: true }
-            }
+                y: { beginAtZero: true },
+                x: { ticks: { maxRotation: 45, minRotation: 45 } }
+            },
+            plugins: { legend: { position: 'top' } }
         }
     });
+} else {
+    document.getElementById('caPerformanceChart').outerHTML =
+        '<p class="text-muted">Tidak ada data CA performance</p>';
+}
 
-    // Line Chart - CA Performance (1 bulan)
-    const caPerformanceData = {
-        labels: [], // Will be set dynamically
-        datasets: []
-    };
+// ===== EVENT HANDLERS (AJAX, MODAL, NOTIF) =====
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.status-dropdown').forEach(drop => {
+        drop.addEventListener('change', function() {
+            const id = this.getAttribute('data-id');
+            const type = this.getAttribute('data-type');
+            const value = this.value;
 
-    // Generate labels for 30 days
-    for (let i = 1; i <= 30; i++) {
-        caPerformanceData.labels.push('Day ' + i);
-    }
-
-    // Add datasets for each CA
-    @foreach($caMonthlyPerformance as $userId => $data)
-        const dataPoints = [];
-        for (let i = 1; i <= 30; i++) {
-            const dayData = @json($data).find(d => d.day === i);
-            dataPoints.push(dayData ? dayData.contacts_per_day : 0);
-        }
-        caPerformanceData.datasets.push({
-            label: 'CA {{ $userId }}',
-            data: dataPoints,
-            borderColor: '#' + Math.floor(Math.random()*16777215).toString(16),
-            fill: false
-        });
-    @endforeach
-
-    if (caPerformanceData.datasets.length > 0) {
-        new Chart(document.getElementById('caPerformanceChart'), {
-            type: 'line',
-            data: caPerformanceData,
-            options: {
-                responsive: true,
-                animation: {
-                    duration: 2500,
-                    easing: 'easeInOutQuart'
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
-                }
+            if (type === 'payment' && value === 'PAID') {
+                openVerificationModal(id);
+                this.value = 'UNPAID';
+                return;
             }
+
+            updateStatus(id, type, value);
         });
+    });
+
+    document.getElementById('confirm-paid').addEventListener('click', function() {
+        const snd = this.getAttribute('data-snd');
+        updateStatus(snd, 'payment', 'PAID');
+        closeVerificationModal();
+    });
+});
+
+function updateStatus(id, type, value) {
+    let url, data;
+    if (type === 'followup') {
+        url = '{{ route("admin.dashboard.updateFollowupStatus") }}';
+        data = { id: id, status: value };
     } else {
-        document.getElementById('caPerformanceChart').style.display = 'none';
-        document.querySelector('#caPerformanceChart').parentNode.innerHTML += '<p>No CA performance data available</p>';
+        url = '{{ route("admin.dashboard.updatePaymentStatus") }}';
+        data = { snd: id, status: value };
     }
 
-    // Modal functions
-    function openPopup(type) {
-        const modal = document.getElementById('popup-modal');
-        const content = document.getElementById('popup-content');
-        if (type === 'belum-followup') {
-            fetch('{{ route("caring.telepon") }}')
-                .then(response => response.text())
-                .then(html => {
-                    content.innerHTML = html;
-                });
-        } else if (type === 'detail-pelanggan') {
-            // Assuming a route for detail pelanggan
-            content.innerHTML = `
-                <h3>Detail Pelanggan</h3>
-                <table class="interactive-table">
-                    <thead>
-                        <tr>
-                            <th>ID NET</th>
-                            <th>NAMA</th>
-                            <th>ALAMAT</th>
-                            <th>KONTAK</th>
-                            <th>STATUS</th>
-                            <th>TANGGAL PEMBAYARAN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($dataPelanggan as $pel)
-                        <tr>
-                            <td>{{ $pel->snd }}</td>
-                            <td>{{ $pel->nama }}</td>
-                            <td>{{ $pel->datel }}</td>
-                            <td>{{ $pel->cp ?? $pel->no_hp }}</td>
-                            <td>{{ $pel->status_bayar }}</td>
-                            <td>{{ $pel->payment_date ?? '-' }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            `;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            showNotification(res.message || 'Status berhasil diperbarui', 'success');
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            showNotification('Gagal memperbarui status', 'error');
         }
-        modal.style.display = 'block';
-    }
+    })
+    .catch(() => showNotification('Terjadi kesalahan server', 'error'));
+}
 
-    function closePopup() {
-        document.getElementById('popup-modal').style.display = 'none';
-    }
+function showNotification(msg, type) {
+    const exist = document.querySelector('.notification');
+    if (exist) exist.remove();
+    const n = document.createElement('div');
+    n.className = `notification ${type}`;
+    n.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()">&times;</button>`;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 3000);
+}
+
+function openVerificationModal(snd) {
+    document.getElementById('verify-snd').textContent = snd;
+    document.getElementById('verification-modal').style.display = 'block';
+    document.getElementById('confirm-paid').setAttribute('data-snd', snd);
+}
+function closeVerificationModal() {
+    document.getElementById('verification-modal').style.display = 'none';
+}
 </script>
 @endpush
