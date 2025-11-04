@@ -58,12 +58,17 @@ class UploadDataController extends Controller
         $count = $result['processed'];
         $duplicates = $result['duplicates'];
 
+        // If there are duplicates, redirect to modal confirmation
+        if (!empty($duplicates)) {
+            return redirect()->route('upload.harian')
+                ->with('duplicates', $duplicates)
+                ->with('file_id', $fileId)
+                ->with('uploaded_file_name', $request->file('file')->getClientOriginalName());
+        }
+
         $this->combineCA($request);
 
         $message = "File Harian berhasil diupload! {$count} data baru disimpan ke database dan didistribusikan ke CA/Admin.";
-        if (!empty($duplicates)) {
-            $message .= " SND yang sudah ada dan dilewati: " . implode(', ', array_unique($duplicates)) . ".";
-        }
 
         return redirect()->route('upload.harian')
             ->with('success', $message)
@@ -80,10 +85,15 @@ class UploadDataController extends Controller
         $count = $result['processed'];
         $duplicates = $result['duplicates'];
 
-        $message = "File Bulanan berhasil diupload! {$count} data baru disimpan ke database.";
+        // If there are duplicates, redirect to modal confirmation
         if (!empty($duplicates)) {
-            $message .= " SND yang sudah ada dan dilewati: " . implode(', ', array_unique($duplicates)) . ".";
+            return redirect()->route('upload.bulanan')
+                ->with('duplicates', $duplicates)
+                ->with('file_id', $fileId)
+                ->with('uploaded_file_name', $request->file('file')->getClientOriginalName());
         }
+
+        $message = "File Bulanan berhasil diupload! {$count} data baru disimpan ke database.";
 
         return redirect()->route('upload.bulanan')
             ->with('success', $message)
@@ -127,6 +137,43 @@ private function review($fileId, $type, $importClass)
     ]);
 }
 
+
+    // ==============================
+    // Import with Replace (for duplicate confirmation)
+    // ==============================
+    public function importHarianReplace(Request $request)
+    {
+        $request->validate(['file_id' => 'required|integer']);
+        $fileId = $request->file_id;
+
+        $result = $this->saveRowsToDatabase($fileId, Harian::class, HarianImport::class, true); // true for replace mode
+        $count = $result['processed'];
+        $duplicates = $result['duplicates'];
+
+        $this->combineCA($request);
+
+        $message = "File Harian berhasil diupload dengan replace! {$count} data disimpan ke database dan didistribusikan ke CA/Admin.";
+
+        return redirect()->route('upload.harian')
+            ->with('success', $message)
+            ->with('lastFileId', $fileId);
+    }
+
+    public function importBulananReplace(Request $request)
+    {
+        $request->validate(['file_id' => 'required|integer']);
+        $fileId = $request->file_id;
+
+        $result = $this->saveRowsToDatabase($fileId, Bulanan::class, BulananImport::class, true); // true for replace mode
+        $count = $result['processed'];
+        $duplicates = $result['duplicates'];
+
+        $message = "File Bulanan berhasil diupload dengan replace! {$count} data disimpan ke database.";
+
+        return redirect()->route('upload.bulanan')
+            ->with('success', $message)
+            ->with('lastFileId', $fileId);
+    }
 
     // ==============================
     // Submit Data
@@ -264,7 +311,7 @@ private function getRowsFromFile($fileId, $importClass)
 }
 
 
-    private function saveRowsToDatabase($fileId, $modelClass, $importClass)
+    private function saveRowsToDatabase($fileId, $modelClass, $importClass, $replace = false)
     {
         $rows = $this->getRowsFromFile($fileId, $importClass);
         if (!$rows) return ['processed' => 0, 'duplicates' => []];
@@ -293,7 +340,7 @@ private function getRowsFromFile($fileId, $importClass)
                     'account_num' => $row['account_num'] ?? 'N/A',
                     'snd' => $snd,
                     'snd_group' => $row['snd_group'] ?? 'N/A',
-                    'nama' => $row['nama'] ?? 'N/A',
+                    'nama' => $row['nama_ncli'] ?? 'N/A', // Company name from NAMA_NCLI
                     'alamat' => $row['alamat'] ?? 'N/A',
                     'ncli' => $row['ncli'] ?? 'N/A',
                     'nama_ncli' => $row['nama_ncli'] ?? 'N/A',
@@ -311,12 +358,19 @@ private function getRowsFromFile($fileId, $importClass)
 
                 $exists = $modelClass::where('snd', $snd)->first();
                 if ($exists) {
-                    $duplicates[] = $snd;
-                    continue;
+                    if ($replace) {
+                        // Update existing record
+                        $exists->update($rowData);
+                        $duplicates[] = $snd;
+                        $processed++;
+                    } else {
+                        $duplicates[] = $snd;
+                        continue;
+                    }
+                } else {
+                    $modelClass::create($rowData);
+                    $processed++;
                 }
-
-                $modelClass::create($rowData);
-                $processed++;
             }
 
             DB::commit();

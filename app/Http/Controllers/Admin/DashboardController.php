@@ -142,7 +142,7 @@ class DashboardController extends Controller
             ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
             ->whereNull('caring_telepon.status_call')
             ->orderBy('caring_telepon.created_at', 'desc')
-            ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama_real', 'caring_telepon.status_call', 'caring_telepon.keterangan', 'users.nama_lengkap as ca_name')
+            ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama', 'caring_telepon.status_call', 'caring_telepon.keterangan', 'users.nama_lengkap as ca_name')
             ->paginate(10);
 
         // ==============================

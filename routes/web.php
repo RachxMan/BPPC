@@ -54,6 +54,7 @@ Route::middleware(['auth', 'status'])->group(function () {
         Route::prefix('harian')->group(function () {
             Route::get('/', [UploadDataController::class, 'harian'])->name('harian');
             Route::post('/import', [UploadDataController::class, 'importHarian'])->name('harian.import');
+            Route::post('/import-replace', [UploadDataController::class, 'importHarianReplace'])->name('harian.import.replace');
             Route::get('/review/{fileId}', [UploadDataController::class, 'reviewHarian'])->name('harian.review');
             Route::post('/submit/{fileId}', [UploadDataController::class, 'submitHarian'])->name('harian.submit');
             Route::post('/combineCA', [UploadDataController::class, 'combineCA'])->name('combineCA');
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'status'])->group(function () {
         Route::prefix('bulanan')->group(function () {
             Route::get('/', [UploadDataController::class, 'bulanan'])->name('bulanan');
             Route::post('/import', [UploadDataController::class, 'importBulanan'])->name('bulanan.import');
+            Route::post('/import-replace', [UploadDataController::class, 'importBulananReplace'])->name('bulanan.import.replace');
             Route::get('/review/{fileId}', [UploadDataController::class, 'reviewBulanan'])->name('bulanan.review');
             Route::post('/submit/{fileId}', [UploadDataController::class, 'submitBulanan'])->name('bulanan.submit');
         });

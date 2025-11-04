@@ -37,6 +37,14 @@
 
         <div style="display:flex; align-items:center; gap:20px;">
             <form method="GET" style="display:flex; align-items:center; gap:5px;">
+                <label>Sortir:</label>
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="">Default</option>
+                    <option value="paid" {{ $sort == 'paid' ? 'selected' : '' }}>Paid</option>
+                    <option value="unpaid" {{ $sort == 'unpaid' ? 'selected' : '' }}>Unpaid</option>
+                </select>
+            </form>
+            <form method="GET" style="display:flex; align-items:center; gap:5px;">
                 <label>Tampilkan:</label>
                 <select name="limit" onchange="this.form.submit()">
                     @foreach([10,20,30,50,100] as $l)

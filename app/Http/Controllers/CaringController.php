@@ -61,7 +61,7 @@ class CaringController extends Controller
                                 'payment_date'   => $h->payment_date,
                                 'status_bayar'   => $h->status_bayar,
                                 'telp'           => $h->telp,
-                                'nama_real'      => $h->nama_real,
+                                'nama_real'      => $h->nama_real, // Always use PIC name from Harian
                                 'segmen_real'    => $h->segmen_real,
                                 // Hanya simpan status_call & keterangan jika belum ada
                                 'status_call'    => CaringTelepon::where('snd', $h->snd)
@@ -78,10 +78,11 @@ class CaringController extends Controller
         });
 
         // ===========================
-        // Limit & Search
+        // Limit & Search & Sort
         // ===========================
         $limit  = $request->get('limit', 10);
         $search = $request->get('search');
+        $sort   = $request->get('sort');
 
         $data = CaringTelepon::with('user')
             ->where('user_id', $user->id)
@@ -95,11 +96,21 @@ class CaringController extends Controller
                           ->orWhere('no_hp', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('created_at', 'asc')
+            ->when($sort === 'paid', function ($q) {
+                $q->orderByRaw("CASE WHEN status_bayar = 'Paid' THEN 1 ELSE 2 END")
+                  ->orderBy('created_at', 'asc');
+            })
+            ->when($sort === 'unpaid', function ($q) {
+                $q->orderByRaw("CASE WHEN status_bayar = 'Unpaid' THEN 1 ELSE 2 END")
+                  ->orderBy('created_at', 'asc');
+            })
+            ->when(!$sort, function ($q) {
+                $q->orderBy('created_at', 'asc');
+            })
             ->paginate($limit)
             ->withQueryString();
 
-        return view('caring.telepon', compact('data', 'limit', 'search'));
+        return view('caring.telepon', compact('data', 'limit', 'search', 'sort'));
     }
 
     /**

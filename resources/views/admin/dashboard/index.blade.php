@@ -135,7 +135,7 @@
                         @foreach($belumFollowUp as $item)
                         <tr>
                             <td>{{ $item->snd }}</td>
-                            <td>{{ $item->nama_real }}</td>
+                            <td>{{ $item->nama }}</td>
                             <td>{{ $item->ca_name ?? '-' }}</td>
                             <td>
                                 <select class="status-dropdown" data-id="{{ $item->id }}" data-type="followup">

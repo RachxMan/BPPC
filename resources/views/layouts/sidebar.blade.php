@@ -10,7 +10,7 @@
     <img src="{{ Auth::user()->profile_photo ? asset('storage/profile_photos/'.Auth::user()->profile_photo) : asset('img/1594252-200.png') }}" alt="Profile" class="profile-photo">
     <div class="profile-info">
       <p class="profile-name">{{ Auth::user()->nama_lengkap ?? 'Administrator' }}</p>
-      <span class="status-badge">● Online</span>
+      <span class="status-badge">{{ strtoupper(Auth::user()->role) }}</span>
     </div>
   </div>
 

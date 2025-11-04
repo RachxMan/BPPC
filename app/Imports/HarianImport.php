@@ -25,13 +25,13 @@ class HarianImport implements ToModel, WithHeadingRow
             'account_num'    => $row['account_num'] ?? null,
             'snd'            => $row['snd'] ?? null,
             'snd_group'      => $row['snd_group'] ?? null,
-            'nama'           => $row['nama'] ?? null,
+            'nama'           => $row['nama_ncli'] ?? null, // Company name from NAMA_NCLI
             'cp'             => $row['cp'] ?? null,
             'datel'          => $row['datel'] ?? null,
             'payment_date'   => !empty($row['payment_date']) ? date('Y-m-d', strtotime($row['payment_date'])) : null,
             'status_bayar'   => $row['status_bayar'] ?? null,
             'no_hp'          => $row['no_hp'] ?? null,
-            'nama_real'      => $row['nama_real'] ?? null,
+            'nama_real'      => $row['nama'] ?? null, // PIC name from NAMA
             'segmen_real'    => $row['segmen_real'] ?? null,
         ]);
     }

@@ -9,15 +9,33 @@
 
     {{-- Flash Messages --}}
     @if(session('success'))
-        <div class="alert alert-success">
+        <div class="alert alert-success" id="successAlert">
             {{ session('success') }}
-            <button type="button" class="close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
         </div>
     @endif
     @if(session('error'))
-        <div class="alert alert-danger">
+        <div class="alert alert-danger" id="errorAlert">
             {{ session('error') }}
             <button type="button" class="close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+    @endif
+
+    {{-- Modal for Duplicate Confirmation --}}
+    @if(session('duplicates'))
+        <div id="duplicateModal" class="modal" style="display: block;">
+            <div class="modal-content">
+                <h3>Duplikat Data Ditemukan</h3>
+                <p>Ada <strong>{{ count(session('duplicates')) }}</strong> data yang sama sudah ada di database.</p>
+                <p>Apakah Anda ingin mengganti data yang sudah ada?</p>
+                <div class="modal-buttons">
+                    <form method="POST" action="{{ route('upload.bulanan.import.replace') }}" style="display: inline;">
+                        @csrf
+                        <input type="hidden" name="file_id" value="{{ session('file_id') }}">
+                        <button type="submit" class="btn btn-danger">Ya, Ganti Data</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" onclick="closeDuplicateModal()">Batal</button>
+                </div>
+            </div>
         </div>
     @endif
 
@@ -83,7 +101,8 @@
 .btn-danger:hover { background-color: #c82333; }
 .btn-warning { background-color: #ffc107; color: black; }
 .btn-warning:hover { background-color: #e0a800; }
-.alert { position: relative; padding: 10px 20px; margin-bottom: 15px; border-radius: 5px; font-size: 0.9rem; }
+.alert { position: relative; padding: 10px 20px; margin-bottom: 15px; border-radius: 5px; font-size: 0.9rem; opacity: 0; transform: translateY(-20px); transition: all 0.3s ease; }
+.alert.show { opacity: 1; transform: translateY(0); }
 .alert-success { background-color: #d4edda; color: #155724; }
 .alert-danger { background-color: #f8d7da; color: #721c24; }
 .close-btn { position: absolute; top: 5px; right: 10px; background: none; border: none; font-size: 1.2rem; line-height: 1; cursor: pointer; }
@@ -160,6 +179,49 @@
     }
 }
 
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+    margin: auto;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+/* Removed ul styles since we no longer show the list */
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.modal-buttons .btn {
+    margin: 0 10px;
+}
+
 /* Small Mobile Styles */
 @media (max-width: 480px) {
     .upload-container {
@@ -194,6 +256,13 @@
         padding: 10px 12px;
         font-size: 0.9rem;
     }
+
+    .modal-content {
+        padding: 15px;
+        max-width: 90%;
+    }
+
+/* Removed ul responsive styles since we no longer show the list */
 }
 </style>
 @endpush
@@ -230,6 +299,28 @@ document.addEventListener('DOMContentLoaded', function () {
         btnUpload.disabled = true;
         btnCancel.disabled = true;
     });
+
+    // Show success alert with fade in/out
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(() => {
+            successAlert.classList.add('show');
+        }, 100);
+
+        setTimeout(() => {
+            successAlert.classList.remove('show');
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 300);
+        }, 3000);
+    }
 });
+
+// Function to close duplicate modal
+function closeDuplicateModal() {
+    document.getElementById('duplicateModal').style.display = 'none';
+    // Clear session data by redirecting without parameters
+    window.location.href = '{{ route("upload.bulanan") }}';
+}
 </script>
 @endpush
