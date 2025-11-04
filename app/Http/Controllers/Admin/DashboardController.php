@@ -25,8 +25,8 @@ public function index(Request $request)
         ->whereNotNull('status_call')
         ->count();
 
-    $jumlahCA = DB::table('users')->where('role', 'CA')->where('status', 'active')->count();
-    $jumlahAdmin = DB::table('users')->where('role', 'Admin')->where('status', 'active')->count();
+    $jumlahCA = DB::table('users')->where('role', 'ca')->where('status', 'Aktif')->count();
+    $jumlahAdmin = DB::table('users')->where('role', 'admin')->where('status', 'Aktif')->count();
 
     // ==============================
     // Progress Collection

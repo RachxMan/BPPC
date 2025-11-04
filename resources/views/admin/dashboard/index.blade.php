@@ -440,16 +440,6 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-/*
-  Notes:
-  - Controller passes:
-      $statusBayar, $weekData, $sevenDaysData, $paketTerlaris, $caDailyPerformance,
-      $selectedMonth, $searchCA
-  - caDailyPerformance is grouped by user_id; each group is an array of rows: {date, contacts_per_day}
-  - In this view we will:
-      - build full list of dates for selected month
-      - for each user_id group, lookup user name (we will embed server-side name via a DB call in the template)
-*/
 
 // ====== FIXED CHART HEIGHT ======
 document.querySelectorAll('canvas').forEach(c => {
