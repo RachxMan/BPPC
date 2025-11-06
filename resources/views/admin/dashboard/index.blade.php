@@ -83,15 +83,15 @@
                         <span class="stat-value">{{ $weekData->sum('contacted') }}</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Total Uncontacted:</span>
-                        <span class="stat-value">{{ $weekData->sum('uncontacted') }}</span>
+                        <span class="stat-label">Total Paid:</span>
+                        <span class="stat-value">{{ $weekData->sum('paid') }}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Success Rate:</span>
                         <span class="stat-value">
                             @php
-                                $totalWeek = $weekData->sum('contacted') + $weekData->sum('uncontacted');
-                                $rateWeek = $totalWeek > 0 ? round(($weekData->sum('contacted') / $totalWeek) * 100, 1) : 0;
+                                $totalContacted = $weekData->sum('contacted');
+                                $rateWeek = $totalContacted > 0 ? round(($weekData->sum('paid') / $totalContacted) * 100, 1) : 0;
                             @endphp
                             {{ $rateWeek }}%
                         </span>
@@ -102,7 +102,7 @@
         </div>
 
         {{-- Belum Follow-up --}}
-        <div class="table-container card" style="margin-top:18px;">
+        <div id="belum-followup" class="table-container card" style="margin-top:18px;">
             <h3>Belum Follow Up</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <div>Total: {{ $belumFollowUp->total() }} data</div>
@@ -113,7 +113,9 @@
                         <tr>
                             <th>ID NET</th>
                             <th>NAMA PERUSAHAAN</th>
+                            @if(auth()->user()->role !== 'ca')
                             <th>USER</th>
+                            @endif
                             <th>STATUS</th>
                             <th>MASALAH</th>
                         </tr>
@@ -123,7 +125,9 @@
                         <tr>
                             <td>{{ $item->snd }}</td>
                             <td>{{ $item->nama }}</td>
+                            @if(auth()->user()->role !== 'ca')
                             <td>{{ $item->ca_name ?? '-' }}</td>
+                            @endif
                             <td>
                                 <select class="status-dropdown" data-id="{{ $item->id }}" data-type="followup">
                                     <option value="belum" {{ ($item->status_call == null || !in_array($item->status_call, ['Konfirmasi Pembayaran','Tidak Konfirmasi Pembayaran','Tutup Telpon'])) ? 'selected' : '' }}>Belum</option>
@@ -137,7 +141,7 @@
                 </table>
             </div>
             <div style="display:flex; justify-content:center; margin-top:10px;">
-                {{ $belumFollowUp->withQueryString()->links('pagination::bootstrap-4') }}
+                {{ $belumFollowUp->withQueryString()->fragment('belum-followup')->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </section>
@@ -146,14 +150,10 @@
     <section class="detail-pelanggan" style="margin-top:18px;">
         <h2>Detail Pelanggan</h2>
 
-        {{-- Paket Terlaris --}}
-        <div class="chart card">
-            <h3>Paket Terlaris</h3>
-            <canvas id="paketChart"></canvas>
-        </div>
+
 
         {{-- Data Pelanggan --}}
-        <div class="table-container card" style="margin-top:14px;">
+        <div id="data-pelanggan" class="table-container card" style="margin-top:14px;">
             <h3>Data Pelanggan</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <div>Total: {{ $dataPelanggan->total() }} data</div>
@@ -190,7 +190,7 @@
                 </table>
             </div>
             <div style="display:flex; justify-content:center; margin-top:10px;">
-                {{ $dataPelanggan->withQueryString()->links('pagination::bootstrap-4') }}
+                {{ $dataPelanggan->withQueryString()->fragment('data-pelanggan')->links('pagination::bootstrap-4') }}
             </div>
         </div>
 
@@ -490,17 +490,17 @@ if (barCtx) {
                     backgroundColor: '#4CAF50'
                 },
                 {
-                    label: 'Uncontacted',
+                    label: 'Paid',
                     data: [
-                        {{ $weekData->where('day',1)->first()['uncontacted'] ?? 0 }},
-                        {{ $weekData->where('day',2)->first()['uncontacted'] ?? 0 }},
-                        {{ $weekData->where('day',3)->first()['uncontacted'] ?? 0 }},
-                        {{ $weekData->where('day',4)->first()['uncontacted'] ?? 0 }},
-                        {{ $weekData->where('day',5)->first()['uncontacted'] ?? 0 }},
-                        {{ $weekData->where('day',6)->first()['uncontacted'] ?? 0 }},
-                        {{ $weekData->where('day',7)->first()['uncontacted'] ?? 0 }}
+                        {{ $weekData->where('day',1)->first()['paid'] ?? 0 }},
+                        {{ $weekData->where('day',2)->first()['paid'] ?? 0 }},
+                        {{ $weekData->where('day',3)->first()['paid'] ?? 0 }},
+                        {{ $weekData->where('day',4)->first()['paid'] ?? 0 }},
+                        {{ $weekData->where('day',5)->first()['paid'] ?? 0 }},
+                        {{ $weekData->where('day',6)->first()['paid'] ?? 0 }},
+                        {{ $weekData->where('day',7)->first()['paid'] ?? 0 }}
                     ],
-                    backgroundColor: '#F44336'
+                    backgroundColor: '#FFC107'
                 }
             ]
         },
@@ -515,26 +515,7 @@ if (barCtx) {
 
 
 
-// ===== PAKET TERLARIS =====
-const paketCtx = document.getElementById('paketChart');
-if (paketCtx) {
-    new Chart(paketCtx, {
-        type: 'bar',
-        data: {
-            labels: @json($paketTerlaris->pluck('type')),
-            datasets: [{
-                label: 'Jumlah',
-                data: @json($paketTerlaris->pluck('total')),
-                backgroundColor: '#2196F3'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } }
-        }
-    });
-}
+
 
 // ===== LINE CHART - CA Performance (Bulanan) =====
 (function(){

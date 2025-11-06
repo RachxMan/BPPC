@@ -86,7 +86,8 @@ public function index(Request $request)
         ->select(
             DB::raw('DAYOFWEEK(updated_at) as day'),
             DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') THEN 1 ELSE 0 END) as contacted"),
-            DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $uncontactOptions) . "') THEN 1 ELSE 0 END) as uncontacted")
+            DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $uncontactOptions) . "') THEN 1 ELSE 0 END) as uncontacted"),
+            DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') AND LOWER(status_bayar) = 'paid' THEN 1 ELSE 0 END) as paid")
         )
         ->whereBetween('updated_at', [$startOfWeek, $endOfWeek])
         ->groupBy('day')
@@ -99,6 +100,7 @@ public function index(Request $request)
             'day' => $day,
             'contacted' => $record->contacted ?? 0,
             'uncontacted' => $record->uncontacted ?? 0,
+            'paid' => $record->paid ?? 0,
         ]);
     }
 
@@ -107,31 +109,38 @@ public function index(Request $request)
     // ==============================
     // Data Pelanggan, Paket, dsb
     // ==============================
-    $paketTerlaris = DB::table('caring_telepon')
-        ->select('type', DB::raw('count(*) as total'))
-        ->whereNotNull('type')
-        ->groupBy('type')
-        ->orderBy('total', 'desc')
-        ->limit(10)
-        ->get();
 
-    $dataPelanggan = DB::table('harian')
+
+    $dataPelangganQuery = DB::table('harian')
+        ->leftJoin('caring_telepon', 'harian.snd', '=', 'caring_telepon.snd')
         ->where(function($q) {
-            $q->where('status_bayar', '!=', 'paid')->orWhereNull('status_bayar');
+            $q->where('harian.status_bayar', '!=', 'paid')->orWhereNull('harian.status_bayar');
         })
-        ->whereNotNull('status_bayar')
-        ->orderBy('created_at', 'desc')
-        ->select('snd','nama','datel','cp','no_hp','status_bayar','payment_date')
-        ->paginate(10);
+        ->whereNotNull('harian.status_bayar')
+        ->orderBy('harian.created_at', 'desc')
+        ->select('harian.snd','harian.nama','harian.datel','harian.cp','harian.no_hp','harian.status_bayar','harian.payment_date');
 
-    $belumFollowUp = DB::table('caring_telepon')
-    ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
-    ->whereNull('caring_telepon.status_call')
-    ->orderBy('caring_telepon.created_at', 'desc')
-    ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama',
-             'caring_telepon.status_call', 'caring_telepon.keterangan',
-             'users.nama_lengkap as ca_name')
-    ->paginate(10);
+    // Jika role CA, hanya tampilkan data yang assigned ke CA tersebut
+    if (auth()->user()->role === 'ca') {
+        $dataPelangganQuery->where('caring_telepon.user_id', auth()->id());
+    }
+
+    $dataPelanggan = $dataPelangganQuery->paginate(10, ['*'], 'pelanggan_page');
+
+    $belumFollowUpQuery = DB::table('caring_telepon')
+        ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
+        ->whereNull('caring_telepon.status_call')
+        ->orderBy('caring_telepon.created_at', 'desc')
+        ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama',
+                 'caring_telepon.status_call', 'caring_telepon.keterangan',
+                 'users.nama_lengkap as ca_name');
+
+    // Jika role CA, hanya tampilkan data yang assigned ke CA tersebut
+    if (auth()->user()->role === 'ca') {
+        $belumFollowUpQuery->where('caring_telepon.user_id', auth()->id());
+    }
+
+    $belumFollowUp = $belumFollowUpQuery->paginate(10, ['*'], 'belum_page');
 
 
     return view('admin.dashboard.index', compact(
@@ -144,7 +153,6 @@ public function index(Request $request)
         'caDailyPerformance',
         'statusBayar',
         'weekData',
-        'paketTerlaris',
         'dataPelanggan',
         'selectedMonth',
         'searchCA',

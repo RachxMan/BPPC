@@ -262,11 +262,11 @@
     {{-- Pilihan Harian / Bulanan --}}
     <div class="upload-options">
         <div class="option-card" onclick="window.location='{{ route('upload.harian') }}'">
-            <div class="option-icon">📅</div>
+            <div class="option-icon"><i class="bi bi-calendar"></i></div>
             <div>Harian</div>
         </div>
         <div class="option-card" onclick="window.location='{{ route('upload.bulanan') }}'">
-            <div class="option-icon">🗓️</div>
+            <div class="option-icon"><i class="bi bi-calendar"></i></div>
             <div>Bulanan</div>
         </div>
     </div>
