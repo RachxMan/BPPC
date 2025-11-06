@@ -94,14 +94,15 @@
 
 /* Upload Box */
 .upload-box {
-    min-height: 400px;
+    height: 400px;
     padding: 50px;
     border: 2px dashed #007bff;
     border-radius: 12px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s;
 }
-.upload-box:hover {
-    background-color: #f7f9fc;
+.upload-box:hover, .upload-box.dragover {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
     cursor: pointer;
 }
 
@@ -217,7 +218,7 @@
     }
 
     .upload-box {
-        min-height: 350px;
+        height: 350px;
         padding: 40px;
     }
 
@@ -240,7 +241,7 @@
     }
 
     .upload-box {
-        min-height: 300px;
+        height: 300px;
         padding: 30px 20px;
         border-radius: 8px;
     }
@@ -326,7 +327,7 @@
     }
 
     .upload-box {
-        min-height: 250px;
+        height: 250px;
         padding: 20px 15px;
     }
 
@@ -372,6 +373,46 @@ document.addEventListener('DOMContentLoaded', function () {
     const fileNameEl = document.getElementById('fileName');
     const btnUpload = document.getElementById('btnUpload');
     const btnCancel = document.getElementById('btnCancel');
+    const uploadBox = document.querySelector('.upload-box');
+
+    // Function to validate file
+    function isValidFile(file) {
+        const validExtensions = ['.csv', '.xlsx'];
+        const fileName = file.name.toLowerCase();
+        return validExtensions.some(ext => fileName.endsWith(ext));
+    }
+
+    // Function to show error alert
+    function showErrorAlert(message) {
+        // Remove existing dynamic error alert if any
+        const existingAlert = document.getElementById('dynamicErrorAlert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        // Create new alert
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'dynamicErrorAlert';
+        alertDiv.className = 'alert alert-danger';
+        alertDiv.innerHTML = message + '<button type="button" class="close-btn" onclick="this.parentElement.remove()">&times;</button>';
+
+        // Insert after upload-container
+        const container = document.querySelector('.upload-container');
+        container.insertBefore(alertDiv, container.firstChild);
+
+        // Fade in
+        setTimeout(() => {
+            alertDiv.classList.add('show');
+        }, 100);
+
+        // Fade out after 3 seconds
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 300);
+        }, 3000);
+    }
 
     // Klik tombol Choose File → buka file dialog
     btnChooseFile.addEventListener('click', () => {
@@ -381,14 +422,57 @@ document.addEventListener('DOMContentLoaded', function () {
     // Enable Upload & Cancel saat file dipilih
     fileInput.addEventListener('change', () => {
         if (fileInput.files.length > 0) {
-            const filename = fileInput.files[0].name;
-            fileNameEl.innerHTML = 'Selected File: <strong>' + filename + '</strong>';
-            btnUpload.disabled = false;
-            btnCancel.disabled = false;
+            const file = fileInput.files[0];
+            if (isValidFile(file)) {
+                const filename = file.name;
+                fileNameEl.innerHTML = 'Selected File: <strong>' + filename + '</strong>';
+                btnUpload.disabled = false;
+                btnCancel.disabled = false;
+            } else {
+                showErrorAlert('Format file salah. Hanya file CSV atau XLSX yang diperbolehkan.');
+                fileInput.value = '';
+                fileNameEl.textContent = '';
+                btnUpload.disabled = true;
+                btnCancel.disabled = true;
+            }
         } else {
             fileNameEl.textContent = '';
             btnUpload.disabled = true;
             btnCancel.disabled = true;
+        }
+    });
+
+    // Drag and Drop functionality
+    uploadBox.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadBox.classList.add('dragover');
+    });
+
+    uploadBox.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadBox.classList.remove('dragover');
+    });
+
+    uploadBox.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadBox.classList.remove('dragover');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (isValidFile(file)) {
+                // Set file to input
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+
+                const filename = file.name;
+                fileNameEl.innerHTML = 'Selected File: <strong>' + filename + '</strong>';
+                btnUpload.disabled = false;
+                btnCancel.disabled = false;
+            } else {
+                showErrorAlert('Format file salah. Hanya file CSV atau XLSX yang diperbolehkan.');
+            }
         }
     });
 

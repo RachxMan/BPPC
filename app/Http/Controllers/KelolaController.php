@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\CaringTelepon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -50,7 +52,7 @@ class KelolaController extends Controller
             'role.required' => 'Role wajib dipilih.',
         ]);
 
-        User::create([
+        $user = User::create([
             'nama_lengkap' => $validated['name'],
             'username' => $validated['username'],
             'email' => $validated['email'],
@@ -58,6 +60,11 @@ class KelolaController extends Controller
             'role' => $validated['role'] === 'Administrator' ? 'admin' : 'ca',
             'status' => 'Aktif', // Default status
         ]);
+
+        // Redistribute caring_telepon if new user is CA
+        if ($validated['role'] === 'Collection Agent') {
+            $this->redistributeCaringTelepon();
+        }
 
         return redirect()->route('kelola.index')
             ->with('success', 'Akun berhasil ditambahkan.');
@@ -154,5 +161,43 @@ class KelolaController extends Controller
 
         return redirect()->route('kelola.index')
             ->with('success', 'Akun berhasil dihapus.');
+    }
+
+    /**
+     * Redistribute all caring_telepon data evenly among active CAs.
+     */
+    private function redistributeCaringTelepon()
+    {
+        DB::transaction(function () {
+            // Get all active CAs
+            $activeCAs = User::where('role', 'ca')
+                ->where('status', 'Aktif')
+                ->pluck('id')
+                ->toArray();
+
+            if (empty($activeCAs)) {
+                return; // No active CAs to assign to
+            }
+
+            // Get all caring_telepon
+            $allRecords = CaringTelepon::all();
+
+            if ($allRecords->isEmpty()) {
+                return; // No data to assign
+            }
+
+            // First, unassign all to reset
+            CaringTelepon::query()->update(['user_id' => null]);
+
+            // Assign round-robin
+            $caCount = count($activeCAs);
+            $index = 0;
+
+            foreach ($allRecords as $record) {
+                $record->user_id = $activeCAs[$index];
+                $record->save();
+                $index = ($index + 1) % $caCount;
+            }
+        });
     }
 }

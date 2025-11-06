@@ -28,7 +28,7 @@
                 <p>Ada <strong>{{ count(session('duplicates')) }}</strong> data yang sama sudah ada di database.</p>
                 <p>Apakah Anda ingin mengganti data yang sudah ada?</p>
                 <div class="modal-buttons">
-                    <form method="POST" action="{{ route('upload.bulanan.import.replace') }}" style="display: inline;">
+                    <form method="POST" action="{{ route('upload.harian.import.replace') }}" style="display: inline;">
                         @csrf
                         <input type="hidden" name="file_id" value="{{ session('file_id') }}">
                         <button type="submit" class="btn btn-danger">Ya, Ganti Data</button>
@@ -46,7 +46,7 @@
             <p><strong>Drag and Drop Files Here</strong></p>
             <p class="support">Supported Files: CSV, XLSX</p>
 
-            <form id="uploadForm" action="{{ route('upload.bulanan.import') }}" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="{{ route('upload.harian.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" id="fileInput" name="file" accept=".csv,.xlsx" style="display:none;">
 
@@ -61,8 +61,8 @@
 
                 {{-- Nama File Terpilih --}}
                 <p id="fileName" class="support mt-3">
-                    @if(!empty($uploaded_file_name))
-                        Selected File: <strong>{{ $uploaded_file_name }}</strong>
+                    @if(session('uploaded_file_name'))
+                        Selected File: <strong>{{ session('uploaded_file_name') }}</strong>
                     @endif
                 </p>
             </form>
@@ -71,9 +71,9 @@
 
     {{-- Tombol Review Table --}}
     <div class="mt-3 text-center">
-        @if(!empty($lastFileId))
-            <a href="{{ route('upload.bulanan.review', $lastFileId) }}" id="btnReview" class="btn btn-warning">
-                Review Tabel untuk Simpan ke Database
+        @if(isset($lastFileId))
+            <a href="{{ route('upload.harian.review', $lastFileId) }}" id="btnReview" class="btn btn-warning">
+                Review Tabel (Opsional)
             </a>
         @else
             <button class="btn btn-warning" id="btnReview" disabled>Review Table</button>
@@ -85,29 +85,127 @@
 
 @push('styles')
 <style>
-.upload-container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-.upload-box { min-height: 400px; padding: 50px; border: 2px dashed #007bff; border-radius: 12px; transition: background-color 0.3s; }
-.upload-box:hover { background-color: #f7f9fc; cursor: pointer; }
-.upload-icon { width: 90px; margin-bottom: 20px; transition: transform 0.3s; }
-.upload-box:hover .upload-icon { transform: scale(1.1); }
-.support { font-size: 0.9rem; color: #555; margin-top: 10px; }
-.btn { padding: 8px 16px; margin: 5px; font-size: 0.9rem; border-radius: 5px; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-info { background-color: #17a2b8; color: white; }
-.btn-info:hover { background-color: #138496; }
-.btn-success { background-color: #28a745; color: white; }
-.btn-success:hover { background-color: #218838; }
-.btn-danger { background-color: #dc3545; color: white; }
-.btn-danger:hover { background-color: #c82333; }
-.btn-warning { background-color: #ffc107; color: black; }
-.btn-warning:hover { background-color: #e0a800; }
-.alert { position: relative; padding: 10px 20px; margin-bottom: 15px; border-radius: 5px; font-size: 0.9rem; opacity: 0; transform: translateY(-20px); transition: all 0.3s ease; }
-.alert.show { opacity: 1; transform: translateY(0); }
-.alert-success { background-color: #d4edda; color: #155724; }
-.alert-danger { background-color: #f8d7da; color: #721c24; }
-.close-btn { position: absolute; top: 5px; right: 10px; background: none; border: none; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+/* Container */
+.upload-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+/* Upload Box */
+.upload-box {
+    height: 400px;
+    padding: 50px;
+    border: 2px dashed #007bff;
+    border-radius: 12px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+.upload-box:hover, .upload-box.dragover {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    cursor: pointer;
+}
+
+/* Upload Icon */
+.upload-icon {
+    width: 90px;
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+.upload-box:hover .upload-icon {
+    transform: scale(1.1);
+}
+
+/* Text */
+.support {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 10px;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    margin: 5px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+}
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+.btn-info:hover {
+    background-color: #138496;
+}
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+.btn-success:hover {
+    background-color: #218838;
+}
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+}
+.btn-warning {
+    background-color: #ffc107;
+    color: black;
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+/* Alerts */
+.alert {
+    position: relative;
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+}
+.alert.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.close-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* Margin helpers */
 .mt-3 { margin-top: 1rem; }
 .mt-4 { margin-top: 1.25rem; }
+.mt-12 { margin-top: 3rem; }
+.me-3 { margin-right: 1rem; }
 .text-center { text-align: center; }
 
 /* Responsive Design */
@@ -120,7 +218,7 @@
     }
 
     .upload-box {
-        min-height: 350px;
+        height: 350px;
         padding: 40px;
     }
 
@@ -143,7 +241,7 @@
     }
 
     .upload-box {
-        min-height: 300px;
+        height: 300px;
         padding: 30px 20px;
         border-radius: 8px;
     }
@@ -229,7 +327,7 @@
     }
 
     .upload-box {
-        min-height: 250px;
+        height: 250px;
         padding: 20px 15px;
     }
 
@@ -275,20 +373,106 @@ document.addEventListener('DOMContentLoaded', function () {
     const fileNameEl = document.getElementById('fileName');
     const btnUpload = document.getElementById('btnUpload');
     const btnCancel = document.getElementById('btnCancel');
+    const uploadBox = document.querySelector('.upload-box');
+
+    // Function to validate file
+    function isValidFile(file) {
+        const validExtensions = ['.csv', '.xlsx'];
+        const fileName = file.name.toLowerCase();
+        return validExtensions.some(ext => fileName.endsWith(ext));
+    }
+
+    // Function to show error alert
+    function showErrorAlert(message) {
+        // Remove existing dynamic error alert if any
+        const existingAlert = document.getElementById('dynamicErrorAlert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        // Create new alert
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'dynamicErrorAlert';
+        alertDiv.className = 'alert alert-danger';
+        alertDiv.innerHTML = message + '<button type="button" class="close-btn" onclick="this.parentElement.remove()">&times;</button>';
+
+        // Insert after upload-container
+        const container = document.querySelector('.upload-container');
+        container.insertBefore(alertDiv, container.firstChild);
+
+        // Fade in
+        setTimeout(() => {
+            alertDiv.classList.add('show');
+        }, 100);
+
+        // Fade out after 3 seconds
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 300);
+        }, 3000);
+    }
 
     // Klik tombol Choose File → buka file dialog
-    btnChooseFile.addEventListener('click', () => fileInput.click());
+    btnChooseFile.addEventListener('click', () => {
+        fileInput.click();
+    });
 
     // Enable Upload & Cancel saat file dipilih
     fileInput.addEventListener('change', () => {
         if (fileInput.files.length > 0) {
-            fileNameEl.innerHTML = 'Selected File: <strong>' + fileInput.files[0].name + '</strong>';
-            btnUpload.disabled = false;
-            btnCancel.disabled = false;
+            const file = fileInput.files[0];
+            if (isValidFile(file)) {
+                const filename = file.name;
+                fileNameEl.innerHTML = 'Selected File: <strong>' + filename + '</strong>';
+                btnUpload.disabled = false;
+                btnCancel.disabled = false;
+            } else {
+                showErrorAlert('Format file salah. Hanya file CSV atau XLSX yang diperbolehkan.');
+                fileInput.value = '';
+                fileNameEl.textContent = '';
+                btnUpload.disabled = true;
+                btnCancel.disabled = true;
+            }
         } else {
             fileNameEl.textContent = '';
             btnUpload.disabled = true;
             btnCancel.disabled = true;
+        }
+    });
+
+    // Drag and Drop functionality
+    uploadBox.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadBox.classList.add('dragover');
+    });
+
+    uploadBox.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadBox.classList.remove('dragover');
+    });
+
+    uploadBox.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadBox.classList.remove('dragover');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (isValidFile(file)) {
+                // Set file to input
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+
+                const filename = file.name;
+                fileNameEl.innerHTML = 'Selected File: <strong>' + filename + '</strong>';
+                btnUpload.disabled = false;
+                btnCancel.disabled = false;
+            } else {
+                showErrorAlert('Format file salah. Hanya file CSV atau XLSX yang diperbolehkan.');
+            }
         }
     });
 
@@ -320,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function closeDuplicateModal() {
     document.getElementById('duplicateModal').style.display = 'none';
     // Clear session data by redirecting without parameters
-    window.location.href = '{{ route("upload.bulanan") }}';
+    window.location.href = '{{ route("upload.harian") }}';
 }
 </script>
 @endpush
