@@ -26,20 +26,6 @@
       </a>
     </div>
 
-    @if(session('success'))
-      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    @endif
-
-    @if(session('error'))
-      <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    @endif
-
     <div class="table-responsive mt-4">
       <table class="table user-table align-middle">
         <thead>
@@ -64,6 +50,7 @@
                 <span class="badge {{ $user->role === 'admin' ? 'bg-danger' : 'bg-secondary' }}">
                   {{ $user->role === 'admin' ? 'Administrator' : 'Collection Agent' }}
                 </span>
+              </td>
               <td>
                 <form action="{{ route('kelola.toggle', $user->id) }}" method="POST" class="d-inline">
                   @csrf
@@ -73,23 +60,20 @@
                   </button>
                 </form>
               </td>
-        <td>
-          <div class="action-buttons">
-            <a href="{{ route('kelola.edit', $user->id) }}" class="btn-action edit" title="Edit Akun">
-              <i class="fa-solid fa-pen"></i>
-            </a>
-            <form action="{{ route('kelola.destroy', $user->id) }}" method="POST" 
-                  onsubmit="return confirm('Yakin ingin menghapus akun ini?');">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="btn-action delete" title="Hapus Akun">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </form>
-          </div>
-        </td>
-
-
+              <td>
+                <div class="action-buttons">
+                  <a href="{{ route('kelola.edit', $user->id) }}" class="btn-action edit" title="Edit Akun">
+                    <i class="fa-solid fa-pen"></i>
+                  </a>
+                  <form action="{{ route('kelola.destroy', $user->id) }}" method="POST" class="d-inline delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn-action delete delete-btn" title="Hapus Akun">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
             </tr>
           @empty
             <tr>
@@ -104,3 +88,54 @@
   </section>
 </main>
 @endsection
+
+@push('scripts')
+{{-- SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  // 🔹 Tampilkan SweetAlert jika ada session success
+  @if (session('success'))
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: '{{ session('success') }}',
+      confirmButtonColor: '#3085d6',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  @endif
+
+  // 🔹 Tampilkan SweetAlert jika ada session error
+  @if (session('error'))
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal!',
+      text: '{{ session('error') }}',
+      confirmButtonColor: '#d33'
+    });
+  @endif
+
+  // 🔹 SweetAlert konfirmasi sebelum hapus data
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const form = this.closest('.delete-form');
+      Swal.fire({
+        title: 'Yakin ingin menghapus akun ini?',
+        text: "Data yang dihapus tidak dapat dikembalikan.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+  });
+</script>
+@endpush
