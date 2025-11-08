@@ -140,14 +140,21 @@ public function index(Request $request)
     $dataPelanggan = $dataPelangganQuery->paginate(10, ['*'], 'pelanggan_page');
 
     $filterUserBelum = $request->get('filter_user_belum');
+    $filterFollowUp = $request->get('filter_followup');
 
     $belumFollowUpQuery = DB::table('caring_telepon')
         ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
-        ->whereNull('caring_telepon.status_call')
         ->orderBy('caring_telepon.created_at', 'desc')
         ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama',
-                 'caring_telepon.status_call', 'caring_telepon.keterangan',
+                 'caring_telepon.status_call', 'caring_telepon.keterangan', 'caring_telepon.contact_date',
                  'users.nama_lengkap as ca_name');
+
+    // Filter follow-up status
+    if ($filterFollowUp === 'sudah') {
+        $belumFollowUpQuery->whereNotNull('caring_telepon.contact_date');
+    } elseif ($filterFollowUp === 'belum') {
+        $belumFollowUpQuery->whereNull('caring_telepon.contact_date');
+    }
 
     // Jika role CA, hanya tampilkan data yang assigned ke CA tersebut
     if (auth()->user()->role === 'ca') {
@@ -177,27 +184,7 @@ public function index(Request $request)
     ));
 }
 
-    public function updateFollowupStatus(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|exists:caring_telepon,id',
-            'status' => 'required|in:belum,sudah'
-        ]);
-
-        $record = \App\Models\CaringTelepon::findOrFail($request->id);
-        $updateData = [];
-        if ($request->status === 'belum') {
-            $updateData['status_call'] = null;
-        } else {
-            $updateData['status_call'] = 'Konfirmasi Pembayaran';
-            $updateData['contact_date'] = now()->toDateString();
-            // Jangan set status_bayar di sini, biarkan sesuai data asli
-        }
-
-        $record->update($updateData);
-
-        return response()->json(['success' => true]);
-    }
+    // Removed updateFollowupStatus method as status updates should only be done in Caring Telepon
 
     public function updatePaymentStatus(Request $request)
     {

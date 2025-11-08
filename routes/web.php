@@ -31,7 +31,7 @@ Route::middleware(['auth', 'status'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/dashboard/update-followup-status', [DashboardController::class, 'updateFollowupStatus'])->name('admin.dashboard.updateFollowupStatus');
+    // Removed updateFollowupStatus route as status updates should only be done in Caring Telepon
     Route::post('/dashboard/update-payment-status', [DashboardController::class, 'updatePaymentStatus'])->name('admin.dashboard.updatePaymentStatus');
 
     // ======================

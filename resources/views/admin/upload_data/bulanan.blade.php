@@ -46,7 +46,7 @@
             <p><strong>Drag and Drop Files Here</strong></p>
             <p class="support">Supported Files: CSV, XLSX</p>
 
-            <form id="uploadForm" action="{{ route('upload.harian.import') }}" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="{{ route('upload.bulanan.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" id="fileInput" name="file" accept=".csv,.xlsx" style="display:none;">
 
@@ -72,7 +72,7 @@
     {{-- Tombol Review Table --}}
     <div class="mt-3 text-center">
         @if(isset($lastFileId))
-            <a href="{{ route('upload.harian.review', $lastFileId) }}" id="btnReview" class="btn btn-warning">
+            <a href="{{ route('upload.bulanan.review', $lastFileId) }}" id="btnReview" class="btn btn-warning">
                 Review Tabel (Opsional)
             </a>
         @else
@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function closeDuplicateModal() {
     document.getElementById('duplicateModal').style.display = 'none';
     // Clear session data by redirecting without parameters
-    window.location.href = '{{ route("upload.harian") }}';
+    window.location.href = '{{ route("upload.bulanan") }}';
 }
 </script>
 @endpush

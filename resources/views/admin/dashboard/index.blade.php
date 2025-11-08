@@ -102,22 +102,33 @@
             </div>
         </div>
 
-        {{-- Belum Follow-up --}}
+        {{-- Follow Up --}}
         <div id="belum-followup" class="table-container card" style="margin-top:18px;">
-            <h3>Belum Follow Up</h3>
+            <h3>Follow Up</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
                 <div>Total: {{ $belumFollowUp->total() }} data</div>
-                @if(auth()->user()->role !== 'ca')
-                <form method="GET" style="display:flex; gap:8px; align-items:center;">
-                    <label>Filter User:</label>
-                    <select name="filter_user_belum" onchange="this.form.submit()">
-                        <option value="">Semua User</option>
-                        @foreach($activeUsers as $user)
-                        <option value="{{ $user->id }}" {{ request('filter_user_belum') == $user->id ? 'selected' : '' }}>{{ $user->nama_lengkap }}</option>
-                        @endforeach
-                    </select>
-                </form>
-                @endif
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <form method="GET" style="display:flex; gap:8px; align-items:center;">
+                        <label>Filter Follow Up:</label>
+                        <select name="filter_followup" onchange="this.form.submit()">
+                            <option value="">Semua</option>
+                            <option value="sudah" {{ request('filter_followup') == 'sudah' ? 'selected' : '' }}>Sudah Follow Up</option>
+                            <option value="belum" {{ request('filter_followup') == 'belum' ? 'selected' : '' }}>Belum Follow Up</option>
+                        </select>
+                    </form>
+                    @if(auth()->user()->role !== 'ca')
+                    <form method="GET" style="display:flex; gap:8px; align-items:center;">
+                        <input type="hidden" name="filter_followup" value="{{ request('filter_followup') }}">
+                        <label>Filter User:</label>
+                        <select name="filter_user_belum" onchange="this.form.submit()">
+                            <option value="">Semua User</option>
+                            @foreach($activeUsers as $user)
+                            <option value="{{ $user->id }}" {{ request('filter_user_belum') == $user->id ? 'selected' : '' }}>{{ $user->nama_lengkap }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                    @endif
+                </div>
             </div>
             <div class="table-scroll">
                 <table class="interactive-table">
@@ -129,6 +140,7 @@
                             <th>USER</th>
                             @endif
                             <th>STATUS</th>
+                            <th>TANGGAL FOLLOW UP</th>
                             <th>MASALAH</th>
                         </tr>
                     </thead>
@@ -140,12 +152,8 @@
                             @if(auth()->user()->role !== 'ca')
                             <td>{{ $item->ca_name ?? '-' }}</td>
                             @endif
-                            <td>
-                                <select class="status-dropdown" data-id="{{ $item->id }}" data-type="followup">
-                                    <option value="belum" {{ ($item->status_call == null || !in_array($item->status_call, ['Konfirmasi Pembayaran','Tidak Konfirmasi Pembayaran','Tutup Telpon'])) ? 'selected' : '' }}>Belum</option>
-                                    <option value="sudah" {{ in_array($item->status_call, ['Konfirmasi Pembayaran','Tidak Konfirmasi Pembayaran','Tutup Telpon']) ? 'selected' : '' }}>Sudah</option>
-                                </select>
-                            </td>
+                            <td>{{ $item->contact_date ? 'Sudah' : 'Belum' }}</td>
+                            <td>{{ $item->contact_date ?? '-' }}</td>
                             <td>{{ $item->keterangan ?? '-' }}</td>
                         </tr>
                         @endforeach
@@ -697,8 +705,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateStatus(id, type, value) {
     let url, data;
     if (type === 'followup') {
-        url = '{{ route("admin.dashboard.updateFollowupStatus") }}';
-        data = { id: id, status: value };
+        // Follow-up status updates are now only allowed in Caring Telepon
+        showNotification('Status follow-up hanya bisa diubah di halaman Caring Telepon', 'error');
+        return;
     } else {
         url = '{{ route("admin.dashboard.updatePaymentStatus") }}';
         data = { snd: id, status: value };
