@@ -129,6 +129,7 @@ class CaringController extends Controller
         $updateData = [];
         if ($request->has('status_call')) {
             $updateData['status_call'] = $request->status_call;
+            $updateData['contact_date'] = now()->toDateString();
         }
         if ($request->has('keterangan')) {
             $updateData['keterangan'] = $request->keterangan;

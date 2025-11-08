@@ -5,6 +5,7 @@
 @section('header-subtitle', "Welcome back! Here's what's happening with your network today.")
 
 @push('styles')
+<link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 <link rel="stylesheet" href="{{ asset('css/caring.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endpush
@@ -65,7 +66,7 @@
 
             <canvas id="caPerformanceChart"></canvas>
             <div class="legend-text" style="margin-top:8px; font-size:0.9rem; color:#666;">
-                Garis menunjukkan jumlah kontak yang tercatat per CA pada tanggal di bulan terpilih.
+                Garis menunjukkan jumlah kontak yang tercatat per user (CA/Admin) pada tanggal di bulan terpilih.
             </div>
         </div>
 
@@ -547,15 +548,18 @@ if (barCtx) {
     @php
         // Prepare an array of user_id => nama_lengkap to embed (lookup in view)
         $userNameMap = [];
-        foreach($caDailyPerformance as $userId => $rows) {
-            $name = \DB::table('users')->where('id', $userId)->value('nama_lengkap') ?? 'CA '.$userId;
-            $userNameMap[$userId] = $name;
+        foreach($activeUsers as $user) {
+            $userNameMap[$user->id] = $user->nama_lengkap ?? 'User '.$user->id;
         }
     @endphp
 
     const userNameMap = @json($userNameMap);
 
-    @foreach($caDailyPerformance as $userId => $rows)
+    @foreach($activeUsers as $user)
+        @php
+            $userId = $user->id;
+            $rows = $caDailyPerformance->get($userId, collect());
+        @endphp
         // rows contain objects like { date: 'YYYY-MM-DD', contacts_per_day: n }
         const caRows_{{ $userId }} = @json($rows->values());
         // map to full month dates
@@ -567,7 +571,7 @@ if (barCtx) {
             return found ? Number(found.contacts_per_day) : 0;
         });
         caPerformanceData.datasets.push({
-            label: userNameMap["{{ $userId }}"] ? userNameMap["{{ $userId }}"] : 'CA {{ $userId }}',
+            label: userNameMap["{{ $userId }}"] ? userNameMap["{{ $userId }}"] : 'User {{ $userId }}',
             data: dataPoints_{{ $userId }},
             borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16),
             borderWidth: 2,
@@ -628,7 +632,7 @@ if (barCtx) {
                 }
             });
         } else {
-            caCtx.outerHTML = '<p class="text-muted">Tidak ada data CA performance untuk bulan ini.</p>';
+            caCtx.outerHTML = '<p class="text-muted">Tidak ada data user performance untuk bulan ini.</p>';
         }
     }
 })();

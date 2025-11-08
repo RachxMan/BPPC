@@ -53,10 +53,7 @@
   </div>
 
   <div class="sidebar-footer">
-    <form action="{{ route('logout') }}" method="POST">
-      @csrf
-      <button type="submit" class="logout-btn">Logout</button>
-    </form>
+    <button type="button" class="logout-btn" onclick="confirmLogout()">Logout</button>
   </div>
 </aside>
 
@@ -103,10 +100,7 @@
     </li>
 
     <li>
-      <form action="{{ route('logout') }}" method="POST">
-        @csrf
-        <button type="submit" class="logout-btn">Logout</button>
-      </form>
+      <button type="button" class="logout-btn" onclick="confirmLogout()">Logout</button>
     </li>
   </ul>
 </div>
@@ -145,8 +139,47 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('#mobile-menu .arrow').forEach(arrow => arrow.textContent = '▾');
     }
   });
+
+  // Logout confirmation modal
+  window.confirmLogout = function() {
+    document.getElementById('logoutModal').style.display = 'block';
+  };
+
+  document.getElementById('confirmLogoutBtn').addEventListener('click', function() {
+    // Create and submit logout form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("logout") }}';
+    const csrf = document.createElement('input');
+    csrf.type = 'hidden';
+    csrf.name = '_token';
+    csrf.value = '{{ csrf_token() }}';
+    form.appendChild(csrf);
+    document.body.appendChild(form);
+    form.submit();
+  });
+
+  document.getElementById('cancelLogoutBtn').addEventListener('click', function() {
+    document.getElementById('logoutModal').style.display = 'none';
+  });
+
+  // Close modal when clicking outside
+  document.getElementById('logoutModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+      this.style.display = 'none';
+    }
+  });
 });
 </script>
+
+{{-- Logout Confirmation Modal --}}
+<div id="logoutModal" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+  <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 400px; border-radius: 8px; text-align: center;">
+    <h3 style="margin-bottom: 20px; color: #333;">Apakah anda yakin ingin Logout?</h3>
+    <button id="confirmLogoutBtn" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; margin: 0 10px; border-radius: 4px; cursor: pointer;">Ya</button>
+    <button id="cancelLogoutBtn" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; margin: 0 10px; border-radius: 4px; cursor: pointer;">Tidak</button>
+  </div>
+</div>
 
 {{-- Style sidebar & mobile --}}
 <style>

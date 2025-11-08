@@ -17,16 +17,20 @@ public function index(Request $request)
     // KPI Section
     // ==============================
     $totalPelanggan = DB::table('harian')->count();
-    $totalFollowUp = DB::table('caring_telepon')->whereNotNull('status_call')->count();
+    $totalFollowUp = DB::table('caring_telepon')->whereNotNull('status_call')->whereNotNull('contact_date')->count();
     $today = Carbon::today();
 
     $recentFollowUp = DB::table('caring_telepon')
-        ->whereDate('updated_at', $today)
+        ->whereDate('contact_date', $today)
         ->whereNotNull('status_call')
+        ->whereNotNull('contact_date')
         ->count();
 
     $jumlahCA = DB::table('users')->where('role', 'ca')->where('status', 'Aktif')->count();
     $jumlahAdmin = DB::table('users')->where('role', 'admin')->where('status', 'Aktif')->count();
+
+    // Get all active users (CA and Admin) for performance chart
+    $activeUsers = DB::table('users')->whereIn('role', ['ca', 'admin'])->where('status', 'Aktif')->select('id', 'nama_lengkap')->get();
 
     // ==============================
     // Progress Collection
@@ -34,7 +38,7 @@ public function index(Request $request)
     $contactOptions = ['Konfirmasi Pembayaran', 'Tidak Konfirmasi Pembayaran', 'Tutup Telpon'];
     $uncontactOptions = ['RNA', 'Tidak Aktif', 'Nomor Luar Jangkauan', 'Tidak Tersambung'];
     $totalCall = DB::table('caring_telepon')->count();
-    $contacted = DB::table('caring_telepon')->whereIn('status_call', $contactOptions)->count();
+    $contacted = DB::table('caring_telepon')->whereIn('status_call', $contactOptions)->whereNotNull('contact_date')->count();
     $progressCollection = $totalCall > 0 ? round(($contacted / $totalCall) * 100, 2) : 0;
 
     // ==============================
@@ -50,11 +54,13 @@ public function index(Request $request)
     $caDailyPerformance = DB::table('caring_telepon')
         ->select(
             'user_id',
-            DB::raw('DATE(updated_at) as date'),
+            DB::raw('DATE(contact_date) as date'),
             DB::raw('COUNT(*) as contacts_per_day')
         )
-        ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+        ->whereBetween('contact_date', [$startOfMonth, $endOfMonth])
         ->whereNotNull('status_call')
+        ->whereNotNull('contact_date')
+        ->whereIn('user_id', $activeUsers->pluck('id'))
         ->groupBy('user_id', 'date')
         ->orderBy('date')
         ->get()
@@ -84,12 +90,13 @@ public function index(Request $request)
 
     $weekDataRaw = DB::table('caring_telepon')
         ->select(
-            DB::raw('DAYOFWEEK(updated_at) as day'),
+            DB::raw('DAYOFWEEK(contact_date) as day'),
             DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') THEN 1 ELSE 0 END) as contacted"),
             DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $uncontactOptions) . "') THEN 1 ELSE 0 END) as uncontacted"),
-            DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') AND LOWER(status_bayar) = 'paid' THEN 1 ELSE 0 END) as paid")
+            DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') AND LOWER(status_bayar) = 'paid' AND DATE(contact_date) = CURDATE() THEN 1 ELSE 0 END) as paid")
         )
-        ->whereBetween('updated_at', [$startOfWeek, $endOfWeek])
+        ->whereBetween('contact_date', [$startOfWeek, $endOfWeek])
+        ->whereNotNull('contact_date')
         ->groupBy('day')
         ->get();
 
@@ -156,7 +163,8 @@ public function index(Request $request)
         'dataPelanggan',
         'selectedMonth',
         'searchCA',
-        'belumFollowUp'
+        'belumFollowUp',
+        'activeUsers'
     ));
 }
 
@@ -168,11 +176,16 @@ public function index(Request $request)
         ]);
 
         $record = \App\Models\CaringTelepon::findOrFail($request->id);
+        $updateData = [];
         if ($request->status === 'belum') {
-            $record->update(['status_call' => null]);
+            $updateData['status_call'] = null;
         } else {
-            $record->update(['status_call' => 'Konfirmasi Pembayaran']);
+            $updateData['status_call'] = 'Konfirmasi Pembayaran';
+            $updateData['contact_date'] = now()->toDateString();
+            // Jangan set status_bayar di sini, biarkan sesuai data asli
         }
+
+        $record->update($updateData);
 
         return response()->json(['success' => true]);
     }

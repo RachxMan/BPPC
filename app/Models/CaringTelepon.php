@@ -33,6 +33,7 @@ class CaringTelepon extends Model
         'user_id',
         'keterangan',
         'status_call',
+        'contact_date',
         'created_at',
         'updated_at'
     ];

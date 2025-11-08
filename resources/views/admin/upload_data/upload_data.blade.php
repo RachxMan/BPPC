@@ -4,6 +4,10 @@
 @section('header-title', 'Upload Data')
 @section('header-subtitle', 'Manage your data uploads here')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/uploaddata.css') }}">
+@endpush
+
 @section('content')
 <style>
     body {
