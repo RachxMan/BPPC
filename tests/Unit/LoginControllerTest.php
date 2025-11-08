@@ -6,10 +6,11 @@ use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 
 class LoginControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
     #[Test]
     public function it_displays_the_login_page(): void
     {
@@ -29,10 +30,11 @@ class LoginControllerTest extends TestCase
             'role' => 'admin'
         ]);
 
-        $response = $this->post('/login', [
+        $response = $this->from('/login')->post('/login', [
             'username' => 'admin3',
             'password' => 'password123',
             'role' => 'admin',
+            '_token' => csrf_token(),
         ]);
 
         $response->assertRedirect('/dashboard');
@@ -48,10 +50,11 @@ class LoginControllerTest extends TestCase
             'role' => 'admin'
         ]);
 
-        $response = $this->post('/login', [
+        $response = $this->from('/login')->post('/login', [
             'username' => 'admin4',
             'password' => 'wrongpassword',
             'role' => 'admin',
+            '_token' => csrf_token(),
         ]);
 
         $response->assertRedirect('/');
@@ -64,7 +67,9 @@ class LoginControllerTest extends TestCase
         $user = User::factory()->create(['role' => 'admin']);
         $this->actingAs($user);
 
-        $response = $this->post('/logout');
+        $response = $this->from('/dashboard')->post('/logout', [
+            '_token' => csrf_token(),
+        ]);
 
         $response->assertRedirect('/login');
         $this->assertGuest();

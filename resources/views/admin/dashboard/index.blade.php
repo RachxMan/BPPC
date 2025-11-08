@@ -106,7 +106,7 @@
         <div id="belum-followup" class="table-container card" style="margin-top:18px;">
             <h3>Follow Up</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-                <div>Total: {{ $belumFollowUp->total() }} data</div>
+                <div>Total: {{ $totalBelumFollowUp ?? $belumFollowUp->total() }} data</div>
                 <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                     <form method="GET" style="display:flex; gap:8px; align-items:center;">
                         <label>Filter Follow Up:</label>
@@ -176,7 +176,7 @@
         <div id="data-pelanggan" class="table-container card" style="margin-top:14px;">
             <h3>Data Pelanggan</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-                <div>Total: {{ $dataPelanggan->total() }} data</div>
+                <div>Total: {{ $totalDataPelanggan ?? $dataPelanggan->total() }} data</div>
                 @if(auth()->user()->role !== 'ca')
                 <form method="GET" style="display:flex; gap:8px; align-items:center;">
                     <label>Filter User:</label>
@@ -209,7 +209,7 @@
                         <tr>
                             <td>{{ $pel->snd }}</td>
                             <td>{{ $pel->nama }}</td>
-                            <td>{{ $pel->datel }}</td>
+                            <td>{{ $pel->alamat }}</td>
                             <td>{{ $pel->cp ?? $pel->no_hp }}</td>
                             @if(auth()->user()->role !== 'ca')
                             <td>{{ $pel->ca_name ?? '-' }}</td>

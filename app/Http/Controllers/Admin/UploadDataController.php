@@ -225,47 +225,75 @@ private function review($fileId, $type, $importClass)
             }
 
             $data = Harian::doesntHave('assignedUsers')->get();
+            $totalData = $data->count();
+            $totalUsers = $users->count();
             $assignedCount = 0;
 
-            DB::beginTransaction();
-            foreach ($data as $row) {
-                $randomUser = $users->random();
-                $row->assignedUsers()->attach($randomUser->id);
-
-                // Jika status_bayar adalah 'unpaid', buat entry di caring_telepon untuk follow-up
-                if (strtolower($row->status_bayar) === 'unpaid') {
-                    CaringTelepon::firstOrCreate(
-                        ['snd' => $row->snd], // Prevent duplicates
-                        [
-                            'witel' => $row->witel,
-                            'type' => $row->type,
-                            'produk_bundling' => $row->produk_bundling,
-                            'fi_home' => $row->fi_home,
-                            'account_num' => $row->account_num,
-                            'snd_group' => $row->snd_group,
-                            'nama' => $row->nama,
-                            'cp' => $row->cp,
-                            'datel' => $row->datel,
-                            'payment_date' => $row->payment_date,
-                            'status_bayar' => $row->status_bayar,
-                            'no_hp' => $row->no_hp,
-                            'nama_real' => $row->nama_real,
-                            'segmen_real' => $row->segmen_real,
-                            'user_id' => $randomUser->id,
-                            'status_call' => null, // Belum follow-up
-                            'keterangan' => null,
-                            'contact_date' => null,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]
-                    );
-                }
-
-                $assignedCount++;
+            if ($totalData == 0) {
+                return response()->json(['success' => true, 'message' => 'Tidak ada data baru untuk didistribusikan.']);
             }
+
+            // Hitung pembagian merata
+            $basePerUser = intdiv($totalData, $totalUsers);
+            $extra = $totalData % $totalUsers;
+
+            DB::beginTransaction();
+
+            $userIndex = 0;
+            $userAssignments = array_fill(0, $totalUsers, $basePerUser);
+            for ($i = 0; $i < $extra; $i++) {
+                $userAssignments[$i]++;
+            }
+
+            $dataChunks = [];
+            $start = 0;
+            foreach ($userAssignments as $count) {
+                $dataChunks[] = $data->slice($start, $count);
+                $start += $count;
+            }
+
+            foreach ($dataChunks as $index => $chunk) {
+                $user = $users[$index];
+                foreach ($chunk as $row) {
+                    $row->assignedUsers()->attach($user->id);
+
+                    // Jika status_bayar adalah 'unpaid', buat entry di caring_telepon untuk follow-up
+                    if (strtolower($row->status_bayar) === 'unpaid') {
+                        CaringTelepon::firstOrCreate(
+                            ['snd' => $row->snd], // Prevent duplicates
+                            [
+                                'witel' => $row->witel,
+                                'type' => $row->type,
+                                'produk_bundling' => $row->produk_bundling,
+                                'fi_home' => $row->fi_home,
+                                'account_num' => $row->account_num,
+                                'snd_group' => $row->snd_group,
+                                'nama' => $row->nama,
+                                'cp' => $row->cp,
+                                'datel' => $row->datel,
+                                'payment_date' => $row->payment_date,
+                                'status_bayar' => $row->status_bayar,
+                                'no_hp' => $row->no_hp,
+                                'nama_real' => $row->nama_real,
+                                'segmen_real' => $row->segmen_real,
+                                'user_id' => $user->id,
+                                'status_call' => null, // Belum follow-up
+                                'keterangan' => null,
+                                'contact_date' => null,
+                                'alamat' => $row->alamat,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]
+                        );
+                    }
+
+                    $assignedCount++;
+                }
+            }
+
             DB::commit();
 
-            return response()->json(['success' => true, 'message' => "Berhasil mendistribusikan {$assignedCount} data."]);
+            return response()->json(['success' => true, 'message' => "Berhasil mendistribusikan {$assignedCount} data secara merata ke {$totalUsers} CA/Admin."]);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("combineCA gagal: " . $e->getMessage());

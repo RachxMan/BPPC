@@ -70,7 +70,7 @@ public function index(Request $request)
     // Status Pembayaran
     // ==============================
     $statusBayarRaw = DB::table('harian')
-        ->select('status_bayar', DB::raw('count(*) as total'))
+        ->select('status_bayar', DB::raw('count(distinct snd) as total'))
         ->whereNotNull('status_bayar')
         ->groupBy('status_bayar')
         ->get();
@@ -128,7 +128,7 @@ public function index(Request $request)
         })
         ->whereNotNull('harian.status_bayar')
         ->orderBy('harian.created_at', 'desc')
-        ->select('harian.snd','harian.nama','harian.datel','harian.cp','harian.no_hp','harian.status_bayar','harian.payment_date', 'users.nama_lengkap as ca_name');
+        ->select('harian.snd','harian.nama','harian.datel','harian.alamat','harian.cp','harian.no_hp','harian.status_bayar','harian.payment_date', 'users.nama_lengkap as ca_name');
 
     // Jika role CA, hanya tampilkan data yang assigned ke CA tersebut
     if (auth()->user()->role === 'ca') {
@@ -136,6 +136,9 @@ public function index(Request $request)
     } elseif ($filterUserPelanggan) {
         $dataPelangganQuery->where('caring_telepon.user_id', $filterUserPelanggan);
     }
+
+    $dataPelangganQueryClone = clone $dataPelangganQuery;
+    $totalDataPelanggan = $dataPelangganQueryClone->distinct('harian.snd')->count('harian.snd');
 
     $dataPelanggan = $dataPelangganQuery->paginate(10, ['*'], 'pelanggan_page');
 
@@ -163,6 +166,9 @@ public function index(Request $request)
         $belumFollowUpQuery->where('caring_telepon.user_id', $filterUserBelum);
     }
 
+    $belumFollowUpQueryClone = clone $belumFollowUpQuery;
+    $totalBelumFollowUp = $belumFollowUpQueryClone->distinct('caring_telepon.snd')->count('caring_telepon.snd');
+
     $belumFollowUp = $belumFollowUpQuery->paginate(10, ['*'], 'belum_page');
 
 
@@ -180,7 +186,9 @@ public function index(Request $request)
         'selectedMonth',
         'searchCA',
         'belumFollowUp',
-        'activeUsers'
+        'activeUsers',
+        'totalBelumFollowUp',
+        'totalDataPelanggan'
     ));
 }
 

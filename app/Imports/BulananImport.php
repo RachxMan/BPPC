@@ -21,6 +21,7 @@ class BulananImport implements ToModel, WithHeadingRow
             'nama' => $row['nama_ncli'] ?? null, // Company name from NAMA_NCLI
             'cp' => $row['cp'],
             'datel' => $row['datel'],
+            'alamat' => $row['alamat'] ?? null,
             'payment_date' => $row['payment_date'] ?? null,
             'status_bayar' => $row['status_bayar'],
             'no_hp' => $row['no_hp'],

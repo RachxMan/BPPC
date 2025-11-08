@@ -17,7 +17,7 @@
             <tr>
                 <td>{{ $pel->snd }}</td>
                 <td>{{ $pel->nama }}</td>
-                <td>{{ $pel->datel }}</td>
+                <td>{{ $pel->alamat }}</td>
                 <td>{{ $pel->cp ?? $pel->no_hp }}</td>
                 <td>{{ $pel->status_bayar }}</td>
                 <td>{{ $pel->payment_date ?? '-' }}</td>

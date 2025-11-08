@@ -25,6 +25,7 @@ class CaringTelepon extends Model
         'nama',
         'cp',
         'datel',
+        'alamat',
         'payment_date',
         'status_bayar',
         'no_hp',

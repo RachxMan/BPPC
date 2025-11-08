@@ -67,7 +67,7 @@
                             <th>SND Group</th>
                             <th>Nama</th>
                             <th>CP</th>
-                            <th>Datel</th>
+                            <th>Alamat</th>
                             <th>Payment Date</th>
                             <th>Status Bayar</th>
                             <th>No HP</th>
@@ -88,7 +88,7 @@
                                 <td>{{ $row['snd_group'] ?? '-' }}</td>
                                 <td>{{ $row['nama'] ?? '-' }}</td>
                                 <td>{{ $row['cp'] ?? '-' }}</td>
-                                <td>{{ $row['datel'] ?? '-' }}</td>
+                                <td>{{ $row['alamat'] ?? '-' }}</td>
                                 <td>{{ $row['payment_date'] ?? '-' }}</td>
                                 <td>{{ $row['status_bayar'] ?? '-' }}</td>
                                 <td>{{ $row['no_hp'] ?? '-' }}</td>

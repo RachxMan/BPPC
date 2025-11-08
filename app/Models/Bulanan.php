@@ -13,7 +13,7 @@ class Bulanan extends Model
 
     protected $fillable = [
         'witel', 'type', 'produk_bundling', 'fi_home', 'account_num',
-        'snd', 'snd_group', 'nama', 'cp', 'datel', 'payment_date',
+        'snd', 'snd_group', 'nama', 'cp', 'datel', 'alamat', 'payment_date',
         'status_bayar', 'no_hp', 'nama_real', 'segmen_real'
     ];
 }

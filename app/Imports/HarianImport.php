@@ -28,6 +28,7 @@ class HarianImport implements ToModel, WithHeadingRow
             'nama'           => $row['nama_ncli'] ?? null, // Company name from NAMA_NCLI
             'cp'             => $row['cp'] ?? null,
             'datel'          => $row['datel'] ?? null,
+            'alamat'         => $row['alamat'] ?? null,
             'payment_date'   => !empty($row['payment_date']) ? date('Y-m-d', strtotime($row['payment_date'])) : null,
             'status_bayar'   => $row['status_bayar'] ?? null,
             'no_hp'          => $row['no_hp'] ?? null,

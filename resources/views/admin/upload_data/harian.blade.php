@@ -4,6 +4,10 @@
 @section('header-title', 'Upload Data')
 @section('header-subtitle', 'Harian')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/uploaddata.css') }}">
+@endpush
+
 @section('content')
 <div class="upload-container">
 

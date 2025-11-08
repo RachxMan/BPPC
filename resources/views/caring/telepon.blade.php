@@ -227,7 +227,7 @@
           </select>
           <span>data</span>
         </form>
-        <div>Total: {{ $data->total() }} pelanggan</div>
+        <div>Total: {{ $totalUnique ?? $data->total() }} pelanggan</div>
       </div>
     </div>
 
@@ -252,7 +252,7 @@
             <td>{{ $data->firstItem() + $index }}</td>
             <td>{{ $row->snd ?? '-' }}</td>
             <td>{{ $row->nama ?? '-' }}</td>
-            <td>{{ $row->datel ?? '-' }}</td>
+            <td>{{ $row->alamat ?? '-' }}</td>
             <td>
               @php $kontak = $row->cp ?? $row->no_hp ?? '-'; @endphp
               <div class="kontak">

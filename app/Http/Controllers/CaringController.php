@@ -35,6 +35,7 @@ class CaringController extends Controller
                         'nama'           => $h->nama,
                         'cp'             => $h->cp,
                         'datel'          => $h->datel,
+                        'alamat'         => $h->alamat,
                         'no_hp'          => $h->no_hp,
                         'nama_real'      => $h->nama_real,
                         'segmen_real'    => $h->segmen_real,
@@ -58,6 +59,7 @@ class CaringController extends Controller
                                 'nama'           => $h->nama,
                                 'cp'             => $h->cp,
                                 'datel'          => $h->datel,
+                                'alamat'         => $h->alamat,
                                 'payment_date'   => $h->payment_date,
                                 'status_bayar'   => $h->status_bayar,
                                 'telp'           => $h->telp,
@@ -84,7 +86,7 @@ class CaringController extends Controller
         $search = $request->get('search');
         $sort   = $request->get('sort');
 
-        $data = CaringTelepon::with('user')
+        $query = CaringTelepon::with('user')
             ->when($user->role !== 'admin', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })
@@ -94,6 +96,7 @@ class CaringController extends Controller
                           ->orWhere('nama', 'like', "%{$search}%")
                           ->orWhere('nama_real', 'like', "%{$search}%")
                           ->orWhere('datel', 'like', "%{$search}%")
+                          ->orWhere('alamat', 'like', "%{$search}%")
                           ->orWhere('cp', 'like', "%{$search}%")
                           ->orWhere('no_hp', 'like', "%{$search}%");
                 });
@@ -108,11 +111,13 @@ class CaringController extends Controller
             })
             ->when(!$sort, function ($q) {
                 $q->orderBy('created_at', 'asc');
-            })
-            ->paginate($limit)
-            ->withQueryString();
+            });
 
-        return view('caring.telepon', compact('data', 'limit', 'search', 'sort'));
+        $totalUnique = (clone $query)->distinct('snd')->count('snd');
+
+        $data = $query->paginate($limit)->withQueryString();
+
+        return view('caring.telepon', compact('data', 'limit', 'search', 'sort', 'totalUnique'));
     }
 
     /**
