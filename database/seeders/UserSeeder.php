@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
                 'username' => 'admin',
                 'no_telp' => '081234567890',
                 'email_verified_at' => now(),
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('El.crackhead21'),
                 'remember_token' => Str::random(10),
                 'role' => 'admin',
                 'created_at' => now(),

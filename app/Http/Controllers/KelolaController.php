@@ -164,7 +164,8 @@ class KelolaController extends Controller
     }
 
     /**
-     * Redistribute all caring_telepon data evenly among active CAs.
+     * Redistribute uncontacted caring_telepon data evenly among active CAs.
+     * Contacted records (contact_date not null) keep their current assignments.
      */
     private function redistributeCaringTelepon()
     {
@@ -179,21 +180,21 @@ class KelolaController extends Controller
                 return; // No active CAs to assign to
             }
 
-            // Get all caring_telepon
-            $allRecords = CaringTelepon::all();
+            // Get only uncontacted caring_telepon records (contact_date is null)
+            $uncontactedRecords = CaringTelepon::whereNull('contact_date')->get();
 
-            if ($allRecords->isEmpty()) {
-                return; // No data to assign
+            if ($uncontactedRecords->isEmpty()) {
+                return; // No uncontacted data to assign
             }
 
-            // First, unassign all to reset
-            CaringTelepon::query()->update(['user_id' => null]);
+            // First, unassign only uncontacted records to reset them
+            CaringTelepon::whereNull('contact_date')->update(['user_id' => null]);
 
-            // Assign round-robin
+            // Assign round-robin only to uncontacted records
             $caCount = count($activeCAs);
             $index = 0;
 
-            foreach ($allRecords as $record) {
+            foreach ($uncontactedRecords as $record) {
                 $record->user_id = $activeCAs[$index];
                 $record->save();
                 $index = ($index + 1) % $caCount;
