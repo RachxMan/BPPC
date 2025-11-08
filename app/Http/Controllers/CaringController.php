@@ -85,7 +85,9 @@ class CaringController extends Controller
         $sort   = $request->get('sort');
 
         $data = CaringTelepon::with('user')
-            ->where('user_id', $user->id)
+            ->when($user->role !== 'admin', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($query) use ($search) {
                     $query->where('snd', 'like', "%{$search}%")

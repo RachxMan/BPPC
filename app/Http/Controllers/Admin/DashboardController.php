@@ -69,7 +69,7 @@ public function index(Request $request)
     // ==============================
     // Status Pembayaran
     // ==============================
-    $statusBayarRaw = DB::table('caring_telepon')
+    $statusBayarRaw = DB::table('harian')
         ->select('status_bayar', DB::raw('count(*) as total'))
         ->whereNotNull('status_bayar')
         ->groupBy('status_bayar')
@@ -118,21 +118,28 @@ public function index(Request $request)
     // ==============================
 
 
+    $filterUserPelanggan = $request->get('filter_user_pelanggan');
+
     $dataPelangganQuery = DB::table('harian')
         ->leftJoin('caring_telepon', 'harian.snd', '=', 'caring_telepon.snd')
+        ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
         ->where(function($q) {
             $q->where('harian.status_bayar', '!=', 'paid')->orWhereNull('harian.status_bayar');
         })
         ->whereNotNull('harian.status_bayar')
         ->orderBy('harian.created_at', 'desc')
-        ->select('harian.snd','harian.nama','harian.datel','harian.cp','harian.no_hp','harian.status_bayar','harian.payment_date');
+        ->select('harian.snd','harian.nama','harian.datel','harian.cp','harian.no_hp','harian.status_bayar','harian.payment_date', 'users.nama_lengkap as ca_name');
 
     // Jika role CA, hanya tampilkan data yang assigned ke CA tersebut
     if (auth()->user()->role === 'ca') {
         $dataPelangganQuery->where('caring_telepon.user_id', auth()->id());
+    } elseif ($filterUserPelanggan) {
+        $dataPelangganQuery->where('caring_telepon.user_id', $filterUserPelanggan);
     }
 
     $dataPelanggan = $dataPelangganQuery->paginate(10, ['*'], 'pelanggan_page');
+
+    $filterUserBelum = $request->get('filter_user_belum');
 
     $belumFollowUpQuery = DB::table('caring_telepon')
         ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
@@ -145,6 +152,8 @@ public function index(Request $request)
     // Jika role CA, hanya tampilkan data yang assigned ke CA tersebut
     if (auth()->user()->role === 'ca') {
         $belumFollowUpQuery->where('caring_telepon.user_id', auth()->id());
+    } elseif ($filterUserBelum) {
+        $belumFollowUpQuery->where('caring_telepon.user_id', $filterUserBelum);
     }
 
     $belumFollowUp = $belumFollowUpQuery->paginate(10, ['*'], 'belum_page');

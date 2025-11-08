@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Harian;
 use App\Models\Bulanan;
 use App\Models\User;
+use App\Models\CaringTelepon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\HarianImport;
 use App\Imports\BulananImport;
@@ -230,6 +231,36 @@ private function review($fileId, $type, $importClass)
             foreach ($data as $row) {
                 $randomUser = $users->random();
                 $row->assignedUsers()->attach($randomUser->id);
+
+                // Jika status_bayar adalah 'unpaid', buat entry di caring_telepon untuk follow-up
+                if (strtolower($row->status_bayar) === 'unpaid') {
+                    CaringTelepon::firstOrCreate(
+                        ['snd' => $row->snd], // Prevent duplicates
+                        [
+                            'witel' => $row->witel,
+                            'type' => $row->type,
+                            'produk_bundling' => $row->produk_bundling,
+                            'fi_home' => $row->fi_home,
+                            'account_num' => $row->account_num,
+                            'snd_group' => $row->snd_group,
+                            'nama' => $row->nama,
+                            'cp' => $row->cp,
+                            'datel' => $row->datel,
+                            'payment_date' => $row->payment_date,
+                            'status_bayar' => $row->status_bayar,
+                            'no_hp' => $row->no_hp,
+                            'nama_real' => $row->nama_real,
+                            'segmen_real' => $row->segmen_real,
+                            'user_id' => $randomUser->id,
+                            'status_call' => null, // Belum follow-up
+                            'keterangan' => null,
+                            'contact_date' => null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]
+                    );
+                }
+
                 $assignedCount++;
             }
             DB::commit();

@@ -105,8 +105,19 @@
         {{-- Belum Follow-up --}}
         <div id="belum-followup" class="table-container card" style="margin-top:18px;">
             <h3>Belum Follow Up</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
                 <div>Total: {{ $belumFollowUp->total() }} data</div>
+                @if(auth()->user()->role !== 'ca')
+                <form method="GET" style="display:flex; gap:8px; align-items:center;">
+                    <label>Filter User:</label>
+                    <select name="filter_user_belum" onchange="this.form.submit()">
+                        <option value="">Semua User</option>
+                        @foreach($activeUsers as $user)
+                        <option value="{{ $user->id }}" {{ request('filter_user_belum') == $user->id ? 'selected' : '' }}>{{ $user->nama_lengkap }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                @endif
             </div>
             <div class="table-scroll">
                 <table class="interactive-table">
@@ -156,8 +167,19 @@
         {{-- Data Pelanggan --}}
         <div id="data-pelanggan" class="table-container card" style="margin-top:14px;">
             <h3>Data Pelanggan</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
                 <div>Total: {{ $dataPelanggan->total() }} data</div>
+                @if(auth()->user()->role !== 'ca')
+                <form method="GET" style="display:flex; gap:8px; align-items:center;">
+                    <label>Filter User:</label>
+                    <select name="filter_user_pelanggan" onchange="this.form.submit()">
+                        <option value="">Semua User</option>
+                        @foreach($activeUsers as $user)
+                        <option value="{{ $user->id }}" {{ request('filter_user_pelanggan') == $user->id ? 'selected' : '' }}>{{ $user->nama_lengkap }}</option>
+                        @endforeach
+                    </select>
+                </form>
+                @endif
             </div>
             <div class="table-scroll">
                 <table class="interactive-table">
@@ -167,6 +189,9 @@
                             <th>NAMA PIC</th>
                             <th>ALAMAT</th>
                             <th>KONTAK</th>
+                            @if(auth()->user()->role !== 'ca')
+                            <th>USER</th>
+                            @endif
                             <th>STATUS</th>
                             <th>TANGGAL PEMBAYARAN</th>
                         </tr>
@@ -178,6 +203,9 @@
                             <td>{{ $pel->nama }}</td>
                             <td>{{ $pel->datel }}</td>
                             <td>{{ $pel->cp ?? $pel->no_hp }}</td>
+                            @if(auth()->user()->role !== 'ca')
+                            <td>{{ $pel->ca_name ?? '-' }}</td>
+                            @endif
                             <td>
                                 <select class="status-dropdown" data-id="{{ $pel->snd }}" data-type="payment">
                                     <option value="UNPAID" {{ strtolower($pel->status_bayar) == 'unpaid' ? 'selected' : '' }}>UNPAID</option>
