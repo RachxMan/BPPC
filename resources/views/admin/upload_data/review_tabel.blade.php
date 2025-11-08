@@ -353,7 +353,7 @@ table th, table td {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const submitBtn = document.getElementById('submitBtn');
-    const combineBtn = document.getElementById('combineDataBtn');
+    const combineBtn = document.getElementById('combineDataBtn'); // may be null if not harian
     const backBtn = document.getElementById('backBtn');
     const form = document.getElementById('submitForm');
 
@@ -367,6 +367,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const notificationTitle = document.getElementById('notificationTitle');
     const notificationMessage = document.getElementById('notificationMessage');
     const notificationCloseBtn = document.getElementById('notificationCloseBtn');
+
+    // Save original button texts to restore later
+    const originalSubmitText = submitBtn ? submitBtn.textContent.trim() : 'Submit';
+    const originalCombineText = combineBtn ? combineBtn.textContent.trim() : '';
 
     // Function to show notification modal
     function showNotification(title, message) {
@@ -423,88 +427,154 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Submit Semua Data ke Database
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        showConfirm('Konfirmasi', 'Yakin ingin menyimpan semua data ke database?', async () => {
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Menyimpan...';
-
-            try {
-                const res = await fetch(form.action, {
-                    method: 'POST',
-                    body: new FormData(form)
-                });
-
-                const text = await res.text();
-                let data;
+    if (form) {
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            showConfirm('Konfirmasi', 'Yakin ingin menyimpan semua data ke database?', async () => {
+                if (!submitBtn) return;
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Menyimpan...';
 
                 try {
-                    data = JSON.parse(text);
-                } catch {
-                    console.warn('Response bukan JSON:', text);
-                    throw new Error('Response tidak dalam format JSON');
-                }
+                    // Prepare fetch options: include X-Requested-With and Accept to hint Laravel to return JSON
+                    const headers = {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    };
 
-                if (data.success) {
-                    showNotification('Berhasil', data.message || 'Data berhasil disimpan ke database!');
-                    @if($type === 'harian')
-                        window.location.href = "{{ route('upload.harian') }}";
-                    @else
-                        combineBtn.disabled = false; // aktifkan tombol distribusi
-                    @endif
-                } else {
-                    showNotification('Gagal', data.message || 'Gagal menyimpan data.');
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        headers: headers,
+                        body: new FormData(form),
+                        credentials: 'same-origin'
+                    });
+
+                    // Try to detect content type
+                    const contentType = res.headers.get('content-type') || '';
+
+                    let data = null;
+                    if (contentType.includes('application/json')) {
+                        // If server returned JSON, parse it
+                        data = await res.json();
+                    } else {
+                        // If not JSON, try text and attempt JSON.parse; otherwise fallback
+                        const txt = await res.text();
+                        try {
+                            data = JSON.parse(txt);
+                        } catch (err) {
+                            // Not JSON — but if response OK (2xx), treat as success.
+                            data = null;
+                            console.warn('Response bukan JSON:', txt);
+                        }
+                    }
+
+                    // Decision logic:
+                    if (data && typeof data === 'object') {
+                        if (data.success) {
+                            showNotification('Berhasil', data.message || 'Data berhasil disimpan ke database!');
+                            @if($type === 'harian')
+                                // kalau harian, redirect ke halaman upload.harian jika server menyarankan
+                                window.location.href = "{{ route('upload.harian') }}";
+                            @else
+                                // aktifkan tombol distribusi jika ada
+                                if (combineBtn) combineBtn.disabled = false;
+                            @endif
+                        } else {
+                            // Server returned JSON but success = false
+                            const msg = data.message || 'Gagal menyimpan data.';
+                            showNotification('Gagal', msg);
+                        }
+                    } else {
+                        // Tidak ada JSON — fallback: gunakan status HTTP
+                        if (res.ok) {
+                            // Anggap berhasil (server mungkin melakukan redirect atau mengembalikan HTML)
+                            showNotification('Berhasil', 'Data berhasil disimpan ke database!');
+                            @if($type === 'harian')
+                                window.location.href = "{{ route('upload.harian') }}";
+                            @else
+                                if (combineBtn) combineBtn.disabled = false;
+                            @endif
+                        } else {
+                            showNotification('Gagal', 'Gagal menyimpan data. (Response tidak valid dari server)');
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showNotification('Kesalahan', 'Terjadi kesalahan saat menyimpan data.');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalSubmitText;
+                    }
                 }
-            } catch (err) {
-                console.error(err);
-                showNotification('Kesalahan', 'Terjadi kesalahan saat menyimpan data.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '✅ Submit Semua Data ke Database';
-            }
+            });
         });
-    });
+    }
 
     // Distribusi Data Random ke CA/Admin
-    combineBtn.addEventListener('click', async function () {
-        showConfirm('Konfirmasi', 'Yakin ingin mendistribusikan data ke semua CA/Admin secara random?', async () => {
-            combineBtn.disabled = true;
-            combineBtn.textContent = '🔄 Membagi data...';
+    if (combineBtn) {
+        combineBtn.addEventListener('click', async function () {
+            showConfirm('Konfirmasi', 'Yakin ingin mendistribusikan data ke semua CA/Admin secara random?', async () => {
+                combineBtn.disabled = true;
+                combineBtn.textContent = '🔄 Membagi data...';
 
-            try {
-                const res = await fetch("{{ route('upload.combineCA') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ file_id: '{{ $fileId }}' })
-                });
+                try {
+                    const res = await fetch("{{ route('upload.combineCA') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ file_id: '{{ $fileId }}' })
+                    });
 
-                const data = await res.json();
+                    let data = null;
+                    const contentType = res.headers.get('content-type') || '';
+                    if (contentType.includes('application/json')) {
+                        data = await res.json();
+                    } else {
+                        const txt = await res.text();
+                        try {
+                            data = JSON.parse(txt);
+                        } catch (err) {
+                            data = null;
+                            console.warn('Combine response bukan JSON:', txt);
+                        }
+                    }
 
-                if (data.success) {
-                    showNotification('Berhasil', data.message || 'Data berhasil dibagi ke seluruh CA/Admin!');
-                    window.location.href = "{{ route('upload.harian') }}";
-                } else {
-                    showNotification('Gagal', data.message || 'Distribusi gagal.');
+                    if (data && data.success) {
+                        showNotification('Berhasil', data.message || 'Data berhasil dibagi ke seluruh CA/Admin!');
+                        window.location.href = "{{ route('upload.harian') }}";
+                    } else if (res.ok && !data) {
+                        // fallback treat OK as success
+                        showNotification('Berhasil', 'Data berhasil dibagi ke seluruh CA/Admin!');
+                        window.location.href = "{{ route('upload.harian') }}";
+                    } else {
+                        showNotification('Gagal', (data && data.message) ? data.message : 'Distribusi gagal.');
+                        combineBtn.disabled = false;
+                        combineBtn.textContent = originalCombineText;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showNotification('Kesalahan', 'Terjadi kesalahan saat mendistribusikan data.');
                     combineBtn.disabled = false;
-                    combineBtn.textContent = '🔄 Distribusi Data Random ke CA/Admin';
+                    combineBtn.textContent = originalCombineText;
                 }
-            } catch (err) {
-                console.error(err);
-                showNotification('Kesalahan', 'Terjadi kesalahan saat mendistribusikan data.');
-                combineBtn.disabled = false;
-                combineBtn.textContent = '🔄 Distribusi Data Random ke CA/Admin';
-            }
+            });
         });
-    });
+    }
 
     // Tombol Back
-    backBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        window.location.href = "{{ $type === 'bulanan' ? route('upload.bulanan') : route('upload.harian') }}";
-    });
+    if (backBtn) {
+        backBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.location.href = "{{ $type === 'bulanan' ? route('upload.bulanan') : route('upload.harian') }}";
+        });
+    }
 });
 </script>
 @endpush
