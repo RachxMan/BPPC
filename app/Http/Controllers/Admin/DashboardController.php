@@ -30,8 +30,8 @@ public function index(Request $request)
     $jumlahCA = DB::table('users')->where('role', 'ca')->where('status', 'Aktif')->count();
     $jumlahAdmin = DB::table('users')->where('role', 'admin')->where('status', 'Aktif')->count();
 
-    // Get all active users (CA and Admin) for performance chart
-    $activeUsers = DB::table('users')->whereIn('role', ['ca', 'admin'])->where('status', 'Aktif')->select('id', 'nama_lengkap')->get();
+    // Get all active users (CA and Admin) for performance chart, sorted by nama_lengkap for consistent color assignment
+    $activeUsers = DB::table('users')->whereIn('role', ['ca', 'admin'])->where('status', 'Aktif')->select('id', 'nama_lengkap')->orderBy('nama_lengkap')->get();
 
     // ==============================
     // Progress Collection

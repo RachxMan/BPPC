@@ -618,11 +618,15 @@ function updateWeekData() {
         foreach($activeUsers as $user) {
             $userNameMap[$user->id] = $user->nama_lengkap ?? 'User '.$user->id;
         }
+
+        // Static color palette for consistent colors
+        $colorPalette = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
     @endphp
 
     const userNameMap = @json($userNameMap);
+    const colorPalette = @json($colorPalette);
 
-    @foreach($activeUsers as $user)
+    @foreach($activeUsers as $index => $user)
         @php
             $userId = $user->id;
             $rows = $caDailyPerformance->get($userId, collect());
@@ -640,7 +644,7 @@ function updateWeekData() {
         caPerformanceData.datasets.push({
             label: userNameMap["{{ $userId }}"] ? userNameMap["{{ $userId }}"] : 'User {{ $userId }}',
             data: dataPoints_{{ $userId }},
-            borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16),
+            borderColor: colorPalette[{{ $index }} % colorPalette.length],
             borderWidth: 2,
             tension: 0.25,
             fill: false,
