@@ -12,6 +12,7 @@ class DashboardController extends Controller
 public function index(Request $request)
 {
     $searchCA = $request->get('search_ca', '');
+    $weekOffset = $request->get('week_offset', 0); // 0 = current week, -1 = previous, 1 = next
 
     // ==============================
     // KPI Section
@@ -83,10 +84,10 @@ public function index(Request $request)
     }
 
     // ==============================
-    // Progress Mingguan
+    // Progress Mingguan with offset
     // ==============================
-    $startOfWeek = Carbon::now()->startOfWeek(Carbon::SUNDAY);
-    $endOfWeek   = Carbon::now()->endOfWeek(Carbon::SATURDAY);
+    $startOfWeek = Carbon::now()->startOfWeek(Carbon::SUNDAY)->addWeeks($weekOffset);
+    $endOfWeek   = Carbon::now()->endOfWeek(Carbon::SATURDAY)->addWeeks($weekOffset);
 
     $weekDataRaw = DB::table('caring_telepon')
         ->select(
@@ -110,6 +111,10 @@ public function index(Request $request)
             'paid' => $record->paid ?? 0,
         ]);
     }
+
+    // Week label and period
+    $weekLabel = $weekOffset == 0 ? 'Minggu Ini' : ($weekOffset < 0 ? 'Minggu Lalu' : 'Minggu Depan');
+    $weekPeriod = 'Periode: ' . $startOfWeek->format('d M Y') . ' – ' . $endOfWeek->format('d M Y');
 
 
 
@@ -147,6 +152,7 @@ public function index(Request $request)
 
     $belumFollowUpQuery = DB::table('caring_telepon')
         ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
+        ->where('caring_telepon.status_bayar', 'Unpaid') // Only show unpaid customers
         ->orderBy('caring_telepon.created_at', 'desc')
         ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama',
                  'caring_telepon.status_call', 'caring_telepon.keterangan', 'caring_telepon.contact_date',
@@ -182,6 +188,9 @@ public function index(Request $request)
         'caDailyPerformance',
         'statusBayar',
         'weekData',
+        'weekLabel',
+        'weekPeriod',
+        'weekOffset',
         'dataPelanggan',
         'selectedMonth',
         'searchCA',

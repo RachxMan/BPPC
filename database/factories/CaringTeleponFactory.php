@@ -31,6 +31,28 @@ class CaringTeleponFactory extends Factory
             'segmen_real' => $this->faker->word(),
             'status_call' => null,
             'keterangan' => null,
+            'contact_date' => null,
         ];
+    }
+
+    /**
+     * State for unassigned records
+     */
+    public function unassigned()
+    {
+        return $this->state([
+            'user_id' => null,
+        ]);
+    }
+
+    /**
+     * State for followed up records
+     */
+    public function followedUp()
+    {
+        return $this->state([
+            'contact_date' => now()->toDateString(),
+            'status_call' => 'Contacted',
+        ]);
     }
 }

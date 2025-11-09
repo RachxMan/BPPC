@@ -77,7 +77,12 @@
                 <canvas id="pieChart"></canvas>
             </div>
             <div class="chart card">
-                <h3>Progress Collection (Minggu Ini)</h3>
+                <h3>Progress Collection ({{ $weekLabel ?? 'Minggu Ini' }})</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <button id="prevWeek" class="btn btn-secondary btn-sm">&laquo; Previous Week</button>
+                    <span id="weekPeriod">{{ $weekPeriod ?? 'Periode: ' . \Carbon\Carbon::now()->startOfWeek()->format('d M Y') . ' – ' . \Carbon\Carbon::now()->endOfWeek()->format('d M Y') }}</span>
+                    <button id="nextWeek" class="btn btn-secondary btn-sm">Next Week &raquo;</button>
+                </div>
                 <div class="chart-stats">
                     <div class="stat-item">
                         <span class="stat-label">Total Contacted:</span>
@@ -214,12 +219,7 @@
                             @if(auth()->user()->role !== 'ca')
                             <td>{{ $pel->ca_name ?? '-' }}</td>
                             @endif
-                            <td>
-                                <select class="status-dropdown" data-id="{{ $pel->snd }}" data-type="payment">
-                                    <option value="UNPAID" {{ strtolower($pel->status_bayar) == 'unpaid' ? 'selected' : '' }}>UNPAID</option>
-                                    <option value="PAID" {{ strtolower($pel->status_bayar) == 'paid' ? 'selected' : '' }}>PAID</option>
-                                </select>
-                            </td>
+                            <td>{{ $pel->status_bayar }}</td>
                             <td>{{ $pel->payment_date ?? '-' }}</td>
                         </tr>
                         @endforeach
@@ -506,9 +506,10 @@ if (pieCtx) {
 }
 
 // ===== WEEKLY BAR CHART =====
+let barChart;
 const barCtx = document.getElementById('barChart');
 if (barCtx) {
-    new Chart(barCtx, {
+    barChart = new Chart(barCtx, {
         type: 'bar',
         data: {
             labels: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
@@ -548,6 +549,22 @@ if (barCtx) {
             plugins: { legend: { position: 'top' } }
         }
     });
+}
+
+// ===== WEEK NAVIGATION =====
+let currentWeekOffset = {{ $weekOffset ?? 0 }};
+document.getElementById('prevWeek').addEventListener('click', function() {
+    currentWeekOffset--;
+    updateWeekData();
+});
+document.getElementById('nextWeek').addEventListener('click', function() {
+    currentWeekOffset++;
+    updateWeekData();
+});
+
+function updateWeekData() {
+    const url = '{{ route("dashboard") }}?week_offset=' + currentWeekOffset + '&month={{ $selectedMonth }}&search_ca={{ urlencode($searchCA) }}';
+    window.location.href = url;
 }
 
 

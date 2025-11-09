@@ -243,7 +243,7 @@
             <th>Kontak</th>
             <th>Payment Date</th>
             <th>Status Bayar</th>
-            <th>Status & Ket.</th>
+            <th>Status & Keterangan</th>
           </tr>
         </thead>
         <tbody>

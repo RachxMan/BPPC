@@ -71,14 +71,15 @@ class CaringControllerTest extends TestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function telepon_page_respects_search_query(): void
     {
-        $harian = Harian::factory()->create([
+        // Create CaringTelepon record directly since sync no longer creates new records
+        CaringTelepon::create([
             'snd' => 'SND002',
             'nama' => 'Customer Test',
             'account_num' => 'ACC002',
+            'user_id' => $this->user->id,
+            'status_call' => null,
+            'keterangan' => null,
         ]);
-
-        // Assign the harian to the test user
-        $this->user->harian()->attach($harian->snd);
 
         $this->actingAs($this->user)
              ->get(route('caring.telepon', ['search' => 'Customer']))

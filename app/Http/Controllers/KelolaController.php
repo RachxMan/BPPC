@@ -61,8 +61,8 @@ class KelolaController extends Controller
             'status' => 'Aktif', // Default status
         ]);
 
-        // Redistribute caring_telepon if new user is CA
-        if ($validated['role'] === 'Collection Agent') {
+        // Redistribute caring_telepon for any new active user
+        if ($validated['role'] === 'Collection Agent' || $validated['role'] === 'Administrator') {
             $this->redistributeCaringTelepon();
         }
 
@@ -164,41 +164,44 @@ class KelolaController extends Controller
     }
 
     /**
-     * Redistribute uncontacted caring_telepon data evenly among active CAs.
-     * Contacted records (contact_date not null) keep their current assignments.
+     * Redistribute "Belum Follow Up" caring_telepon data evenly among active users (CA/Admin).
+     * Only data with contact_date null is redistributed to ensure even distribution.
+     * Also handles unassigned data (user_id IS NULL) by allocating to users with least customers.
      */
-    private function redistributeCaringTelepon()
-    {
-        DB::transaction(function () {
-            // Get all active CAs
-            $activeCAs = User::where('role', 'ca')
-                ->where('status', 'Aktif')
-                ->pluck('id')
-                ->toArray();
+ private function redistributeCaringTelepon()
+{
+    DB::transaction(function () {
+        // Get all active users (CA and Admin)
+        $activeUsers = User::whereIn('role', ['ca', 'admin'])
+            ->where('status', 'Aktif')
+            ->pluck('id')
+            ->toArray();
 
-            if (empty($activeCAs)) {
-                return; // No active CAs to assign to
-            }
+        if (empty($activeUsers)) {
+            return; // No active users to assign to
+        }
 
-            // Get only uncontacted caring_telepon records (contact_date is null)
-            $uncontactedRecords = CaringTelepon::whereNull('contact_date')->get();
+        // Ambil semua data belum follow up
+        $belumFollowUpRecords = CaringTelepon::whereNull('contact_date')->get();
+        if ($belumFollowUpRecords->isEmpty()) {
+            return;
+        }
 
-            if ($uncontactedRecords->isEmpty()) {
-                return; // No uncontacted data to assign
-            }
+        // Reset semua user_id ke null
+        CaringTelepon::whereNull('contact_date')->update(['user_id' => null]);
 
-            // First, unassign only uncontacted records to reset them
-            CaringTelepon::whereNull('contact_date')->update(['user_id' => null]);
+        // 🔥 Ambil ulang data segar dari DB setelah reset
+        $belumFollowUpRecords = CaringTelepon::whereNull('contact_date')->get();
 
-            // Assign round-robin only to uncontacted records
-            $caCount = count($activeCAs);
-            $index = 0;
+        // Round robin distribusi ke semua user aktif
+        $userCount = count($activeUsers);
+        $index = 0;
 
-            foreach ($uncontactedRecords as $record) {
-                $record->user_id = $activeCAs[$index];
-                $record->save();
-                $index = ($index + 1) % $caCount;
-            }
-        });
-    }
+        foreach ($belumFollowUpRecords as $record) {
+            $record->user_id = $activeUsers[$index];
+            $record->save();
+            $index = ($index + 1) % $userCount;
+        }
+    });
+}
 }

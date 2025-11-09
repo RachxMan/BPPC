@@ -17,11 +17,11 @@ class CaringController extends Controller
         $user = Auth::user();
 
         // ===========================
-        // Sinkronisasi Harian -> CaringTelepon (dengan chunking untuk menghindari limit memori/waktu)
+        // Sinkronisasi Harian -> CaringTelepon (hanya update existing records, tidak create baru)
         // ===========================
-        Harian::with('assignedUsers')->chunk(100, function ($harianUsers) {
+        Harian::chunk(100, function ($harianUsers) {
             foreach ($harianUsers as $h) {
-                // 1. Update semua record existing untuk snd ini (update status_bayar, payment_date)
+                // Update existing records only - do not create new ones
                 CaringTelepon::where('snd', $h->snd)
                     ->update([
                         'status_bayar'   => $h->status_bayar,
@@ -40,42 +40,6 @@ class CaringController extends Controller
                         'nama_real'      => $h->nama_real,
                         'segmen_real'    => $h->segmen_real,
                     ]);
-
-                // 2. Tambahkan record untuk assigned users yang belum ada
-                if ($h->assignedUsers && $h->assignedUsers->count() > 0) {
-                    foreach ($h->assignedUsers as $assignedUser) {
-                        CaringTelepon::updateOrCreate(
-                            [
-                                'snd'     => $h->snd,
-                                'user_id' => $assignedUser->id
-                            ],
-                            [
-                                'witel'          => $h->witel,
-                                'type'           => $h->type,
-                                'produk_bundling'=> $h->produk_bundling,
-                                'fi_home'        => $h->fi_home,
-                                'account_num'    => $h->account_num,
-                                'snd_group'      => $h->snd_group,
-                                'nama'           => $h->nama,
-                                'cp'             => $h->cp,
-                                'datel'          => $h->datel,
-                                'alamat'         => $h->alamat,
-                                'payment_date'   => $h->payment_date,
-                                'status_bayar'   => $h->status_bayar,
-                                'telp'           => $h->telp,
-                                'nama_real'      => $h->nama_real, // Always use PIC name from Harian
-                                'segmen_real'    => $h->segmen_real,
-                                // Hanya simpan status_call & keterangan jika belum ada
-                                'status_call'    => CaringTelepon::where('snd', $h->snd)
-                                                               ->where('user_id', $assignedUser->id)
-                                                               ->value('status_call') ?? $h->status_call ?? null,
-                                'keterangan'     => CaringTelepon::where('snd', $h->snd)
-                                                               ->where('user_id', $assignedUser->id)
-                                                               ->value('keterangan') ?? $h->keterangan ?? null,
-                            ]
-                        );
-                    }
-                }
             }
         });
 
@@ -133,6 +97,11 @@ class CaringController extends Controller
 
         $record = CaringTelepon::findOrFail($request->id);
 
+        // Validate that the record exists and belongs to the current user (if not admin)
+        if (auth()->user()->role !== 'admin' && $record->user_id !== auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
         $updateData = [];
         if ($request->has('status_call')) {
             $updateData['status_call'] = $request->status_call;
@@ -144,6 +113,29 @@ class CaringController extends Controller
 
         if (!empty($updateData)) {
             $record->update($updateData);
+
+            // Automate status_bayar based on status_call
+            if ($request->status_call === 'Konfirmasi Pembayaran') {
+                $record->update([
+                    'status_bayar' => 'Paid',
+                    'payment_date' => now()->toDateString(),
+                ]);
+                // Sync to harian table
+                \App\Models\Harian::where('snd', $record->snd)->update([
+                    'status_bayar' => 'Paid',
+                    'payment_date' => now()->toDateString(),
+                ]);
+            } else {
+                $record->update([
+                    'status_bayar' => 'Unpaid',
+                    'payment_date' => null,
+                ]);
+                // Sync to harian table
+                \App\Models\Harian::where('snd', $record->snd)->update([
+                    'status_bayar' => 'Unpaid',
+                    'payment_date' => null,
+                ]);
+            }
         }
 
         return response()->json(['success' => true]);
