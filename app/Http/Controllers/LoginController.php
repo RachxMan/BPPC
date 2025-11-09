@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-
+    // ✅ Tambahkan ini agar halaman login bisa diakses
     public function showLoginForm()
     {
         return view('auth.login');
@@ -21,27 +21,28 @@ class LoginController extends Controller
             'role' => 'required|in:admin,ca',
         ]);
 
-        $credentials = $request->only('username', 'password');
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password,
+        ];
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
+            // Pastikan role sesuai
             if ($user->role !== $request->role) {
                 Auth::logout();
-                return redirect()->route('login')->withErrors(['role' => 'Username tidak terdaftar sebagai role ' . ($request->role === 'admin' ? 'Admin' : 'CA') . '.']);
+                return redirect()->route('login')->withErrors([
+                    'role' => 'Username tidak terdaftar sebagai role ' . ucfirst($request->role) . '.'
+                ]);
             }
 
-            if ($user->role === 'admin') {
-                return redirect()->route('dashboard')->with('success', 'Selamat datang Admin!');
-            } elseif ($user->role === 'ca') {
-                return redirect()->route('dashboard')->with('success', 'Selamat datang CA!');
-            } else {
-                Auth::logout();
-                return redirect()->route('login')->withErrors(['role' => 'Role tidak dikenal.']);
-            }
+            return redirect()->route('dashboard')
+                ->with('success', 'Selamat datang ' . strtoupper($user->role) . '!');
         }
 
-        return back()->withErrors([
+        // Login gagal
+        return redirect()->route('login')->withErrors([
             'username' => 'Username atau password salah.',
         ])->withInput();
     }

@@ -50,7 +50,14 @@ class CaringController extends Controller
         $search = $request->get('search');
         $sort   = $request->get('sort');
 
-        $query = CaringTelepon::with('user')
+        $query = CaringTelepon::with(['user' => function ($q) {
+                $q->where('status', 'Aktif');
+            }])
+            ->where(function ($q) {
+                $q->whereHas('user', function ($subQ) {
+                    $subQ->where('status', 'Aktif');
+                })->orWhereNull('user_id');
+            })
             ->when($user->role !== 'admin', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })

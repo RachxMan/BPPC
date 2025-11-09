@@ -137,11 +137,22 @@ class KelolaController extends Controller
      */
     public function toggleStatus(User $user)
     {
+        $oldStatus = $user->status;
         $user->status = $user->status === 'Aktif' ? 'Nonaktif' : 'Aktif';
         $user->save();
 
+        // If deactivating user, set user_id to null for their CaringTelepon records
+        // and redistribute "belum follow up" data to active users
+        if ($oldStatus === 'Aktif' && $user->status === 'Nonaktif') {
+            // Set user_id to null for all records assigned to this user
+            CaringTelepon::where('user_id', $user->id)->update(['user_id' => null]);
+
+            // Redistribute only "belum follow up" data (contact_date is null)
+            $this->redistributeCaringTelepon();
+        }
+
         $statusText = $user->status === 'Aktif' ? 'diaktifkan' : 'dinonaktifkan';
-        
+
         return redirect()->route('kelola.index')
             ->with('success', "Akun berhasil {$statusText}.");
     }

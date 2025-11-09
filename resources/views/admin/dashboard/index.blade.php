@@ -330,11 +330,14 @@
 }
 .search-form button {
     padding: 8px 16px;
-    background: #007BFF;
+    background: #e74c3c;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+.search-form button:hover {
+    background: #c0392b;
 }
 
 /* Charts */
@@ -419,6 +422,17 @@
     font-size: 0.9rem;
     min-width: 100px;
     cursor: pointer;
+}
+
+/* Override btn-secondary for red color */
+.btn-secondary {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #c0392b;
 }
 
 /* Modal */

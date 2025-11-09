@@ -12,7 +12,7 @@ class DashboardController extends Controller
 public function index(Request $request)
 {
     $searchCA = $request->get('search_ca', '');
-    $weekOffset = $request->get('week_offset', 0); // 0 = current week, -1 = previous, 1 = next
+    $weekOffset = (int) $request->get('week_offset', 0); // 0 = current week, -1 = previous, 1 = next
 
     // ==============================
     // KPI Section
@@ -132,6 +132,10 @@ public function index(Request $request)
             $q->where('harian.status_bayar', '!=', 'paid')->orWhereNull('harian.status_bayar');
         })
         ->whereNotNull('harian.status_bayar')
+        ->where(function ($q) {
+            $q->where('users.status', 'Aktif')
+              ->orWhereNull('caring_telepon.user_id');
+        })
         ->orderBy('harian.created_at', 'desc')
         ->select('harian.snd','harian.nama','harian.datel','harian.alamat','harian.cp','harian.no_hp','harian.status_bayar','harian.payment_date', 'users.nama_lengkap as ca_name');
 
@@ -153,6 +157,10 @@ public function index(Request $request)
     $belumFollowUpQuery = DB::table('caring_telepon')
         ->leftJoin('users', 'caring_telepon.user_id', '=', 'users.id')
         ->where('caring_telepon.status_bayar', 'Unpaid') // Only show unpaid customers
+        ->where(function ($q) {
+            $q->where('users.status', 'Aktif')
+              ->orWhereNull('caring_telepon.user_id');
+        })
         ->orderBy('caring_telepon.created_at', 'desc')
         ->select('caring_telepon.id', 'caring_telepon.snd', 'caring_telepon.nama',
                  'caring_telepon.status_call', 'caring_telepon.keterangan', 'caring_telepon.contact_date',

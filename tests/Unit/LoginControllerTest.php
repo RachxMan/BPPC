@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 class LoginControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
+
     #[Test]
     public function it_displays_the_login_page(): void
     {
@@ -42,7 +43,7 @@ class LoginControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_redirects_to_dashboard_even_with_wrong_credentials(): void
+    public function it_does_not_redirect_to_dashboard_with_wrong_credentials(): void
     {
         $user = User::factory()->create([
             'username' => 'admin4',
@@ -57,7 +58,13 @@ class LoginControllerTest extends TestCase
             '_token' => csrf_token(),
         ]);
 
-        $response->assertRedirect('/');
+        // Pastikan redirect kembali ke login (karena login gagal)
+        $response->assertRedirect('/login');
+
+        // Pastikan pesan error muncul
+        $response->assertSessionHasErrors(['username']);
+
+        // Pastikan user tidak login
         $this->assertGuest();
     }
 
