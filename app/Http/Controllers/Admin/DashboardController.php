@@ -94,7 +94,7 @@ public function index(Request $request)
             DB::raw('DAYOFWEEK(contact_date) as day'),
             DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') THEN 1 ELSE 0 END) as contacted"),
             DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $uncontactOptions) . "') THEN 1 ELSE 0 END) as uncontacted"),
-            DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') AND LOWER(status_bayar) = 'paid' AND DATE(contact_date) = CURDATE() THEN 1 ELSE 0 END) as paid")
+            DB::raw("SUM(CASE WHEN status_call IN ('" . implode("','", $contactOptions) . "') AND LOWER(status_bayar) = 'paid' THEN 1 ELSE 0 END) as paid")
         )
         ->whereBetween('contact_date', [$startOfWeek, $endOfWeek])
         ->whereNotNull('contact_date')
