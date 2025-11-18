@@ -75,6 +75,8 @@
     align-items: center;
     z-index: 9999;
     animation: fadeIn 0.25s ease;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
   @keyframes fadeIn {
@@ -93,6 +95,8 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     animation: slideUp 0.3s ease;
     font-size: 13px;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   @keyframes slideUp {
@@ -138,6 +142,7 @@
     justify-content: flex-end;
     gap: 8px;
     margin-top: 8px;
+    flex-wrap: wrap;
   }
 
   .btn-cancel {
@@ -172,12 +177,76 @@
   /* Responsive table */
   .table-responsive {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   @media (max-width: 1200px) {
     .user-table th, .user-table td {
       font-size: 11.5px !important;
       padding: 5px 6px !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .modal-content {
+      width: 95%;
+      padding: 16px 18px;
+      font-size: 12px;
+    }
+
+    .modal-content h4 {
+      font-size: 13px;
+    }
+
+    .modal-content select,
+    .modal-content textarea {
+      font-size: 12px;
+      padding: 8px;
+    }
+
+    .btn-cancel, .btn-save {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    .user-table th, .user-table td {
+      font-size: 10px !important;
+      padding: 4px 5px !important;
+    }
+
+    .user-table {
+      min-width: 600px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .modal-content {
+      width: 98%;
+      padding: 12px 16px;
+    }
+
+    .modal-content h4 {
+      font-size: 12px;
+    }
+
+    .modal-content select,
+    .modal-content textarea {
+      font-size: 11px;
+      padding: 6px;
+    }
+
+    .btn-cancel, .btn-save {
+      padding: 5px 10px;
+      font-size: 10px;
+    }
+
+    .user-table {
+      min-width: 500px;
+    }
+
+    .user-table th, .user-table td {
+      font-size: 9px !important;
+      padding: 3px 4px !important;
     }
   }
 </style>
@@ -200,7 +269,7 @@
 
     {{-- Search & Filter --}}
     <div class="top-controls" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-      <form id="search-form" method="GET" style="display:flex; align-items:center; gap:8px;">
+      <form id="search-form" method="GET" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pelanggan..." class="search-input">
         <button type="submit" class="btn-red"><i class="fa-solid fa-search me-2"></i> Cari</button>
         @if(request('search'))
@@ -208,7 +277,7 @@
         @endif
       </form>
 
-      <div style="display:flex; align-items:center; gap:16px;">
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
         <form method="GET" style="display:flex; align-items:center; gap:4px;">
           <label>Sortir:</label>
           <select name="sort" onchange="this.form.submit()">

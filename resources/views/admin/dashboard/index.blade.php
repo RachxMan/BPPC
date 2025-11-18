@@ -310,6 +310,41 @@
     margin: 0;
 }
 
+/* Responsive KPI Cards */
+@media (max-width: 768px) {
+    .cards {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .card.kpi {
+        padding: 10px;
+    }
+    .card.kpi h3 {
+        font-size: 0.7rem;
+    }
+    .card.kpi p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+    .card.kpi {
+        padding: 8px;
+    }
+    .card.kpi h3 {
+        font-size: 0.65rem;
+        margin-bottom: 2px;
+    }
+    .card.kpi p {
+        font-size: 0.9rem;
+    }
+}
+
 /* CA Performance */
 .ca-performance {
     background: #fff;
@@ -354,6 +389,27 @@
     box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 
+/* Responsive Charts */
+@media (max-width: 768px) {
+    .charts {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .chart.card {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .charts {
+        gap: 12px;
+    }
+    .chart.card {
+        padding: 12px;
+    }
+}
+
 /* 7 Days Section */
 .seven-days-section {
     margin-bottom: 20px;
@@ -389,6 +445,40 @@
     color: #333;
 }
 
+/* Responsive 7 Days Section */
+@media (max-width: 768px) {
+    .seven-days-section {
+        margin-bottom: 16px;
+    }
+    .chart-stats {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+    .stat-item {
+        text-align: left;
+    }
+    .stat-label {
+        font-size: 0.8rem;
+    }
+    .stat-value {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-stats {
+        padding: 10px;
+        gap: 8px;
+    }
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    .stat-value {
+        font-size: 1rem;
+    }
+}
+
 /* Tables */
 .table-container.card {
     background: #fff;
@@ -396,10 +486,12 @@
     border-radius: 10px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     margin-bottom: 20px;
+    overflow-x: auto;
 }
 .interactive-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px; /* Ensure minimum width for proper display */
 }
 .interactive-table thead {
     background: #f4f4f4;
@@ -408,9 +500,38 @@
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #eee;
+    white-space: nowrap;
 }
 .interactive-table tbody tr:hover {
     background: #f1faff;
+}
+
+/* Responsive Tables */
+@media (max-width: 768px) {
+    .table-container.card {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    .interactive-table th, .interactive-table td {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+    .interactive-table {
+        min-width: 500px;
+    }
+}
+
+@media (max-width: 480px) {
+    .table-container.card {
+        padding: 12px;
+    }
+    .interactive-table th, .interactive-table td {
+        padding: 8px 6px;
+        font-size: 0.8rem;
+    }
+    .interactive-table {
+        min-width: 400px;
+    }
 }
 
 /* Status Dropdown Styling */
