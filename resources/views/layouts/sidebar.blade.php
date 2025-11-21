@@ -26,7 +26,7 @@
       </li>
 
       <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
-        <a href="{{ url('/kelola-akun') }}" class="sidebar-link">Kelola Akun</a>
+        <a href="{{ url('/kelola-akun') }}" class="sidebar-link">Kelola Akun Cuy</a>
       </li>
       @endif
 
