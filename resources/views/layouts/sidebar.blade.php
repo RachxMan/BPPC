@@ -52,7 +52,7 @@
 </aside>
 
 {{-- Logout Modal --}}
-<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden" id="logoutModal">
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" id="logoutModal" style="z-index: 1100;">
   <div class="bg-white rounded-lg shadow-lg w-1/3">
     <div class="p-4 border-b">
       <h2 class="text-lg font-semibold">Konfirmasi Logout</h2>
@@ -67,13 +67,9 @@
   </div>
 </div>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
-
-
-
-
   // Logout modal
   window.confirmLogout = function() {
     document.getElementById('logoutModal').classList.remove('hidden');
@@ -103,3 +99,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
+@endpush
