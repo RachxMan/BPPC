@@ -52,51 +52,64 @@
 </aside>
 
 {{-- Logout Modal --}}
-<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" id="logoutModal" style="z-index: 1100;">
-  <div class="bg-white rounded-lg shadow-lg w-1/3">
-    <div class="p-4 border-b">
-      <h2 class="text-lg font-semibold">Konfirmasi Logout</h2>
-    </div>
-    <div class="p-4">
-      <p>Apakah Anda yakin ingin logout?</p>
-    </div>
-    <div class="p-4 border-t flex justify-end space-x-2">
-      <button id="cancelLogoutBtn" class="px-4 py-2 bg-gray-500 text-white rounded">Batal</button>
-      <button id="confirmLogoutBtn" class="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
-    </div>
+<div id="logoutModal"
+     class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center"
+     style="z-index: 2000;">
+
+  <div class="modal-box bg-white rounded-lg shadow-lg w-80 p-6">
+      <h2 class="text-lg font-semibold mb-2">Konfirmasi Logout</h2>
+      <p class="mb-4">Apakah Anda yakin ingin logout?</p>
+
+      <div class="btns flex justify-end space-x-2">
+          <button id="cancelLogoutBtn" class="btn-cancel px-4 py-2 bg-gray-500 text-white rounded">
+              Batal
+          </button>
+
+          <button id="confirmLogoutBtn" class="btn-confirm px-4 py-2 bg-red-600 text-white rounded">
+              Ya
+          </button>
+      </div>
   </div>
+
 </div>
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Logout modal
+
+  // buka modal
   window.confirmLogout = function() {
     document.getElementById('logoutModal').classList.remove('hidden');
   };
 
+  // aksi logout
   document.getElementById('confirmLogoutBtn').addEventListener('click', function() {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '{{ route("logout") }}';
+    
     const csrf = document.createElement('input');
     csrf.type = 'hidden';
     csrf.name = '_token';
     csrf.value = '{{ csrf_token() }}';
+
     form.appendChild(csrf);
     document.body.appendChild(form);
     form.submit();
   });
 
+  // batal logout
   document.getElementById('cancelLogoutBtn').addEventListener('click', function() {
     document.getElementById('logoutModal').classList.add('hidden');
   });
 
-  document.getElementById('logoutModal').addEventListener('click', function(event) {
-    if (event.target === this) {
+  // klik area luar untuk menutup modal
+  document.getElementById('logoutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
       this.classList.add('hidden');
     }
   });
+
 });
 </script>
 @endpush
