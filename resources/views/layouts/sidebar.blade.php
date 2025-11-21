@@ -26,7 +26,7 @@
       </li>
 
       <li class="{{ request()->is('kelola-akun') ? 'active' : '' }}">
-        <a href="{{ url('/kelola-akun') }}" class="sidebar-link">Kelola Akun Cuy</a>
+        <a href="{{ url('/kelola-akun') }}" class="sidebar-link">Kelola Akun</a>
       </li>
       @endif
 
@@ -52,13 +52,17 @@
 </aside>
 
 {{-- Logout Modal --}}
-<div id="logoutModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <h3>Konfirmasi Logout</h3>
-    <p>Apakah Anda yakin ingin logout?</p>
-    <div class="modal-buttons">
-      <button id="cancelLogoutBtn" class="btn-cancel">Batal</button>
-      <button id="confirmLogoutBtn" class="btn-confirm">Logout</button>
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden" id="logoutModal">
+  <div class="bg-white rounded-lg shadow-lg w-1/3">
+    <div class="p-4 border-b">
+      <h2 class="text-lg font-semibold">Konfirmasi Logout</h2>
+    </div>
+    <div class="p-4">
+      <p>Apakah Anda yakin ingin logout?</p>
+    </div>
+    <div class="p-4 border-t flex justify-end space-x-2">
+      <button id="cancelLogoutBtn" class="px-4 py-2 bg-gray-500 text-white rounded">Batal</button>
+      <button id="confirmLogoutBtn" class="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
     </div>
   </div>
 </div>
@@ -72,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Logout modal
   window.confirmLogout = function() {
-    document.getElementById('logoutModal').style.display = 'block';
+    document.getElementById('logoutModal').classList.remove('hidden');
   };
 
   document.getElementById('confirmLogoutBtn').addEventListener('click', function() {
@@ -89,12 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('cancelLogoutBtn').addEventListener('click', function() {
-    document.getElementById('logoutModal').style.display = 'none';
+    document.getElementById('logoutModal').classList.add('hidden');
   });
 
   document.getElementById('logoutModal').addEventListener('click', function(event) {
     if (event.target === this) {
-      this.style.display = 'none';
+      this.classList.add('hidden');
     }
   });
 });
