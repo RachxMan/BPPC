@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'Telkom Paycoll')</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ asset('img/1594112895830_compress_PNG Icon Telkom.png') }}">
   <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 <body>

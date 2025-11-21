@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>@yield('title', 'PayColl PT. Telkom')</title>
 
+  {{-- Favicon --}}
+  <link rel="icon" type="image/png" href="{{ asset('img/1594112895830_compress_PNG Icon Telkom.png') }}">
+
   {{-- Global CSS --}}
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
   <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
