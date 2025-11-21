@@ -32,9 +32,6 @@
 
       @if(Auth::user()->role === 'admin' || Auth::user()->role === 'ca')
       <li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
-        <a href="javascript:void(0)" class="dropdown-toggle sidebar-link" id="caring-toggle">
-          Caring Pelanggan <span class="arrow">▾</span>
-        </a>
         <ul class="dropdown-menu">
           <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
             <a href="{{ url('/caring/telepon') }}" class="sidebar-link">Caring Telepon</a>
@@ -66,7 +63,6 @@
   </div>
 </div>
 
-{{-- Script --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
