@@ -32,9 +32,6 @@
 
       @if(Auth::user()->role === 'admin' || Auth::user()->role === 'ca')
       <li class="dropdown {{ request()->is('caring*') ? 'open' : '' }}">
-        <a href="javascript:void(0)" class="dropdown-toggle sidebar-link" id="caring-toggle">
-          Caring Pelanggan <span class="arrow">▾</span>
-        </a>
         <ul class="dropdown-menu">
           <li class="{{ request()->is('caring/telepon') ? 'active' : '' }}">
             <a href="{{ url('/caring/telepon') }}" class="sidebar-link">Caring Telepon</a>
@@ -54,20 +51,23 @@
   </div>
 </aside>
 
+{{-- Logout Modal --}}
+<div id="logoutModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Konfirmasi Logout</h3>
+    <p>Apakah Anda yakin ingin logout?</p>
+    <div class="modal-buttons">
+      <button id="cancelLogoutBtn" class="btn-cancel">Batal</button>
+      <button id="confirmLogoutBtn" class="btn-confirm">Logout</button>
+    </div>
+  </div>
+</div>
+
 {{-- Script --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Dropdown caring
-  const caringToggle = document.getElementById('caring-toggle');
-  if(caringToggle){
-    caringToggle.addEventListener('click', () => {
-      const parent = caringToggle.parentElement;
-      parent.classList.toggle('open');
-      caringToggle.querySelector('.arrow').textContent =
-        parent.classList.contains('open') ? '▲' : '▾';
-    });
-  }
+
 
 
 
