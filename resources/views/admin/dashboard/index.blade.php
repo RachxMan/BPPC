@@ -118,7 +118,7 @@
                         <select name="filter_followup" onchange="this.form.submit()">
                             <option value="">Semua</option>
                             <option value="sudah" {{ request('filter_followup') == 'sudah' ? 'selected' : '' }}>Sudah Follow Up</option>
-                            <option value="belum" {{ request('filter_followup') == 'belum' ? 'selected' : '' }}>Belum Follow Up</option>
+                            <option value="belum " {{ request('filter_followup') == 'belum' ? 'selected' : '' }}>Belum Follow Up</option>
                         </select>
                     </form>
                     @if(auth()->user()->role !== 'ca')
@@ -157,7 +157,7 @@
                             @if(auth()->user()->role !== 'ca')
                             <td>{{ $item->ca_name ?? '-' }}</td>
                             @endif
-                            <td>{{ $item->contact_date ? 'Sudah' : 'Belum' }}</td>
+                            <td>{{ $item->contact_date ? 'Sudah Follow Up' : 'Belum Follow Up' }}</td>
                             <td>{{ $item->contact_date ?? '-' }}</td>
                             <td>{{ $item->keterangan ?? '-' }}</td>
                         </tr>
