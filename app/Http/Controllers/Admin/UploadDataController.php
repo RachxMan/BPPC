@@ -380,17 +380,37 @@ private function getRowsFromFile($fileId, $importClass)
 
         DB::beginTransaction();
         try {
-            foreach ($rows as $row) {
-                $snd = $row['snd'] ?? null;
-                if (empty($snd)) continue;
+        foreach ($rows as $row) {
+            $snd = $row['snd'] ?? null;
+            if (empty($snd)) continue;
 
-                // Tentukan status bayar berdasarkan TGL_BAYAR
-                $tglBayar = $this->parseExcelDate($row['tgl_bayar'] ?? null);
-                $statusBayar = $tglBayar ? 'Paid' : 'Unpaid';
+            // Tentukan status bayar berdasarkan TGL_BAYAR
+            $tglBayar = $this->parseExcelDate($row['tgl_bayar'] ?? null);
+            $statusBayar = $tglBayar ? 'Paid' : 'Unpaid';
 
-                // Ambil kontak dari kolom TELP
-                $kontak = $row['no_hp'] ?? 'N/A';
+            // Ambil kontak dari kolom TELP
+            $kontak = $row['no_hp'] ?? 'N/A';
 
+            if ($modelClass == Harian::class) {
+                // For Harian, update existing records cumulatively
+                $exists = Harian::where('snd', $snd)->first();
+                if ($exists && $tglBayar) {
+                    $exists->update([
+                        'payment_date' => $tglBayar,
+                        'status_bayar' => 'Paid',
+                        'updated_at' => now(),
+                    ]);
+                    // Update corresponding CaringTelepon status if exists
+                    CaringTelepon::where('snd', $snd)->update([
+                        'status_bayar' => 'Paid',
+                        'updated_at' => now(),
+                    ]);
+                    $processed++;
+                } else {
+                    $duplicates[] = $snd;
+                }
+            } else {
+                // For Bulanan, keep original insert/update logic
                 $rowData = [
                     'witel' => $row['witel'] ?? 'N/A',
                     'type' => $row['type'] ?? 'N/A',
@@ -431,6 +451,7 @@ private function getRowsFromFile($fileId, $importClass)
                     $processed++;
                 }
             }
+        }
 
             DB::commit();
             return ['processed' => $processed, 'duplicates' => $duplicates];
