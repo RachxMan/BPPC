@@ -5,20 +5,33 @@
 @extends('layouts.app')
 
 @section('title', 'Tambah Akun - PayColl PT. Telkom')
+@section('header-title', 'Tambah Akun Baru')
+@section('header-subtitle', 'Buat akun pengguna Administrator atau Collection Agent baru.')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/kelola.css') }}">
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.page-header {
+    margin-bottom: 20px;
+}
+.page-header h1 {
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.page-header p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+</style>
 @endpush
 
 @section('content')
 <main class="main" id="main">
-  <header class="header">
-    <h1>Tambah Akun Baru</h1>
-    <p class="subtitle">Buat akun pengguna Administrator atau Collection Agent baru.</p>
-  </header>
-
   <section class="profile-container">
     <div class="header-section">
       <div>

@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Caring Telepon - PayColl PT. Telkom')
+@section('header-title', 'Caring Telepon')
+@section('header-subtitle', 'Daftar pelanggan yang harus dihubungi oleh CA/Admin.')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
@@ -8,6 +10,20 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
+.page-header {
+    margin-bottom: 20px;
+}
+.page-header h1 {
+    color: #e74c3c;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.page-header p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
   /* ======================== CUSTOM STYLE ======================== */
   body {
     font-size: 13px;
@@ -25,12 +41,16 @@
     background-color: #e63946;
     color: #fff;
     border: none;
-    padding: 4px 10px;
+    width: 30px;
+    height: 30px;
     border-radius: 5px;
     font-weight: 500;
     font-size: 12px;
     transition: all 0.25s ease;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .btn-add:hover {
@@ -254,18 +274,7 @@
 
 @section('content')
 <main class="main" id="main">
-  <header class="header">
-    <h1>Caring Telepon</h1>
-    <p class="subtitle">Daftar pelanggan yang harus dihubungi oleh CA/Admin.</p>
-  </header>
-
   <section class="profile-container">
-    <div class="header-section">
-      <div>
-        <h4 class="fw-bold mb-1" style="color: #333;">Daftar Caring Telepon</h4>
-        <p class="text-muted mb-0">Kelola dan pantau status panggilan pelanggan.</p>
-      </div>
-    </div>
 
     {{-- Search & Filter --}}
     <div class="top-controls" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
@@ -305,19 +314,30 @@
       <table class="user-table align-middle">
         <thead>
           <tr>
+            <th>Aksi</th>
             <th>No</th>
             <th>ID NET (SND)</th>
             <th>Nama</th>
             <th>Alamat</th>
             <th>Kontak</th>
-            <th>Payment Date</th>
+            <th>TGL Bayar</th>
             <th>Status Bayar</th>
-            <th>Status & Keterangan</th>
           </tr>
-        </thead>
         <tbody>
           @forelse($data as $index => $row)
           <tr class="{{ $index % 2 == 0 ? 'even' : 'odd' }}">
+            <td>
+              <button class="btn-add" data-id="{{ $row->id }}"
+                data-status="{{ $row->status_call ?? '' }}"
+                data-keterangan="{{ $row->keterangan ?? '' }}"
+                title="{{ ($row->status_call || $row->keterangan) ? 'Lihat Status & Keterangan' : 'Tambah Status & Keterangan' }}">
+                @if($row->status_call || $row->keterangan)
+                  <i class="fas fa-plus"></i>
+                @else
+                  <i class="fas fa-plus"></i>
+                @endif
+              </button>
+            </td>
             <td>{{ $data->firstItem() + $index }}</td>
             <td>{{ $row->snd ?? '-' }}</td>
             <td>{{ $row->nama ?? '-' }}</td>
@@ -333,13 +353,6 @@
             </td>
             <td>{{ $row->payment_date ?? '-' }}</td>
             <td>{{ $row->status_bayar ?? '-' }}</td>
-            <td>
-              <button class="btn-add" data-id="{{ $row->id }}" 
-                data-status="{{ $row->status_call ?? '' }}" 
-                data-keterangan="{{ $row->keterangan ?? '' }}">
-                {{ ($row->status_call || $row->keterangan) ? 'Lihat' : 'Tambah' }}
-              </button>
-            </td>
           </tr>
           @empty
           <tr>

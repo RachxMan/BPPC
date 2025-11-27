@@ -5,27 +5,36 @@
 @extends('layouts.app')
 
 @section('title', 'Edit Akun - PayColl PT. Telkom')
+@section('header-title', 'Edit Akun')
+@section('header-subtitle', 'Ubah informasi akun pengguna.')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 <link rel="stylesheet" href="{{ asset('css/kelola.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.page-header {
+    margin-bottom: 20px;
+}
+.page-header h1 {
+    color: #e74c3c;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.page-header p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+</style>
 @endpush
 
 @section('content')
 
 <main class="main" id="main">
-  <header class="header">
-    <h1>Edit Akun</h1>
-    <p class="subtitle">Ubah informasi akun pengguna.</p>
-  </header>
-
   <section class="profile-container">
     <div class="header-section">
-      <div>
-        <h4 class="fw-bold mb-1" style="color: #333;">Form Edit Akun</h4>
-        <p class="text-muted mb-0">Perbarui data akun di bawah ini.</p>
-      </div>
       <a href="{{ route('kelola.index') }}" class="btn-back">
         <i class="fa-solid fa-arrow-left me-2"></i> Kembali
       </a>

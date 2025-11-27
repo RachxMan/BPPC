@@ -125,6 +125,20 @@
 
 @push('styles')
 <style>
+.page-header {
+    margin-bottom: 20px;
+}
+.page-header h1 {
+    color: #e74c3c;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.page-header p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
 .review-container {
     max-width: 95%;
     margin: 20px auto;

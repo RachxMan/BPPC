@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Profil & Pengaturan - PayColl PT. Telkom')
+@section('header-title', 'Profil & Pengaturan')
+@section('header-subtitle', 'Atur dan kelola akun kamu.')
 
 @section('content')
 <div class="content">
@@ -116,6 +118,22 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/profil.css') }}">
+<style>
+.page-header {
+    margin-bottom: 20px;
+}
+.page-header h1 {
+    color: #e74c3c;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.page-header p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+</style>
 @endpush
 
 @push('scripts')

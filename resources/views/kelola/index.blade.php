@@ -1,26 +1,35 @@
 @extends('layouts.app')
 
 @section('title', 'Kelola Akun - PayColl PT. Telkom')
+@section('header-title', 'Kelola Akun')
+@section('header-subtitle', 'Daftar akun pengguna yang terdaftar dengan mudah.')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/kelola.css') }}">
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.page-header {
+    margin-bottom: 20px;
+}
+.page-header h1 {
+    color: #e74c3c;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.page-header p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+</style>
 @endpush
 
 @section('content')
 <main class="main" id="main">
-  <header class="header">
-    <h1>Kelola Akun</h1>
-    <p class="subtitle"></p>
-  </header>
-
   <section class="profile-container">
     <div class="header-section">
-      <div>
-        <h4 class="fw-bold mb-1" style="color: #333;">Daftar Akun Pengguna</h4>
-        <p class="text-muted mb-0">Lihat, ubah, dan kelola data pengguna yang terdaftar dengan mudah.</p>
-      </div>
       <a href="{{ route('kelola.create') }}" class="btn-red">
         <i class="fa-solid fa-user-plus me-2"></i> Tambah Akun Baru
       </a>
