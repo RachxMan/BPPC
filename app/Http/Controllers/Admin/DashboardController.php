@@ -18,13 +18,12 @@ public function index(Request $request)
     // KPI Section
     // ==============================
     $totalPelanggan = DB::table('harian')->count();
-    $totalFollowUp = DB::table('caring_telepon')->whereNotNull('status_call')->whereNotNull('contact_date')->count();
+    $totalFollowUp = DB::table('caring_telepon')->where('follow_up_count', '>', 0)->count();
     $today = Carbon::today();
 
     $recentFollowUp = DB::table('caring_telepon')
         ->whereDate('contact_date', $today)
-        ->whereNotNull('status_call')
-        ->whereNotNull('contact_date')
+        ->where('follow_up_count', '>', 0)
         ->count();
 
     $jumlahCA = DB::table('users')->where('role', 'ca')->where('status', 'Aktif')->count();
@@ -56,10 +55,10 @@ public function index(Request $request)
         ->select(
             'user_id',
             DB::raw('DATE(contact_date) as date'),
-            DB::raw('COUNT(*) as contacts_per_day')
+            DB::raw('SUM(follow_up_count) as contacts_per_day')
         )
         ->whereBetween('contact_date', [$startOfMonth, $endOfMonth])
-        ->whereNotNull('status_call')
+        ->where('follow_up_count', '>', 0)
         ->whereNotNull('contact_date')
         ->whereIn('user_id', $activeUsers->pluck('id'))
         ->groupBy('user_id', 'date')

@@ -35,6 +35,7 @@ class CaringTelepon extends Model
         'keterangan',
         'status_call',
         'contact_date',
+        'follow_up_count',
         'created_at',
         'updated_at'
     ];

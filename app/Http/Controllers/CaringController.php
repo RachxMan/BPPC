@@ -110,16 +110,23 @@ class CaringController extends Controller
         }
 
         $updateData = [];
+        $incrementFollowUp = false;
+
         if ($request->has('status_call')) {
             $updateData['status_call'] = $request->status_call;
             $updateData['contact_date'] = now()->toDateString();
+            $incrementFollowUp = true;
         }
         if ($request->has('keterangan')) {
             $updateData['keterangan'] = $request->keterangan;
+            $incrementFollowUp = true;
         }
 
         if (!empty($updateData)) {
             $record->update($updateData);
+            if ($incrementFollowUp) {
+                $record->increment('follow_up_count');
+            }
 
             // Automate status_bayar based on status_call
             if ($request->status_call === 'Konfirmasi Pembayaran') {
