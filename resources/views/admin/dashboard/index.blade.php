@@ -97,7 +97,7 @@
                         <span class="stat-value">
                             @php
                                 $totalContacted = $weekData->sum('contacted');
-                                $rateWeek = $totalContacted > 0 ? round(($weekData->sum('paid') / $totalContacted) * 100, 1) : 0;
+                                $rateWeek = $totalContacted > 0 ? round(($weekData->sum('paid') / $totalContacted) * 100, 0) : 0;
                             @endphp
                             {{ $rateWeek }}%
                         </span>

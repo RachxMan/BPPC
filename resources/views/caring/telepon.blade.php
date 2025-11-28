@@ -497,7 +497,6 @@ document.getElementById('modal-save').addEventListener('click', () => {
     if(data.success){
       document.getElementById('statusModal').style.display = 'none';
 
-      currentButton.textContent = 'Lihat';
       currentButton.dataset.status = detail;
       currentButton.dataset.keterangan = ket;
 

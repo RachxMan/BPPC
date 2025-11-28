@@ -147,6 +147,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const y = baseline - height;
       ctx.fillStyle = d.color;
       ctx.fillRect(x, y, barWidth, height);
+      // Add text label with whole number
+      ctx.fillStyle = '#fff'; // White text for contrast
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(Math.round(d.value), x + barWidth / 2, y - 5);
     });
   }
   drawBars();
