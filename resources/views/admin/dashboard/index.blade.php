@@ -791,7 +791,7 @@ function updateWeekData() {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true },
+                        y: { beginAtZero: true, ticks: { precision: 0 } },
                         x: {
                             ticks: {
                                 maxRotation: 45,
